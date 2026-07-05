@@ -1,0 +1,89 @@
+# AGENTS.md — ClipsNeko Linux Installer
+
+Conventions for AI agents (and human contributors) working on this project.
+
+## 1. Project purpose
+
+A lightweight TUI installer for ClipsNeko Linux (an Arch Linux derivative).
+Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
+
+## 2. Tech stack (locked)
+
+- Rust (Edition 2021)
+- TUI: `ratatui` + `crossterm`
+- i18n: `gettext-rs` (binds to system libgettext), `.po/.mo` workflow; `en` is the
+  source/POT language, `zh_CN` the first translation.
+- Subprocess: `std::process::Command` — always shell out to existing tools, never
+  reimplement.
+- Errors: `anyhow` + `thiserror`.
+- Logging: `tracing` + `tracing-subscriber` → `/var/log/clipsneko-installer.log`.
+- Runtime config (must exist or the installer exits with a clear error):
+  - `/etc/clipsneko-installer/packages.list` — one package name per line.
+  - `/etc/clipsneko-installer/repo.conf` — `name`, `server_url`, `siglevel`
+    (default `Never` for the debug phase).
+
+## 3. Language of code and docs
+
+- All source comments, identifiers, doc-comments, commit messages, and docs are
+  **English**.
+- TUI strings are **never hardcoded** — every user-facing string goes through
+  gettext (`_(...)`).
+- The installer UI language (en/zh_CN) is independent of the target system's
+  locale.
+
+## 4. Don't reinvent wheels
+
+- Prefer existing crates from the locked stack. Add a new crate only after
+  justification.
+- For system operations, shell out to existing tools already shipped on the ISO:
+  `nmtui`, `cfdisk`, `reflector`, `pacman`, `pacstrap`, `arch-chroot`,
+  `grub-install`, `grub-mkconfig`, `mkinitcpio`, `genfstab`, `lsblk`, `blkid`,
+  `partprobe`, `mkfs.btrfs`, `mkfs.vfat`, `mount`, `umount`, `loadkeys`,
+  `localectl`, `systemctl`, and `ip-api.com` (HTTP) for GeoIP.
+- Do not write partition editors, mirror ranking, or pacman frontends yourself.
+
+## 5. Code style
+
+- `cargo fmt` clean and `cargo clippy -- -D warnings` green before any task is
+  considered done.
+- Module layout follows `docs/design.md`.
+- Public functions carry `///` doc-comments in English.
+
+## 6. i18n workflow
+
+- Add a UI string → wrap in `_(...)` at the call site.
+- After adding/changing strings: regenerate the POT (`xgettext` or the project's
+  script), then update `po/en/LC_MESSAGES/clipsneko-installer.po` (identity) and
+  `po/zh_CN/LC_MESSAGES/clipsneko-installer.po` (translation).
+- Never leave a UI string untranslated in `zh_CN` unless intentionally marked
+  fuzzy.
+
+## 7. Progress logging (mandatory)
+
+After every working session, update `docs/dev-prog.md` with three sections:
+
+- **Done**: what was actually finished.
+- **Not done**: what was planned but skipped or blocked, and why.
+- **Next**: the concrete next steps.
+
+## 8. Git discipline (mandatory)
+
+- The agent MUST NOT run `git commit`, `git push`, `git tag`, `git commit --amend`,
+  or any write-side git command. The user commits manually.
+- The agent MAY run read-only git commands (`status`, `diff`, `log`) to inspect.
+- Never stage secrets, keys, or the user's `/etc/clipsneko-installer/repo.conf`
+  runtime data.
+
+## 9. Verification before declaring a task done
+
+- If Rust code was touched: run `cargo fmt --check`, `cargo clippy -- -D warnings`,
+  and `cargo build` (or `cargo test` when tests exist).
+- If i18n strings were touched: confirm `.pot` and both `.po` files are consistent.
+- Update `docs/dev-prog.md` last, in the same session.
+
+## 10. When uncertain
+
+- Stop and ask the user. The user is the decision-maker on any design choice not
+  pre-approved in `docs/design.md`.
+- Do not silently invent behavior for partitioning, nvidia, chroot, or the deferred
+  "postinstall script" hook — those are all waiting on explicit user direction.
