@@ -27,7 +27,7 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
 - All source comments, identifiers, doc-comments, commit messages, and docs are
   **English**.
 - TUI strings are **never hardcoded** — every user-facing string goes through
-  gettext (`_(...)`).
+  the `t!()` macro (backed by gettext).
 - The installer UI language (en/zh_CN) is independent of the target system's
   locale.
 
@@ -51,7 +51,7 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
 
 ## 6. i18n workflow
 
-- Add a UI string → wrap in `_(...)` at the call site.
+- Add a UI string → wrap in `t!(...)` at the call site.
 - After adding/changing strings: regenerate the POT (`xgettext` or the project's
   script), then update `po/en/LC_MESSAGES/clipsneko-installer.po` (identity) and
   `po/zh_CN/LC_MESSAGES/clipsneko-installer.po` (translation).

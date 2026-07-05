@@ -1,0 +1,27 @@
+# --- Rust build artifacts ---
+/target
+**/*.rs.bk
+
+# --- Compiled gettext catalogs ---
+# build.rs emits .mo into OUT_DIR (under /target), but ignore any .mo that
+# might be produced by running msgfmt manually inside po/.
+*.mo
+*.gmo
+
+# --- Editor / IDE ---
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.iml
+
+# --- OS metadata ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Local environment / secrets ---
+.env
+.env.local
+.env.*.local

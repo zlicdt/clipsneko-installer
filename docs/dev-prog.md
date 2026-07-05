@@ -59,3 +59,66 @@
   `zh_CN/LC_MESSAGES/`.
 - Implement the linear wizard shell (`app.rs` + `state.rs`) with stubbed step
   modules so navigation works end-to-end before any real system logic lands.
+
+## 2026-07-05 — Project scaffolding
+
+### Done
+
+- Initialized Cargo project with the locked stack:
+  `Cargo.toml` pins `ratatui 0.29`, `crossterm 0.28`, `gettext-rs 0.7` (with the
+  `gettext-system` feature so it links the system gettext instead of vendoring
+  one — vendored gettext 0.26 fails to build against current glibc headers),
+  `anyhow 1`, `thiserror 2`, `tracing 0.1`, `tracing-subscriber 0.3` (with the
+  `env-filter` feature). Release profile uses LTO + strip + panic=abort.
+- Wrote `build.rs` that runs `msgfmt` to compile each `po/<lang>/LC_MESSAGES/
+  clipsneko-installer.po` into `$OUT_DIR/locale/<lang>/LC_MESSAGES/
+  clipsneko-installer.mo`; passes `$OUT_DIR/locale` to the binary via the
+  `CLIPSNEKO_DEV_LOCALEDIR` compile-time env var, overridable at runtime via
+  `CLIPSNEKO_LOCALEDIR` for production installs.
+- Wrote `src/i18n.rs` with `UiLang` enum (en/zh_CN), `set_language()` (setlocale
+  + bindtextdomain + bind_textdomain_codeset + textdomain), and the `t!()`
+  macro exported via `#[macro_export]`. The macro replaces the originally
+  drafted `_()` name — `_` is a Rust reserved identifier and cannot name a
+  macro. `AGENTS.md` §3/§6 and `docs/design.md` §8 were updated to reference
+  `t!()` instead of `_(...)`.
+- Wrote `src/main.rs`: inits tracing to `/var/log/clipsneko-installer.log`
+  with `RUST_LOG` override, sets UI language to English, then runs a minimal
+  ratatui loop that renders the translated "Welcome to ClipsNeko Linux
+  Installer" + "Press q to quit" lines and exits on q/Q/Esc. This proves the
+  full i18n + TUI stack is wired end-to-end.
+- Set up `po/` scaffolding: `clipsneko-installer.pot` (the source template),
+  `po/en/LC_MESSAGES/clipsneko-installer.po` (identity), and
+  `po/zh_CN/LC_MESSAGES/clipsneko-installer.po` (Simplified Chinese). Both
+  example strings from `src/main.rs` are present in all three files so the
+  translation pipeline is exercised.
+- Added `.gitignore` covering `/target` and compiled `*.mo` files.
+- Verified green: `cargo fmt --check`, `cargo clippy -- -D warnings`,
+  `cargo build`. Confirmed the `.mo` files are emitted under
+  `target/debug/build/clipsneko-installer-*/out/locale/`.
+
+### Not done
+
+- The minimal `main.rs` only renders a placeholder screen; no real wizard
+  shell (`app.rs` / `state.rs`) or step modules exist yet.
+- `set_language(UiLang::En)` is hardcoded; the language picker step is not
+  implemented, so `UiLang::ZhCn` and `UiLang::label()` are currently
+  dead code (marked `#[allow(dead_code)]` until the picker lands).
+- No runtime fallback for the log file path — the binary requires
+  `/var/log/clipsneko-installer.log` to be writable, which means running as
+  root even for early dev testing. May want a `CLIPSNEKO_LOG_FILE` env var
+  override later; not added now to avoid inventing behavior.
+- No README at the project root (not required by AGENTS.md, just noted).
+
+### Next
+
+- Implement the linear wizard shell: `state.rs` (the `InstallerState` struct
+  holding every step's choices), `app.rs` (the step state machine + main
+  render loop), and stub `steps/*.rs` modules for all 12 steps. Goal:
+  Tab/Shift+Tab/Esc/Enter navigation works end-to-end with placeholders.
+- Wire the `$LANG`/`LC_ALL` requirement into `set_language` so it surfaces a
+  clean error when the requested locale is not generated on the host (the
+  code already returns an error, but the wizard shell will need to present
+  it rather than crashing).
+- Decide with the user whether to add a `CLIPSNEKO_LOG_FILE` override for
+  non-root dev testing, or keep root-only.
+

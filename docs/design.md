@@ -153,6 +153,6 @@ root shell on live env.
 ## 8. i18n workflow
 
 - `en` is the POT source.
-- Add a UI string → wrap in `_(...)`; update `.pot` and both `.po` files in the
-  same change.
+- Add a UI string → wrap in `t!(...)`; update `.pot` and both `.po` files in
+  the same change.
 - `zh_CN` must not lag `en` by more than one session.

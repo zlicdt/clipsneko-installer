@@ -1,0 +1,22 @@
+[package]
+name = "clipsneko-installer"
+version = "0.1.0"
+edition = "2021"
+description = "Lightweight TUI installer for ClipsNeko Linux"
+license = "MIT"
+build = "build.rs"
+
+[dependencies]
+ratatui = "0.29"
+crossterm = "0.28"
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+anyhow = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
