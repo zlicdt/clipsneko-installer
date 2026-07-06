@@ -64,6 +64,9 @@
 
 ### Done
 
+- Expanded `.gitignore` to a fuller Rust + gettext layout (covers `/target`,
+  `*.mo`/`*.gmo`, editor swap files, IDE dirs, OS metadata, local `.env`).
+  `Cargo.lock` is intentionally kept tracked (binary project).
 - Initialized Cargo project with the locked stack:
   `Cargo.toml` pins `ratatui 0.29`, `crossterm 0.28`, `gettext-rs 0.7` (with the
   `gettext-system` feature so it links the system gettext instead of vendoring
@@ -121,4 +124,77 @@
   it rather than crashing).
 - Decide with the user whether to add a `CLIPSNEKO_LOG_FILE` override for
   non-root dev testing, or keep root-only.
+
+## 2026-07-05 — Wizard shell (linear, stubbed)
+
+### Done
+
+- Wrote `src/state.rs` with the full data model from `design.md` §4 so it is
+  documented and ready for real step logic: `InstallerState` (with `Option`
+  fields for `ui_lang`, `keymap`, `timezone`, `user`, `hostname`, plus
+  `network_ok`, `mirror_lines: Vec<String>`, `disk: DiskState`, `kernel`:
+  `Option<KernelChoice>`, `nvidia: NvidiaChoice`), `DiskState` (main disk,
+  ESP/root partitions, extra mounts), `KernelChoice` (Linux/LinuxLts/
+  LinuxZen/LinuxHardened), `NvidiaChoice` (None/Nvidia/NvidiaDkms/
+  NvidiaOpenDkms/NvidiaLts with `#[default] None`), `UserInfo` (username,
+  gecos, `password_set` — the password itself is never stored). All marked
+  `#![allow(dead_code)]` at the module level until each step populates its
+  fields.
+- Wrote `src/steps/mod.rs`: `StepId` enum (12 variants in design order),
+  `StepId::title()` returning translated titles via `t!()`, the `Step` trait
+  (`id` / `render` / `handle_key`), `StepAction` (None/Next/Back/Quit; Quit
+  marked `#[allow(dead_code)]` until the install step emits it), and
+  `StubStep` — a placeholder that renders "This step is not implemented yet."
+  + "Press Enter to continue, Esc to go back." and maps Enter→Next, Esc→Back.
+  `build_steps()` returns all 12 slots as `Box<dyn Step>` stubs. Per-step
+  files (`steps/language.rs`, etc.) will be created as each step gets real
+  logic; the stub keeps the whole wizard navigable in the meantime.
+- Wrote `src/app.rs`: `App` holds `steps: Vec<Box<dyn Step>>`, `current`
+  index, `state: InstallerState`, `quit_confirm: bool`. Render splits the
+  screen into a 3-row header (bold "ClipsNeko Linux Installer" title +
+  "Step X/12: <translated step title>" indicator), the step body, and a
+  1-row DIM centered footer ("Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help").
+  Global keys handled at the app level: Ctrl+C arms a centered quit
+  confirmation dialog ("Are you sure you want to quit?" / "Press Y to quit,
+  any other key to cancel."); Y→quit, anything else→cancel. F1 reserved for
+  a help screen (no-op for the stub phase). All other keys dispatch to the
+  current step; Next/Back are clamped at step 0 and the last step.
+  `app::run()` is the main loop (`terminal.draw` + `event::read`).
+- Rewrote `src/main.rs` to declare `mod app; mod i18n; mod state; mod steps;`
+  and call `app::run(&mut terminal)` after i18n + tracing init. The old
+  placeholder welcome screen and its two strings were removed.
+- Refreshed `po/clipsneko-installer.pot`, `po/en/LC_MESSAGES/...po`, and
+  `po/zh_CN/LC_MESSAGES/...po`: removed the two old placeholder strings
+  ("Welcome to ClipsNeko Linux Installer", "Press q to quit") and added the
+  19 new strings used by `app.rs` and `steps/mod.rs` (title, "Step",
+  footer hint, quit-dialog pair, 12 step titles, two stub-body lines). zh_CN
+  translations provided for all 19.
+- Verified green: `cargo fmt --check`, `cargo clippy -- -D warnings`,
+  `cargo build`. After `cargo clean -p clipsneko-installer` + rebuild,
+  confirmed the regenerated `.mo` contains exactly the 19 new msgids and
+  none of the retired ones.
+
+### Not done
+
+- All 12 steps are stubs; no step has real UI or system logic yet.
+- The language step still doesn't actually switch `UiLang` — `main.rs`
+  hardcodes `UiLang::En`, so `UiLang::ZhCn` and `UiLang::label()` remain
+  dead code (annotated).
+- No runtime test was performed (the binary needs a writable
+  `/var/log/clipsneko-installer.log`, i.e. root, and an interactive
+  terminal) — only compile-time verification was done.
+- The `CLIPSNEKO_LOG_FILE` override question from the previous entry is
+  still open.
+
+### Next
+
+- Implement the first real step: **language select** (`steps/language.rs`).
+  It lists `UiLang::En` / `UiLang::ZhCn` via `UiLang::label()`, calls
+  `set_language()` on change so the rest of the UI re-translates live, and
+  writes the choice into `InstallerState::ui_lang`. This unblocks
+  `UiLang::ZhCn` / `label()` and lets us visually verify the zh_CN `.mo`.
+- Then keyboard select (`steps/keyboard.rs`) — list `localectl list-keymaps`,
+  `loadkeys` immediately, persist into `state.keymap`.
+- Decide on the `CLIPSNEKO_LOG_FILE` override so non-root dev runs are
+  possible for visual testing.
 

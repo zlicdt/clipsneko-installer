@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 12:00+0800\n"
-"PO-Revision-Date: 2026-07-05 12:00+0800\n"
+"POT-Creation-Date: 2026-07-05 13:30+0800\n"
+"PO-Revision-Date: 2026-07-05 13:30+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Simplified Chinese\n"
 "Language: zh_CN\n"
@@ -15,10 +15,78 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main.rs
-msgid "Welcome to ClipsNeko Linux Installer"
-msgstr "欢迎使用 ClipsNeko Linux 安装程序"
+#: src/app.rs
+msgid "ClipsNeko Linux Installer"
+msgstr "ClipsNeko Linux 安装程序"
 
-#: src/main.rs
-msgid "Press q to quit"
-msgstr "按 q 退出"
+#: src/app.rs
+msgid "Step"
+msgstr "步骤"
+
+#: src/app.rs
+msgid "Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help"
+msgstr "Enter=下一步  Esc=上一步  Ctrl+C=退出  F1=帮助"
+
+#: src/app.rs
+msgid "Are you sure you want to quit?"
+msgstr "确定要退出吗?"
+
+#: src/app.rs
+msgid "Press Y to quit, any other key to cancel."
+msgstr "按 Y 退出,按其他任意键取消。"
+
+#: src/steps/mod.rs
+msgid "Language"
+msgstr "语言"
+
+#: src/steps/mod.rs
+msgid "Keyboard Layout"
+msgstr "键盘布局"
+
+#: src/steps/mod.rs
+msgid "Network"
+msgstr "网络"
+
+#: src/steps/mod.rs
+msgid "Mirror List"
+msgstr "镜像列表"
+
+#: src/steps/mod.rs
+msgid "Disk Partitioning"
+msgstr "磁盘分区"
+
+#: src/steps/mod.rs
+msgid "Kernel"
+msgstr "内核"
+
+#: src/steps/mod.rs
+msgid "Nvidia Driver"
+msgstr "Nvidia 驱动"
+
+#: src/steps/mod.rs
+msgid "Timezone"
+msgstr "时区"
+
+#: src/steps/mod.rs
+msgid "User Account"
+msgstr "用户账户"
+
+#: src/steps/mod.rs
+msgid "Hostname"
+msgstr "主机名"
+
+#: src/steps/mod.rs
+msgid "Confirm Installation"
+msgstr "确认安装"
+
+#: src/steps/mod.rs
+msgid "Installing"
+msgstr "安装中"
+
+#: src/steps/mod.rs
+msgid "This step is not implemented yet."
+msgstr "此步骤尚未实现。"
+
+#: src/steps/mod.rs
+msgid "Press Enter to continue, Esc to go back."
+msgstr "按 Enter 继续,按 Esc 返回。"

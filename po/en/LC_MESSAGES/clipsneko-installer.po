@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 12:00+0800\n"
-"PO-Revision-Date: 2026-07-05 12:00+0800\n"
+"POT-Creation-Date: 2026-07-05 13:30+0800\n"
+"PO-Revision-Date: 2026-07-05 13:30+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -15,10 +15,78 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main.rs
-msgid "Welcome to ClipsNeko Linux Installer"
-msgstr "Welcome to ClipsNeko Linux Installer"
+#: src/app.rs
+msgid "ClipsNeko Linux Installer"
+msgstr "ClipsNeko Linux Installer"
 
-#: src/main.rs
-msgid "Press q to quit"
-msgstr "Press q to quit"
+#: src/app.rs
+msgid "Step"
+msgstr "Step"
+
+#: src/app.rs
+msgid "Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help"
+msgstr "Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help"
+
+#: src/app.rs
+msgid "Are you sure you want to quit?"
+msgstr "Are you sure you want to quit?"
+
+#: src/app.rs
+msgid "Press Y to quit, any other key to cancel."
+msgstr "Press Y to quit, any other key to cancel."
+
+#: src/steps/mod.rs
+msgid "Language"
+msgstr "Language"
+
+#: src/steps/mod.rs
+msgid "Keyboard Layout"
+msgstr "Keyboard Layout"
+
+#: src/steps/mod.rs
+msgid "Network"
+msgstr "Network"
+
+#: src/steps/mod.rs
+msgid "Mirror List"
+msgstr "Mirror List"
+
+#: src/steps/mod.rs
+msgid "Disk Partitioning"
+msgstr "Disk Partitioning"
+
+#: src/steps/mod.rs
+msgid "Kernel"
+msgstr "Kernel"
+
+#: src/steps/mod.rs
+msgid "Nvidia Driver"
+msgstr "Nvidia Driver"
+
+#: src/steps/mod.rs
+msgid "Timezone"
+msgstr "Timezone"
+
+#: src/steps/mod.rs
+msgid "User Account"
+msgstr "User Account"
+
+#: src/steps/mod.rs
+msgid "Hostname"
+msgstr "Hostname"
+
+#: src/steps/mod.rs
+msgid "Confirm Installation"
+msgstr "Confirm Installation"
+
+#: src/steps/mod.rs
+msgid "Installing"
+msgstr "Installing"
+
+#: src/steps/mod.rs
+msgid "This step is not implemented yet."
+msgstr "This step is not implemented yet."
+
+#: src/steps/mod.rs
+msgid "Press Enter to continue, Esc to go back."
+msgstr "Press Enter to continue, Esc to go back."
