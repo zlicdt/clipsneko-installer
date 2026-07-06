@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 13:30+0800\n"
+"POT-Creation-Date: 2026-07-06 15:00+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -24,7 +24,15 @@ msgid "Step"
 msgstr ""
 
 #: src/app.rs
-msgid "Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help"
+msgid "Back"
+msgstr ""
+
+#: src/app.rs
+msgid "Next"
+msgstr ""
+
+#: src/app.rs
+msgid "Tab=Focus  F1=Help  Esc=Quit"
 msgstr ""
 
 #: src/app.rs
@@ -32,7 +40,19 @@ msgid "Are you sure you want to quit?"
 msgstr ""
 
 #: src/app.rs
-msgid "Press Y to quit, any other key to cancel."
+msgid "Quit"
+msgstr ""
+
+#: src/app.rs
+msgid "Esc to cancel, Enter to quit."
+msgstr ""
+
+#: src/steps/language.rs
+msgid "Select installer language"
+msgstr ""
+
+#: src/steps/language.rs
+msgid "Space=Select  Enter=Next"
 msgstr ""
 
 #: src/steps/mod.rs
@@ -88,5 +108,5 @@ msgid "This step is not implemented yet."
 msgstr ""
 
 #: src/steps/mod.rs
-msgid "Press Enter to continue, Esc to go back."
+msgid "Press Enter to continue."
 msgstr ""

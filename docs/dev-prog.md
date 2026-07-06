@@ -84,13 +84,44 @@ finished it moves from "Not done" to "Done" and stays there.
   sync. Packaging is out of scope (user handles elsewhere); sample
   `/etc/clipsneko-installer/` config files (`config/packages.list`,
   `config/repo.conf`) are a deliverable in M1.
+- **Language step** (`steps/language.rs`): `LanguageStep` with a stateful
+  `List` of `UiLang::En` / `UiLang::ZhCn` (labels via `UiLang::label()`);
+  Up/Down/j/k moves the highlight, Space selects and calls `set_language()`
+  live so the whole UI re-translates immediately, Enter selects and
+  advances; writes `state.ui_lang`; `sync_from_state()` restores the pick
+  when re-entered via Back. Selection failure falls back to English with a
+  `tracing::warn!` (defensive only — the ISO build generates both
+  `en_US.UTF-8` and `zh_CN.UTF-8`). Step body shows a `Space=Select
+  Enter=Next` hint line below the list. Esc is no longer handled by the
+  step — `app.rs` intercepts it as a global quit. `i18n.rs` dead-code
+  allows on `UiLang` / `label()` removed; `set_language()` doc-comment
+  records the ISO locale-build assumption.
+- **Bottom Back/Next buttons + focus model** (`app.rs`): footer renders
+  `[ Back ]` (left) and `[ Next ]` (right) with a center hint
+  `Tab=Focus  F1=Help  Esc=Quit`; `Focus` enum (StepBody / BackButton /
+  NextButton) with Tab/Shift+Tab cycling (skipping disabled buttons);
+  button-focused Enter activates the button; step-body-focused Enter still
+  advances via `StepAction::Next`. Back disabled on the first step, Next
+  on the last. `Step::render` changed to `&mut self` so stateful widgets
+  (e.g. `ListState`) are managed in place — the previous `&self` +
+  clone-state approach lost ratatui's offset bookkeeping and could wedge
+  the list after a few Up/Down presses.
+- **Quit flow** (`app.rs`): Esc and Ctrl+C both open the quit-confirmation
+  dialog (Esc is no longer "back"); the dialog shows a `[ Quit ]` button
+  and `Esc to cancel, Enter to quit.` hint — Enter exits, Esc cancels,
+  `Y` removed. `StubStep` no longer handles Esc.
+- **Privilege model + logging** (`main.rs`, `util/process.rs`): installer
+  runs as a normal user; log goes to `$XDG_CACHE_HOME/clipsneko-installer/log`
+  (fallback `$HOME/.cache/...`), fixed path, no env-var override. A panic
+  hook restores the terminal on crash. `util::process::privileged_command()`
+  prepends `sudo` when euid != 0 (both `root` and the `installer` user are
+  passwordless for sudo on the ISO); `is_root()` via `libc::geteuid()`.
+  `libc 0.2` added to `Cargo.toml` (already an indirect dep via crossterm).
+  `design.md` §1 / §6 / §9 and `AGENTS.md` §2 updated. Resolves the
+  "Open — log file override" item (decided: no env-var override).
 
 ## Not done
 
-- **Language step** (`steps/language.rs`): list En/ZhCn via `UiLang::label()`,
-  call `set_language()` on change so the rest of the UI re-translates live,
-  write into `state.ui_lang`. Currently `main.rs` hardcodes `UiLang::En`, so
-  `UiLang::ZhCn` and `UiLang::label()` are dead code (annotated).
 - **Keyboard step** (`steps/keyboard.rs`): list `localectl list-keymaps`,
   `loadkeys` immediately, persist `state.keymap`.
 - **Network step** (`steps/network.rs`): suspend ratatui, run `nmtui`, verify
@@ -123,10 +154,8 @@ finished it moves from "Not done" to "Done" and stays there.
   injection.
 - **Deferred — ClipsNeko package repository**: not built yet; only the
   `repo.conf` interface shape is specified.
-- **Open — log file override**: decide whether to add a `CLIPSNEKO_LOG_FILE`
-  env var so the binary can run without root for dev testing, or keep
-  `/var/log/clipsneko-installer.log` root-only.
 - **Open — F1 help screen**: content not designed.
-- **No runtime/visual test performed yet**: the binary needs a writable
-  `/var/log/clipsneko-installer.log` (root) and an interactive terminal;
-  only compile-time verification is done so far.
+- **No runtime/visual test performed yet**: the binary now runs as a normal
+  user (log under `~/.cache/`), but an interactive terminal is still needed;
+  only compile-time verification + `cargo test` (util::process) is done so
+  far. TestBackend-based render tests are planned.

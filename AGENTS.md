@@ -14,9 +14,12 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
 - i18n: `gettext-rs` (binds to system libgettext), `.po/.mo` workflow; `en` is the
   source/POT language, `zh_CN` the first translation.
 - Subprocess: `std::process::Command` — always shell out to existing tools, never
-  reimplement.
+  reimplement. Commands needing root go through `util::process::privileged_command()`
+  (prepends `sudo` when euid != 0; see `design.md` §9).
 - Errors: `anyhow` + `thiserror`.
-- Logging: `tracing` + `tracing-subscriber` → `/var/log/clipsneko-installer.log`.
+- Logging: `tracing` + `tracing-subscriber` → `~/.cache/clipsneko-installer/log`
+  (fixed path under `$XDG_CACHE_HOME`, falling back to `$HOME/.cache`; no env-var
+  override). A panic hook restores the terminal on crash.
 - Runtime config (must exist or the installer exits with a clear error):
   - `/etc/clipsneko-installer/packages.list` — one package name per line.
   - `/etc/clipsneko-installer/repo.conf` — `name`, `server_url`, `siglevel`

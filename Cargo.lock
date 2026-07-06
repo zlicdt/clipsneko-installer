@@ -73,6 +73,7 @@ dependencies = [
  "anyhow",
  "crossterm",
  "gettext-rs",
+ "libc",
  "ratatui",
  "thiserror",
  "tracing",

@@ -1,7 +1,8 @@
 //! The linear wizard state machine and main render loop. Holds the ordered
-//! list of steps, the current step index, the shared `InstallerState`, and a
-//! quit-confirmation flag. Global keys (Ctrl+C / F1) are handled here; all
-//! other keys are dispatched to the current step.
+//! list of steps, the current step index, the shared `InstallerState`, a
+//! focus pointer (step body vs. Back/Next buttons), and a quit-confirmation
+//! flag. Esc and Ctrl+C both request quit; the Back/Next buttons are the
+//! only way to navigate between steps.
 
 use crate::state::InstallerState;
 use crate::steps::{build_steps, Step, StepAction};
@@ -16,6 +17,62 @@ use ratatui::Frame;
 use ratatui::Terminal;
 use std::io::Stdout;
 
+/// Which widget currently has keyboard focus.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Focus {
+    StepBody,
+    BackButton,
+    NextButton,
+}
+
+impl Focus {
+    /// Cycle to the next focusable widget, skipping disabled buttons.
+    fn next(self, back_enabled: bool, next_enabled: bool) -> Focus {
+        match self {
+            Focus::StepBody => {
+                if back_enabled {
+                    Focus::BackButton
+                } else if next_enabled {
+                    Focus::NextButton
+                } else {
+                    Focus::StepBody
+                }
+            }
+            Focus::BackButton => {
+                if next_enabled {
+                    Focus::NextButton
+                } else {
+                    Focus::StepBody
+                }
+            }
+            Focus::NextButton => Focus::StepBody,
+        }
+    }
+
+    /// Cycle to the previous focusable widget, skipping disabled buttons.
+    fn prev(self, back_enabled: bool, next_enabled: bool) -> Focus {
+        match self {
+            Focus::StepBody => {
+                if next_enabled {
+                    Focus::NextButton
+                } else if back_enabled {
+                    Focus::BackButton
+                } else {
+                    Focus::StepBody
+                }
+            }
+            Focus::BackButton => Focus::StepBody,
+            Focus::NextButton => {
+                if back_enabled {
+                    Focus::BackButton
+                } else {
+                    Focus::StepBody
+                }
+            }
+        }
+    }
+}
+
 /// Outcome of app-level event handling.
 enum Action {
     Continue,
@@ -27,6 +84,7 @@ pub struct App {
     current: usize,
     state: InstallerState,
     quit_confirm: bool,
+    focus: Focus,
 }
 
 impl App {
@@ -36,10 +94,33 @@ impl App {
             current: 0,
             state: InstallerState::default(),
             quit_confirm: false,
+            focus: Focus::StepBody,
         }
     }
 
-    pub fn render(&self, frame: &mut Frame) {
+    fn back_enabled(&self) -> bool {
+        self.current > 0
+    }
+
+    fn next_enabled(&self) -> bool {
+        self.current + 1 < self.steps.len()
+    }
+
+    fn go_next(&mut self) {
+        if self.next_enabled() {
+            self.current += 1;
+            self.focus = Focus::StepBody;
+        }
+    }
+
+    fn go_back(&mut self) {
+        if self.back_enabled() {
+            self.current -= 1;
+            self.focus = Focus::StepBody;
+        }
+    }
+
+    pub fn render(&mut self, frame: &mut Frame) {
         let area = frame.area();
         let chunks = Layout::default()
             .direction(Direction::Vertical)
@@ -51,7 +132,15 @@ impl App {
             .split(area);
 
         self.render_header(frame, chunks[0]);
-        self.steps[self.current].render(frame, chunks[1], &self.state);
+
+        // Split borrow: `steps` (mut, for stateful render) and `state`
+        // (shared) are disjoint fields so Rust allows borrowing both.
+        {
+            let state = &self.state;
+            let steps = &mut self.steps;
+            steps[self.current].render(frame, chunks[1], state);
+        }
+
         self.render_footer(frame, chunks[2]);
 
         if self.quit_confirm {
@@ -78,21 +167,57 @@ impl App {
         frame.render_widget(header, area);
     }
 
+    /// Style for a footer button: dimmed when disabled, reversed when focused.
+    fn button_style(&self, which: Focus, enabled: bool) -> Style {
+        if !enabled {
+            Style::default().add_modifier(Modifier::DIM)
+        } else if self.focus == which {
+            Style::default().add_modifier(Modifier::REVERSED)
+        } else {
+            Style::default()
+        }
+    }
+
     fn render_footer(&self, frame: &mut Frame, area: Rect) {
-        let hint = t!("Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help");
-        let footer = Paragraph::new(hint)
+        let chunks = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([
+                Constraint::Length(16),
+                Constraint::Min(0),
+                Constraint::Length(16),
+            ])
+            .split(area);
+
+        let back = Paragraph::new(format!("[ {} ]", t!("Back")))
+            .alignment(Alignment::Left)
+            .style(self.button_style(Focus::BackButton, self.back_enabled()));
+        frame.render_widget(back, chunks[0]);
+
+        let hint = t!("Tab=Focus  F1=Help  Esc=Quit");
+        let hint_p = Paragraph::new(hint)
             .alignment(Alignment::Center)
             .style(Style::default().add_modifier(Modifier::DIM));
-        frame.render_widget(footer, area);
+        frame.render_widget(hint_p, chunks[1]);
+
+        let next = Paragraph::new(format!("[ {} ]", t!("Next")))
+            .alignment(Alignment::Right)
+            .style(self.button_style(Focus::NextButton, self.next_enabled()));
+        frame.render_widget(next, chunks[2]);
     }
 
     fn render_quit_dialog(&self, frame: &mut Frame) {
-        let area = centered_rect(60, 7, frame.area());
+        let area = centered_rect(50, 7, frame.area());
+        let quit_btn = Span::styled(
+            format!("[ {} ]", t!("Quit")),
+            Style::default().add_modifier(Modifier::REVERSED),
+        );
         let text = vec![
             Line::from(""),
             Line::from(t!("Are you sure you want to quit?")),
             Line::from(""),
-            Line::from(t!("Press Y to quit, any other key to cancel.")),
+            Line::from(quit_btn),
+            Line::from(""),
+            Line::from(t!("Esc to cancel, Enter to quit.")),
         ];
         let dialog = Paragraph::new(text)
             .block(Block::default().borders(Borders::ALL))
@@ -107,40 +232,75 @@ impl App {
             return Action::Continue;
         };
 
+        // Quit-confirmation dialog: Enter quits, Esc cancels, everything else
+        // is swallowed so the user must pick one.
         if self.quit_confirm {
-            if key.kind == KeyEventKind::Press
-                && (key.code == KeyCode::Char('y') || key.code == KeyCode::Char('Y'))
-            {
-                return Action::Quit;
+            if key.kind == KeyEventKind::Press {
+                match key.code {
+                    KeyCode::Enter => return Action::Quit,
+                    KeyCode::Esc => self.quit_confirm = false,
+                    _ => {}
+                }
             }
-            self.quit_confirm = false;
             return Action::Continue;
         }
 
-        if key.kind == KeyEventKind::Press {
-            if key.modifiers.contains(KeyModifiers::CONTROL) && key.code == KeyCode::Char('c') {
-                self.quit_confirm = true;
-                return Action::Continue;
-            }
-            if key.code == KeyCode::F(1) {
-                // Help screen: not implemented for the stub phase.
-                return Action::Continue;
-            }
+        if key.kind != KeyEventKind::Press {
+            return Action::Continue;
         }
 
+        // Global keys: Esc and Ctrl+C both request quit (with confirmation).
+        if key.code == KeyCode::Esc {
+            self.quit_confirm = true;
+            return Action::Continue;
+        }
+        if key.modifiers.contains(KeyModifiers::CONTROL) && key.code == KeyCode::Char('c') {
+            self.quit_confirm = true;
+            return Action::Continue;
+        }
+        if key.code == KeyCode::F(1) {
+            // Help screen: not implemented yet.
+            return Action::Continue;
+        }
+
+        // Tab / Shift+Tab: cycle focus between step body and the buttons.
+        let is_shift_tab = matches!(key.code, KeyCode::BackTab)
+            || (key.code == KeyCode::Tab && key.modifiers.contains(KeyModifiers::SHIFT));
+        if is_shift_tab {
+            self.focus = self.focus.prev(self.back_enabled(), self.next_enabled());
+            return Action::Continue;
+        }
+        if key.code == KeyCode::Tab {
+            self.focus = self.focus.next(self.back_enabled(), self.next_enabled());
+            return Action::Continue;
+        }
+
+        // When a button has focus, only Tab/Shift+Tab/Enter are meaningful;
+        // other keys are ignored so they don't bleed into the step body.
+        match self.focus {
+            Focus::BackButton => {
+                if key.code == KeyCode::Enter {
+                    self.go_back();
+                }
+                return Action::Continue;
+            }
+            Focus::NextButton => {
+                if key.code == KeyCode::Enter {
+                    self.go_next();
+                }
+                return Action::Continue;
+            }
+            Focus::StepBody => {}
+        }
+
+        // Step body has focus: dispatch the key to the step. A step may still
+        // emit Next (e.g. Enter on a list) to advance; Back is also honored
+        // for forward-compat with steps that have their own cancel logic.
         let action = self.steps[self.current].handle_key(key, &mut self.state);
         match action {
             StepAction::None => {}
-            StepAction::Next => {
-                if self.current + 1 < self.steps.len() {
-                    self.current += 1;
-                }
-            }
-            StepAction::Back => {
-                if self.current > 0 {
-                    self.current -= 1;
-                }
-            }
+            StepAction::Next => self.go_next(),
+            StepAction::Back => self.go_back(),
             StepAction::Quit => return Action::Quit,
         }
         Action::Continue

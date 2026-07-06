@@ -8,6 +8,9 @@ user amends them in writing. Pending items are explicitly marked **(deferred)**.
 - TUI installer for ClipsNeko Linux (Arch derivative).
 - Runs on the ClipsNeko Live ISO. **UEFI-only, 64-bit.**
 - Lightweight: single Rust binary; all system work via existing tools.
+- Runs as a **normal user** (either `root` on a root shell or the
+  passwordless `installer` user on the ISO); commands needing root go
+  through `sudo` automatically (see §9).
 
 ## 2. Stack
 
@@ -37,6 +40,14 @@ AGENTS.md
 Linear: Back/Next only, no per-item jump from the confirm page.
 
 1. **UI language** — en / zh_CN. Only changes installer display language.
+   Up/Down (or j/k) moves the highlight; Space selects the highlighted
+   language and calls `set_language()` immediately so the whole UI
+   re-translates live; Enter selects and advances. Default highlight is
+   English on entry. The choice is not persisted across runs (Live ISO
+   starts fresh; target-system locale is configured in §5). The ISO build
+   must generate both `en_US.UTF-8` and `zh_CN.UTF-8`; `set_language()`
+   failure is defensive-only and falls back to English (logged via
+   `tracing`).
 2. **Keyboard** — list from `localectl list-keymaps`; `loadkeys` immediately;
    persisted to target `/etc/vconsole.conf`.
 3. **Network** — suspend ratatui, run `nmtui`; on return verify with
@@ -130,16 +141,25 @@ root shell on live env.
 
 ## 6. Keybindings
 
-- **Tab / Shift+Tab**: cycle focus between widgets.
-- **Up / Down** (or **j / k**): list navigation.
-- **Space**: toggle selection.
-- **Enter**: confirm / select / advance.
-- **Esc**: back (previous step).
-- **Next / Back**: always also drawn as on-screen buttons.
-- **Ctrl+C**: exit (with confirmation if any state collected).
-- **F1**: help.
+- **Tab / Shift+Tab**: cycle focus between the step body and the on-screen
+  Back/Next buttons. Disabled buttons are skipped during focus cycling.
+- **Up / Down** (or **j / k**): list navigation (step body only).
+- **Space**: toggle / select the highlighted item (step body only).
+- **Enter**: in the step body, confirm / select / advance (a step may emit
+  `Next` to advance, so Enter still works without Tab-ing to the Next
+  button); on a focused button, activate it.
+- **Esc**: request quit — opens the quit-confirmation dialog. Esc is no
+  longer used for going back.
+- **Ctrl+C**: same as Esc — opens the quit-confirmation dialog.
+- **Back button**: go to the previous step (disabled on the first step).
+- **Next button**: go to the next step (disabled on the last step).
+- **F1**: help (not implemented yet).
 - Install phase: **Spinner + progress text** on screen, log only to file;
   **L**: view log after completion.
+
+The quit-confirmation dialog shows a `[ Quit ]` button and the hint
+"Esc to cancel, Enter to quit." Enter confirms and exits; Esc cancels and
+returns to the wizard. `Y` is no longer used.
 
 ## 7. Deferred items (pending user direction)
 
@@ -156,3 +176,35 @@ root shell on live env.
 - Add a UI string → wrap in `t!(...)`; update `.pot` and both `.po` files in
   the same change.
 - `zh_CN` must not lag `en` by more than one session.
+
+## 9. Privilege model and logging
+
+### Privilege model
+
+The installer runs as a **normal user**, not as root (unless the user
+explicitly launched it from a root shell). On the ClipsNeko ISO the
+`installer` user is in `sudoers` and is passwordless; `root` is also
+passwordless. This means `sudo` never prompts.
+
+Commands that require root privileges (disk partitioning, formatting,
+mounting, `pacstrap`, `arch-chroot`, `grub-install`, `mkinitcpio`,
+`genfstab`, `partprobe`, `reflector`, `pacman`, `localectl`,
+`systemctl`, `loadkeys`, `cfdisk`, …) are wrapped via
+`util::process::privileged_command(program)`: when the effective UID is 0
+the command runs directly, otherwise `sudo -- <program>` is used.
+
+Commands that do not require root (`nmtui` via polkit, HTTP fetches to
+`ip-api.com`, reading `/etc/clipsneko-installer/*` config files, reading
+`/usr/share/zoneinfo/`) are invoked with a plain `Command::new(...)`.
+
+This is the required pattern for all future modules that shell out — see
+`AGENTS.md` §2 and the `util::process` module.
+
+### Logging
+
+- Log file: `$XDG_CACHE_HOME/clipsneko-installer/log`, falling back to
+  `$HOME/.cache/clipsneko-installer/log`. The path is **fixed** (no
+  env-var override) so the binary runs without root on any user account.
+- A `panic` hook restores the terminal (disables raw mode, leaves the
+  alternate screen) so a crash never leaves the user stuck in a dead
+  terminal.

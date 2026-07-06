@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 13:30+0800\n"
-"PO-Revision-Date: 2026-07-05 13:30+0800\n"
+"POT-Creation-Date: 2026-07-06 15:00+0800\n"
+"PO-Revision-Date: 2026-07-06 15:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Simplified Chinese\n"
 "Language: zh_CN\n"
@@ -24,16 +24,36 @@ msgid "Step"
 msgstr "步骤"
 
 #: src/app.rs
-msgid "Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help"
-msgstr "Enter=下一步  Esc=上一步  Ctrl+C=退出  F1=帮助"
+msgid "Back"
+msgstr "上一步"
+
+#: src/app.rs
+msgid "Next"
+msgstr "下一步"
+
+#: src/app.rs
+msgid "Tab=Focus  F1=Help  Esc=Quit"
+msgstr "Tab=切换焦点  F1=帮助  Esc=退出"
 
 #: src/app.rs
 msgid "Are you sure you want to quit?"
 msgstr "确定要退出吗?"
 
 #: src/app.rs
-msgid "Press Y to quit, any other key to cancel."
-msgstr "按 Y 退出,按其他任意键取消。"
+msgid "Quit"
+msgstr "退出"
+
+#: src/app.rs
+msgid "Esc to cancel, Enter to quit."
+msgstr "Esc 取消,Enter 确认退出。"
+
+#: src/steps/language.rs
+msgid "Select installer language"
+msgstr "选择安装程序语言"
+
+#: src/steps/language.rs
+msgid "Space=Select  Enter=Next"
+msgstr "Space=选择  Enter=下一步"
 
 #: src/steps/mod.rs
 msgid "Language"
@@ -88,5 +108,5 @@ msgid "This step is not implemented yet."
 msgstr "此步骤尚未实现。"
 
 #: src/steps/mod.rs
-msgid "Press Enter to continue, Esc to go back."
-msgstr "按 Enter 继续,按 Esc 返回。"
+msgid "Press Enter to continue."
+msgstr "按 Enter 继续。"

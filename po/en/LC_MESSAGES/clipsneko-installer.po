@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 13:30+0800\n"
-"PO-Revision-Date: 2026-07-05 13:30+0800\n"
+"POT-Creation-Date: 2026-07-06 15:00+0800\n"
+"PO-Revision-Date: 2026-07-06 15:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -24,16 +24,36 @@ msgid "Step"
 msgstr "Step"
 
 #: src/app.rs
-msgid "Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help"
-msgstr "Enter=Next  Esc=Back  Ctrl+C=Quit  F1=Help"
+msgid "Back"
+msgstr "Back"
+
+#: src/app.rs
+msgid "Next"
+msgstr "Next"
+
+#: src/app.rs
+msgid "Tab=Focus  F1=Help  Esc=Quit"
+msgstr "Tab=Focus  F1=Help  Esc=Quit"
 
 #: src/app.rs
 msgid "Are you sure you want to quit?"
 msgstr "Are you sure you want to quit?"
 
 #: src/app.rs
-msgid "Press Y to quit, any other key to cancel."
-msgstr "Press Y to quit, any other key to cancel."
+msgid "Quit"
+msgstr "Quit"
+
+#: src/app.rs
+msgid "Esc to cancel, Enter to quit."
+msgstr "Esc to cancel, Enter to quit."
+
+#: src/steps/language.rs
+msgid "Select installer language"
+msgstr "Select installer language"
+
+#: src/steps/language.rs
+msgid "Space=Select  Enter=Next"
+msgstr "Space=Select  Enter=Next"
 
 #: src/steps/mod.rs
 msgid "Language"
@@ -88,5 +108,5 @@ msgid "This step is not implemented yet."
 msgstr "This step is not implemented yet."
 
 #: src/steps/mod.rs
-msgid "Press Enter to continue, Esc to go back."
-msgstr "Press Enter to continue, Esc to go back."
+msgid "Press Enter to continue."
+msgstr "Press Enter to continue."

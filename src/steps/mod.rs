@@ -3,6 +3,8 @@
 //! created as individual steps get real implementations; until then a single
 //! `StubStep` services all 12 slots so navigation works end-to-end.
 
+mod language;
+
 use crate::state::InstallerState;
 use crate::t;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
@@ -10,10 +12,17 @@ use ratatui::layout::Rect;
 use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 
+pub use language::LanguageStep;
+
 /// Result of a step handling a key.
 pub enum StepAction {
     None,
     Next,
+    /// Emitted by a step that wants to go back. Currently no step emits this
+    /// (Esc is intercepted by `app.rs` as quit; Back is the on-screen button),
+    /// but the variant is kept for forward-compat with steps that have their
+    /// own cancel logic.
+    #[allow(dead_code)]
     Back,
     /// Emitted by a step that wants the whole wizard to exit (e.g. the install
     /// step after a successful run).
@@ -62,12 +71,13 @@ impl StepId {
 /// selection index, etc.) and read/write the shared `InstallerState`.
 pub trait Step {
     fn id(&self) -> StepId;
-    fn render(&self, frame: &mut Frame, area: Rect, state: &InstallerState);
+    fn render(&mut self, frame: &mut Frame, area: Rect, state: &InstallerState);
     fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> StepAction;
 }
 
 /// Placeholder step: renders a "not implemented" notice and advances on
-/// Enter / goes back on Esc. Replaced step-by-step as real UI is written.
+/// Enter. Esc/Back is no longer handled here — app.rs intercepts Esc as a
+/// global quit request, so the only way back is the on-screen Back button.
 pub struct StubStep {
     id: StepId,
 }
@@ -83,11 +93,11 @@ impl Step for StubStep {
         self.id
     }
 
-    fn render(&self, frame: &mut Frame, area: Rect, _state: &InstallerState) {
+    fn render(&mut self, frame: &mut Frame, area: Rect, _state: &InstallerState) {
         let body = format!(
             "{}\n\n{}",
             t!("This step is not implemented yet."),
-            t!("Press Enter to continue, Esc to go back."),
+            t!("Press Enter to continue."),
         );
         frame.render_widget(Paragraph::new(body), area);
     }
@@ -98,17 +108,16 @@ impl Step for StubStep {
         }
         match key.code {
             KeyCode::Enter => StepAction::Next,
-            KeyCode::Esc => StepAction::Back,
             _ => StepAction::None,
         }
     }
 }
 
-/// Build the full 12-step wizard. Each entry is a stub for now and will be
-/// swapped for a real step module as that step's UI is implemented.
+/// Build the full 12-step wizard. Steps with a real implementation are wired
+/// in here; the rest are stubs swapped out as their UI is written.
 pub fn build_steps() -> Vec<Box<dyn Step>> {
     vec![
-        Box::new(StubStep::new(StepId::Language)),
+        Box::new(LanguageStep::new()),
         Box::new(StubStep::new(StepId::Keyboard)),
         Box::new(StubStep::new(StepId::Network)),
         Box::new(StubStep::new(StepId::Mirror)),
