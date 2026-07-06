@@ -60,11 +60,15 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
 
 ## 7. Progress logging (mandatory)
 
-After every working session, update `docs/dev-prog.md` with three sections:
+`docs/dev-prog.md` tracks the **current state** of the project as two
+running lists, not a chronological log:
 
-- **Done**: what was actually finished.
-- **Not done**: what was planned but skipped or blocked, and why.
-- **Next**: the concrete next steps.
+- **Done**: completed items. Once an item lands here it stays.
+- **Not done**: pending, blocked, or deferred items.
+
+After each task, move newly finished items from "Not done" to "Done". Do
+not keep dated entries or a history of past sessions — the file is a
+snapshot of where the project stands right now.
 
 ## 8. Git discipline (mandatory)
 
