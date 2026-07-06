@@ -78,6 +78,12 @@ finished it moves from "Not done" to "Done" and stays there.
 - Verified green: `cargo fmt --check`, `cargo clippy -- -D warnings`,
   `cargo build`. Confirmed the regenerated `.mo` contains exactly the 19
   current msgids.
+- `docs/dev-plan.md` written: M0-M5 milestone roadmap (M4 split into
+  M4a/M4b/M4c). Definition of Done per milestone = fmt + clippy + build +
+  `cargo test` (unit tests for pure-logic modules) + manual run test + po
+  sync. Packaging is out of scope (user handles elsewhere); sample
+  `/etc/clipsneko-installer/` config files (`config/packages.list`,
+  `config/repo.conf`) are a deliverable in M1.
 
 ## Not done
 
