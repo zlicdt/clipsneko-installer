@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 15:00+0800\n"
-"PO-Revision-Date: 2026-07-06 15:00+0800\n"
+"POT-Creation-Date: 2026-07-07 00:00+0800\n"
+"PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Simplified Chinese\n"
 "Language: zh_CN\n"
@@ -16,97 +16,97 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/app.rs
-msgid "ClipsNeko Linux Installer"
+msgid "app.title"
 msgstr "ClipsNeko Linux 安装程序"
 
 #: src/app.rs
-msgid "Step"
+msgid "app.step_indicator"
 msgstr "步骤"
 
 #: src/app.rs
-msgid "Back"
+msgid "button.back"
 msgstr "上一步"
 
 #: src/app.rs
-msgid "Next"
+msgid "button.next"
 msgstr "下一步"
 
 #: src/app.rs
-msgid "Tab=Focus  F1=Help  Esc=Quit"
-msgstr "Tab=切换焦点  F1=帮助  Esc=退出"
-
-#: src/app.rs
-msgid "Are you sure you want to quit?"
-msgstr "确定要退出吗?"
-
-#: src/app.rs
-msgid "Quit"
+msgid "button.quit"
 msgstr "退出"
 
 #: src/app.rs
-msgid "Esc to cancel, Enter to quit."
+msgid "footer.hint"
+msgstr "Tab=切换焦点  F1=帮助  Esc=退出"
+
+#: src/app.rs
+msgid "quit_dialog.title"
+msgstr "确定要退出吗?"
+
+#: src/app.rs
+msgid "quit_dialog.hint"
 msgstr "Esc 取消,Enter 确认退出。"
 
 #: src/steps/language.rs
-msgid "Select installer language"
+msgid "language_step.title"
 msgstr "选择安装程序语言"
 
 #: src/steps/language.rs
-msgid "Space=Select  Enter=Next"
+msgid "language_step.hint"
 msgstr "Space=选择  Enter=下一步"
 
 #: src/steps/mod.rs
-msgid "Language"
+msgid "step.title.language"
 msgstr "语言"
 
 #: src/steps/mod.rs
-msgid "Keyboard Layout"
+msgid "step.title.keyboard_layout"
 msgstr "键盘布局"
 
 #: src/steps/mod.rs
-msgid "Network"
+msgid "step.title.network"
 msgstr "网络"
 
 #: src/steps/mod.rs
-msgid "Mirror List"
+msgid "step.title.mirror_list"
 msgstr "镜像列表"
 
 #: src/steps/mod.rs
-msgid "Disk Partitioning"
+msgid "step.title.disk_partitioning"
 msgstr "磁盘分区"
 
 #: src/steps/mod.rs
-msgid "Kernel"
+msgid "step.title.kernel"
 msgstr "内核"
 
 #: src/steps/mod.rs
-msgid "Nvidia Driver"
+msgid "step.title.nvidia_driver"
 msgstr "Nvidia 驱动"
 
 #: src/steps/mod.rs
-msgid "Timezone"
+msgid "step.title.timezone"
 msgstr "时区"
 
 #: src/steps/mod.rs
-msgid "User Account"
+msgid "step.title.user_account"
 msgstr "用户账户"
 
 #: src/steps/mod.rs
-msgid "Hostname"
+msgid "step.title.hostname"
 msgstr "主机名"
 
 #: src/steps/mod.rs
-msgid "Confirm Installation"
+msgid "step.title.confirm_installation"
 msgstr "确认安装"
 
 #: src/steps/mod.rs
-msgid "Installing"
+msgid "step.title.installing"
 msgstr "安装中"
 
 #: src/steps/mod.rs
-msgid "This step is not implemented yet."
+msgid "stub.body"
 msgstr "此步骤尚未实现。"
 
 #: src/steps/mod.rs
-msgid "Press Enter to continue."
+msgid "stub.hint"
 msgstr "按 Enter 继续。"

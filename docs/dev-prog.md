@@ -72,11 +72,11 @@ finished it moves from "Not done" to "Done" and stays there.
   centered quit-confirmation dialog (Y→quit, other→cancel); F1 reserved for
   help; Next/Back clamped at the ends.
 - `po/` scaffolding: `clipsneko-installer.pot` + `en/LC_MESSAGES/` (identity)
-  + `zh_CN/LC_MESSAGES/` (Simplified Chinese); 19 strings, all translated.
+  + `zh_CN/LC_MESSAGES/` (Simplified Chinese); 24 strings, all translated.
 - `.gitignore` expanded (target, `*.mo`/`*.gmo`, editor swap, IDE dirs, OS
   metadata, local `.env`); `Cargo.lock` kept tracked (binary project).
 - Verified green: `cargo fmt --check`, `cargo clippy -- -D warnings`,
-  `cargo build`. Confirmed the regenerated `.mo` contains exactly the 19
+  `cargo build`. Confirmed the regenerated `.mo` contains exactly the 24
   current msgids.
 - `docs/dev-plan.md` written: M0-M5 milestone roadmap (M4 split into
   M4a/M4b/M4c). Definition of Done per milestone = fmt + clippy + build +
@@ -84,6 +84,27 @@ finished it moves from "Not done" to "Done" and stays there.
   sync. Packaging is out of scope (user handles elsewhere); sample
   `/etc/clipsneko-installer/` config files (`config/packages.list`,
   `config/repo.conf`) are a deliverable in M1.
+- **Test layout**: per-module unit tests live in sibling files
+  (`src/util/process/tests.rs`, `src/steps/language/tests.rs`) reached from
+  the parent module via a one-line `#[cfg(test)] mod tests;` declaration
+  (Rust 2018 `foo.rs` + `foo/` coexistence, no `mod.rs`). Tests keep
+  `use super::*` so private items stay testable. The inline
+  `#[cfg(test)] mod tests { ... }` blocks in `util/process.rs` and
+  `steps/language.rs` were removed in favor of this layout. Convention
+  applies to all future modules with tests.
+- **i18n msgid convention**: `t!()` keys are namespaced dot-ids (lowercase
+  English with underscores), not English UI text — e.g. `app.title`,
+  `app.step_indicator`, `button.back`, `button.next`, `button.quit`,
+  `footer.hint`, `quit_dialog.title`, `quit_dialog.hint`,
+  `language_step.title`, `language_step.hint`, `step.title.<step>`,
+  `stub.body`, `stub.hint`. `.pot` and `en`/`zh_CN` `.po` rewritten to match:
+  the template carries the dot-id msgid with empty msgstr; `en` stores the
+  English UI text as msgstr (identity translation, since gettext returns the
+  msgid when msgstr is empty — and the msgid is no longer the display text);
+  `zh_CN` stores the Simplified Chinese translation. Multi-symbol hint lines
+  (`footer.hint`, `quit_dialog.hint`, `language_step.hint`) are kept as one
+  msgid per line rather than being split per key. `ZhTw` variant added to
+  `UiLang` (`zh_TW.UTF-8`, label "繁體中文"); the picker is 3 entries now.
 - **Language step** (`steps/language.rs`): `LanguageStep` with a stateful
   `List` of `UiLang::En` / `UiLang::ZhCn` (labels via `UiLang::label()`);
   Up/Down/j/k moves the highlight, Space selects and calls `set_language()`

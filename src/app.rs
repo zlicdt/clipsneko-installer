@@ -149,10 +149,10 @@ impl App {
     }
 
     fn render_header(&self, frame: &mut Frame, area: Rect) {
-        let title = t!("ClipsNeko Linux Installer");
+        let title = t!("app.title");
         let indicator = format!(
             "{} {}/{}  {}",
-            t!("Step"),
+            t!("app.step_indicator"),
             self.current + 1,
             self.steps.len(),
             self.steps[self.current].id().title(),
@@ -188,18 +188,18 @@ impl App {
             ])
             .split(area);
 
-        let back = Paragraph::new(format!("[ {} ]", t!("Back")))
+        let back = Paragraph::new(format!("[ {} ]", t!("button.back")))
             .alignment(Alignment::Left)
             .style(self.button_style(Focus::BackButton, self.back_enabled()));
         frame.render_widget(back, chunks[0]);
 
-        let hint = t!("Tab=Focus  F1=Help  Esc=Quit");
+        let hint = t!("footer.hint");
         let hint_p = Paragraph::new(hint)
             .alignment(Alignment::Center)
             .style(Style::default().add_modifier(Modifier::DIM));
         frame.render_widget(hint_p, chunks[1]);
 
-        let next = Paragraph::new(format!("[ {} ]", t!("Next")))
+        let next = Paragraph::new(format!("[ {} ]", t!("button.next")))
             .alignment(Alignment::Right)
             .style(self.button_style(Focus::NextButton, self.next_enabled()));
         frame.render_widget(next, chunks[2]);
@@ -208,16 +208,16 @@ impl App {
     fn render_quit_dialog(&self, frame: &mut Frame) {
         let area = centered_rect(50, 7, frame.area());
         let quit_btn = Span::styled(
-            format!("[ {} ]", t!("Quit")),
+            format!("[ {} ]", t!("button.quit")),
             Style::default().add_modifier(Modifier::REVERSED),
         );
         let text = vec![
             Line::from(""),
-            Line::from(t!("Are you sure you want to quit?")),
+            Line::from(t!("quit_dialog.title")),
             Line::from(""),
             Line::from(quit_btn),
             Line::from(""),
-            Line::from(t!("Esc to cancel, Enter to quit.")),
+            Line::from(t!("quit_dialog.hint")),
         ];
         let dialog = Paragraph::new(text)
             .block(Block::default().borders(Borders::ALL))

@@ -51,18 +51,18 @@ impl StepId {
     /// Translated title shown in the header and any per-step block.
     pub fn title(self) -> String {
         match self {
-            StepId::Language => t!("Language"),
-            StepId::Keyboard => t!("Keyboard Layout"),
-            StepId::Network => t!("Network"),
-            StepId::Mirror => t!("Mirror List"),
-            StepId::Disk => t!("Disk Partitioning"),
-            StepId::Kernel => t!("Kernel"),
-            StepId::Nvidia => t!("Nvidia Driver"),
-            StepId::Timezone => t!("Timezone"),
-            StepId::User => t!("User Account"),
-            StepId::Hostname => t!("Hostname"),
-            StepId::Confirm => t!("Confirm Installation"),
-            StepId::Install => t!("Installing"),
+            StepId::Language => t!("step.title.language"),
+            StepId::Keyboard => t!("step.title.keyboard_layout"),
+            StepId::Network => t!("step.title.network"),
+            StepId::Mirror => t!("step.title.mirror_list"),
+            StepId::Disk => t!("step.title.disk_partitioning"),
+            StepId::Kernel => t!("step.title.kernel"),
+            StepId::Nvidia => t!("step.title.nvidia_driver"),
+            StepId::Timezone => t!("step.title.timezone"),
+            StepId::User => t!("step.title.user_account"),
+            StepId::Hostname => t!("step.title.hostname"),
+            StepId::Confirm => t!("step.title.confirm_installation"),
+            StepId::Install => t!("step.title.installing"),
         }
     }
 }
@@ -94,11 +94,7 @@ impl Step for StubStep {
     }
 
     fn render(&mut self, frame: &mut Frame, area: Rect, _state: &InstallerState) {
-        let body = format!(
-            "{}\n\n{}",
-            t!("This step is not implemented yet."),
-            t!("Press Enter to continue."),
-        );
+        let body = format!("{}\n\n{}", t!("stub.body"), t!("stub.hint"),);
         frame.render_widget(Paragraph::new(body), area);
     }
 

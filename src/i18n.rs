@@ -14,6 +14,7 @@ const DOMAIN: &str = "clipsneko-installer";
 pub enum UiLang {
     En,
     ZhCn,
+    ZhTw,
 }
 
 impl UiLang {
@@ -22,6 +23,7 @@ impl UiLang {
         match self {
             UiLang::En => "en_US.UTF-8",
             UiLang::ZhCn => "zh_CN.UTF-8",
+            UiLang::ZhTw => "zh_TW.UTF-8",
         }
     }
 
@@ -30,7 +32,8 @@ impl UiLang {
     pub fn label(self) -> &'static str {
         match self {
             UiLang::En => "English",
-            UiLang::ZhCn => "简体中文 (Simplified Chinese)",
+            UiLang::ZhCn => "简体中文",
+            UiLang::ZhTw => "繁體中文",
         }
     }
 }
