@@ -188,9 +188,12 @@ impl App {
             ])
             .split(area);
 
-        let back = Paragraph::new(format!("[ {} ]", t!("button.back")))
-            .alignment(Alignment::Left)
-            .style(self.button_style(Focus::BackButton, self.back_enabled()));
+        let back_style = self.button_style(Focus::BackButton, self.back_enabled());
+        let back = Paragraph::new(Line::from(Span::styled(
+            format!("[ {} ]", t!("button.back")),
+            back_style,
+        )))
+        .alignment(Alignment::Left);
         frame.render_widget(back, chunks[0]);
 
         let hint = t!("footer.hint");
@@ -199,9 +202,12 @@ impl App {
             .style(Style::default().add_modifier(Modifier::DIM));
         frame.render_widget(hint_p, chunks[1]);
 
-        let next = Paragraph::new(format!("[ {} ]", t!("button.next")))
-            .alignment(Alignment::Right)
-            .style(self.button_style(Focus::NextButton, self.next_enabled()));
+        let next_style = self.button_style(Focus::NextButton, self.next_enabled());
+        let next = Paragraph::new(Line::from(Span::styled(
+            format!("[ {} ]", t!("button.next")),
+            next_style,
+        )))
+        .alignment(Alignment::Right);
         frame.render_widget(next, chunks[2]);
     }
 
