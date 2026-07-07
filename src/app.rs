@@ -12,7 +12,7 @@ use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, Borders, Clear, Paragraph, Wrap};
+use ratatui::widgets::{Block, Borders, Clear, Paragraph};
 use ratatui::Frame;
 use ratatui::Terminal;
 use std::io::Stdout;
@@ -206,7 +206,7 @@ impl App {
     }
 
     fn render_quit_dialog(&self, frame: &mut Frame) {
-        let area = centered_rect(50, 7, frame.area());
+        let area = centered_rect(50, 8, frame.area());
         let quit_btn = Span::styled(
             format!("[ {} ]", t!("button.quit")),
             Style::default().add_modifier(Modifier::REVERSED),
@@ -221,8 +221,7 @@ impl App {
         ];
         let dialog = Paragraph::new(text)
             .block(Block::default().borders(Borders::ALL))
-            .alignment(Alignment::Center)
-            .wrap(Wrap { trim: true });
+            .alignment(Alignment::Center);
         frame.render_widget(Clear, area);
         frame.render_widget(dialog, area);
     }
@@ -307,26 +306,23 @@ impl App {
     }
 }
 
-/// Compute a centered rect for dialogs. `w`/`h` are percentages.
-fn centered_rect(w: u16, h: u16, area: Rect) -> Rect {
-    let h_pad = (100u16).saturating_sub(h) / 2;
-    let w_pad = (100u16).saturating_sub(w) / 2;
-    let vertical = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Percentage(h_pad),
-            Constraint::Percentage(h),
-            Constraint::Percentage(h_pad),
-        ])
-        .split(area);
-    Layout::default()
+/// Compute a centered rect for dialogs. `width_pct` is the dialog width as
+/// a percentage of `area.width`; `height_rows` is the dialog height as a
+/// fixed number of rows (clamped to `area.height` so it never overflows).
+fn centered_rect(width_pct: u16, height_rows: u16, area: Rect) -> Rect {
+    let h = height_rows.min(area.height);
+    let y = area.y + (area.height - h) / 2;
+    let w_pad = (100u16).saturating_sub(width_pct) / 2;
+    let horizontal = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([
             Constraint::Percentage(w_pad),
-            Constraint::Percentage(w),
+            Constraint::Percentage(width_pct),
             Constraint::Percentage(w_pad),
         ])
-        .split(vertical[1])[1]
+        .split(area);
+    let inner = horizontal[1];
+    Rect::new(inner.x, y, inner.width, h)
 }
 
 /// Main loop. Draws the wizard and pumps events until the user quits.

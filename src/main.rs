@@ -66,10 +66,22 @@ fn install_panic_hook() {
     }));
 }
 
+/// Minimum terminal size the wizard can render in. Below this the quit
+/// dialog (50% width, 8 rows), the 2-row header, the 1-row footer, and the
+/// per-step body no longer fit, so we refuse to start rather than render a
+/// garbled UI.
+const MIN_COLS: u16 = 60;
+const MIN_ROWS: u16 = 16;
+
 fn main() -> Result<()> {
     install_panic_hook();
     init_tracing()?;
     set_language(UiLang::En)?;
+
+    let (cols, rows) = crossterm::terminal::size().context("could not read terminal size")?;
+    if cols < MIN_COLS || rows < MIN_ROWS {
+        anyhow::bail!("terminal too small: need at least {MIN_COLS}x{MIN_ROWS}, got {cols}x{rows}");
+    }
 
     enable_raw_mode().context("enable_raw_mode failed")?;
     let mut stdout = std::io::stdout();

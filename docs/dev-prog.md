@@ -105,6 +105,24 @@ finished it moves from "Not done" to "Done" and stays there.
   (`footer.hint`, `quit_dialog.hint`, `language_step.hint`) are kept as one
   msgid per line rather than being split per key. `ZhTw` variant added to
   `UiLang` (`zh_TW.UTF-8`, label "繁體中文"); the picker is 3 entries now.
+- **Minimum terminal size guard** (`main.rs`): before entering raw mode /
+  alternate screen, `crossterm::terminal::size()` is checked against
+  `MIN_COLS=60` × `MIN_ROWS=16`. Below that the installer bails with a
+  plain `Error: terminal too small: need at least 60x16, got <c>x<r>`
+  (no alt screen, no raw mode, so the message reaches the user's normal
+  terminal). Driven by the quit-dialog regression: the dialog was sized
+  via `centered_rect(50, 7, ...)` with the second argument treated as a
+  percentage of terminal height — at 30 rows that is ~2 rows of content
+  (only the empty border visible on Windows Terminal), at 40 rows ~3 rows
+  (only the title visible on kitty). Now the dialog requests a fixed 8
+  rows (6 content + 2 borders) and starting below 16 rows is refused.
+- **Quit dialog layout fix** (`app.rs`): `centered_rect(width_pct,
+  height_rows, area)` now takes a fixed row count for height (clamped to
+  `area.height`); the previous percent-based height produced the
+  Windows-Window-empty / kitty-title-only symptoms above. The dialog
+  Paragraph dropped `.wrap(Wrap { trim: true })` — the fixed 8-row box
+  already fits all 6 content lines, and `Wrap` + `Alignment::Center`
+  could fragment lines on narrow terminals. `Wrap` import removed.
 - **Language step** (`steps/language.rs`): `LanguageStep` with a stateful
   `List` of `UiLang::En` / `UiLang::ZhCn` (labels via `UiLang::label()`);
   Up/Down/j/k moves the highlight, Space selects and calls `set_language()`
