@@ -116,7 +116,17 @@ impl Step for LanguageStep {
 
         let items: Vec<ListItem> = ALL_LANGS
             .iter()
-            .map(|l| ListItem::new(l.label().to_string()))
+            .map(|l| {
+                // The marker (▶) follows the *selected/applied* language, not
+                // the cursor. The cursor row itself is indicated by the
+                // `REVERSED` highlight style. This separates "what's active"
+                // from "where the keyboard is" — e.g. after launching with
+                // En active and pressing Down once, the cursor is on ZhCn
+                // (reversed bg) while the ▶ stays next to "English" until
+                // the user presses Space to apply ZhCn.
+                let marker = if *l == self.selected { "▶" } else { " " };
+                ListItem::new(format!("{marker} {}", l.label()))
+            })
             .collect();
 
         let list = List::new(items)
@@ -125,8 +135,7 @@ impl Step for LanguageStep {
                     .borders(Borders::ALL)
                     .title(t!("language_step.title")),
             )
-            .highlight_style(Style::default().add_modifier(Modifier::REVERSED))
-            .highlight_symbol("▶ ");
+            .highlight_style(Style::default().add_modifier(Modifier::REVERSED));
 
         frame.render_stateful_widget(list, chunks[0], &mut self.list_state);
 

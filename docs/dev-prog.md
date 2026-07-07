@@ -124,11 +124,17 @@ finished it moves from "Not done" to "Done" and stays there.
   already fits all 6 content lines, and `Wrap` + `Alignment::Center`
   could fragment lines on narrow terminals. `Wrap` import removed.
 - **Language step** (`steps/language.rs`): `LanguageStep` with a stateful
-  `List` of `UiLang::En` / `UiLang::ZhCn` (labels via `UiLang::label()`);
-  Up/Down/j/k moves the highlight, Space selects and calls `set_language()`
-  live so the whole UI re-translates immediately, Enter selects and
-  advances; writes `state.ui_lang`; `sync_from_state()` restores the pick
-  when re-entered via Back. Selection failure falls back to English with a
+  `List` of `UiLang::En` / `UiLang::ZhCn` / `UiLang::ZhTw` (labels via
+  `UiLang::label()`); Up/Down/j/k moves the highlight cursor (rendered by
+  the `REVERSED` `highlight_style`), Space selects and calls
+  `set_language()` live so the whole UI re-translates immediately, Enter
+  selects and advances; writes `state.ui_lang`; `sync_from_state()`
+  restores the pick when re-entered via Back. The `▶` selection marker is
+  embedded in each `ListItem` text (prefix `▶` for the active language,
+  space otherwise) so it follows `self.selected` instead of the cursor —
+  ratatui's `highlight_symbol` was dropped because it is bound to
+  `ListState::selected()` (the cursor) and cannot mark a separate
+  "currently applied" row. Selection failure falls back to English with a
   `tracing::warn!` (defensive only — the ISO build generates both
   `en_US.UTF-8` and `zh_CN.UTF-8`). Step body shows a `Space=Select
   Enter=Next` hint line below the list. Esc is no longer handled by the
