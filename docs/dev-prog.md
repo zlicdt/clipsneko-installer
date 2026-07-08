@@ -191,11 +191,43 @@ finished it moves from "Not done" to "Done" and stays there.
   visual consistency. Verified green: `cargo fmt --check`, `cargo clippy
   -- -D warnings`, `cargo build`, `cargo test` (15 tests); `.mo` confirmed
   to contain 26 msgids including both keyboard strings.
+- **Network step** (`steps/network.rs`): `NetworkStep` checks connectivity
+  on entry via `Step::activate()` — runs `curl --max-time 5 -sI
+  http://ip-api.com/json` (exit 0 = connected) and sets `state.network_ok`.
+  The body shows `✓ Connected` + network details (interface / address /
+  gateway from `hostname -I` and `ip route show default`) or `✗ Not
+  connected`. `Step::is_complete()` returns `state.network_ok`, so
+  `app.rs`'s `next_enabled()` disables the Next button (dimmed, skipped in
+  Tab focus cycling) until connectivity is verified — exactly the "grey =
+  not clickable, bright = clickable" UX requested. Enter is
+  context-sensitive: connected → `StepAction::Next`; disconnected →
+  `StepAction::SuspendRun("nmtui", [])`. `N` always launches nmtui;
+  `R` re-checks connectivity. `nmtui` runs via `util::process::run_fullscreen`
+  — a new helper that leaves the alt screen + disables raw mode, runs the
+  subprocess, then resumes ratatui; `app.rs` calls `terminal.clear()`
+  afterwards and routes the exit status to `Step::on_subprocess_done()`,
+  which triggers a re-check. The `Step` trait gained three default-method
+  extension points: `activate(&mut self, &mut InstallerState)` (entry hook),
+  `is_complete(&self, &InstallerState) -> bool` (Next-gate, default `true`),
+  `on_subprocess_done(&mut self, ExitStatus, &mut InstallerState)` (post-
+  subprocess hook). `StepAction` gained `SuspendRun(String, Vec<String>)`;
+  `app.rs`'s `Action` gained `RunSubprocess(String, Vec<String>)`.
+  `activate_current()` is called on initial entry and on every Back/Next
+  navigation. `nmtui`, `curl`, `hostname`, and `ip` do not need root
+  (`nmtui` uses polkit; the rest are plain user commands per `design.md`
+  §9) so they use `Command::new` directly, not `privileged_command`. Pure
+  parsers `parse_hostname_i()` (whitespace-split IPs) and
+  `parse_default_route()` (extract `via`/`dev` from first line) are
+  unit-tested in `steps/network/tests.rs` (9 cases). i18n: 8 new strings
+  (`network_step.title`, `.status_connected`, `.status_disconnected`,
+  `.label_interface`, `.label_address`, `.label_gateway`,
+  `.hint_connected`, `.hint_disconnected`) added to `.pot`, `en`, `zh_CN`.
+  Verified green: `cargo fmt --check`, `cargo clippy -- -D warnings`,
+  `cargo build`, `cargo test` (25 tests); `.mo` confirmed to contain 34
+  msgids.
 
 ## Not done
 
-- **Network step** (`steps/network.rs`): suspend ratatui, run `nmtui`, verify
-  connectivity (`curl -sI http://ip-api.com/json`).
 - **Mirror step** (`steps/mirror.rs`): reflector run + manual `Server =`
   entry + `pacman -Sy` validation.
 - **Disk step** (`steps/disk.rs`): disk select, cfdisk, partition

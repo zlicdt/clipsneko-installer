@@ -5,6 +5,7 @@
 
 mod keyboard;
 mod language;
+mod network;
 
 use crate::state::InstallerState;
 use crate::t;
@@ -12,9 +13,11 @@ use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::Rect;
 use ratatui::widgets::Paragraph;
 use ratatui::Frame;
+use std::process::ExitStatus;
 
 pub use keyboard::KeyboardStep;
 pub use language::LanguageStep;
+pub use network::NetworkStep;
 
 /// Result of a step handling a key.
 pub enum StepAction {
@@ -30,6 +33,11 @@ pub enum StepAction {
     /// step after a successful run).
     #[allow(dead_code)] // constructed when the install step lands.
     Quit,
+    /// Suspend ratatui, run `program args` as a full-screen subprocess, then
+    /// resume. `app.rs` handles the actual suspension/resume and calls
+    /// `Step::on_subprocess_done` with the exit status afterwards. Used by
+    /// steps that need to launch interactive TUIs such as `nmtui` or `cfdisk`.
+    SuspendRun(String, Vec<String>),
 }
 
 /// Identifier for a wizard step. Order matches the layout in `design.md` §4.
@@ -75,6 +83,24 @@ pub trait Step {
     fn id(&self) -> StepId;
     fn render(&mut self, frame: &mut Frame, area: Rect, state: &InstallerState);
     fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> StepAction;
+
+    /// Called when this step becomes the current step (on initial entry and
+    /// on every Back/Next navigation into it). Lets the step run entry-time
+    /// side effects such as a connectivity check or refreshing device lists.
+    /// Default: no-op.
+    fn activate(&mut self, _state: &mut InstallerState) {}
+
+    /// Whether this step is complete enough for the Next button to be
+    /// enabled. Steps that require a validated choice before proceeding
+    /// (e.g. network must be online) override this. Default: `true`.
+    fn is_complete(&self, _state: &InstallerState) -> bool {
+        true
+    }
+
+    /// Called after a `StepAction::SuspendRun` subprocess finishes (whether
+    /// it succeeded or not). Lets the step react — e.g. re-check connectivity
+    /// after `nmtui` returns. Default: no-op.
+    fn on_subprocess_done(&mut self, _status: ExitStatus, _state: &mut InstallerState) {}
 }
 
 /// Placeholder step: renders a "not implemented" notice and advances on
@@ -117,7 +143,7 @@ pub fn build_steps() -> Vec<Box<dyn Step>> {
     vec![
         Box::new(LanguageStep::new()),
         Box::new(KeyboardStep::new()),
-        Box::new(StubStep::new(StepId::Network)),
+        Box::new(NetworkStep::new()),
         Box::new(StubStep::new(StepId::Mirror)),
         Box::new(StubStep::new(StepId::Disk)),
         Box::new(StubStep::new(StepId::Kernel)),

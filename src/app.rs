@@ -7,6 +7,7 @@
 use crate::state::InstallerState;
 use crate::steps::{build_steps, Step, StepAction};
 use crate::t;
+use crate::util::process::run_fullscreen;
 use crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -77,6 +78,9 @@ impl Focus {
 enum Action {
     Continue,
     Quit,
+    /// Suspend ratatui, run the given program full-screen, then resume and
+    /// notify the current step via `on_subprocess_done`.
+    RunSubprocess(String, Vec<String>),
 }
 
 pub struct App {
@@ -103,13 +107,14 @@ impl App {
     }
 
     fn next_enabled(&self) -> bool {
-        self.current + 1 < self.steps.len()
+        self.current + 1 < self.steps.len() && self.steps[self.current].is_complete(&self.state)
     }
 
     fn go_next(&mut self) {
         if self.next_enabled() {
             self.current += 1;
             self.focus = Focus::StepBody;
+            self.activate_current();
         }
     }
 
@@ -117,7 +122,25 @@ impl App {
         if self.back_enabled() {
             self.current -= 1;
             self.focus = Focus::StepBody;
+            self.activate_current();
         }
+    }
+
+    /// Call `activate` on the current step. Invoked on initial entry and on
+    /// every Back/Next navigation so the step can run entry-time side effects
+    /// (e.g. the network step runs its connectivity check here).
+    fn activate_current(&mut self) {
+        let state = &mut self.state;
+        let steps = &mut self.steps;
+        steps[self.current].activate(state);
+    }
+
+    /// Route a completed subprocess's exit status to the current step so it
+    /// can react (e.g. the network step re-checks connectivity after nmtui).
+    fn subprocess_done(&mut self, status: std::process::ExitStatus) {
+        let state = &mut self.state;
+        let steps = &mut self.steps;
+        steps[self.current].on_subprocess_done(status, state);
     }
 
     pub fn render(&mut self, frame: &mut Frame) {
@@ -307,6 +330,9 @@ impl App {
             StepAction::Next => self.go_next(),
             StepAction::Back => self.go_back(),
             StepAction::Quit => return Action::Quit,
+            StepAction::SuspendRun(prog, args) => {
+                return Action::RunSubprocess(prog, args);
+            }
         }
         Action::Continue
     }
@@ -334,12 +360,26 @@ fn centered_rect(width_pct: u16, height_rows: u16, area: Rect) -> Rect {
 /// Main loop. Draws the wizard and pumps events until the user quits.
 pub fn run(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> anyhow::Result<()> {
     let mut app = App::new();
+    app.activate_current();
     loop {
         terminal.draw(|frame| app.render(frame))?;
         let event = crossterm::event::read()?;
         match app.handle_event(event) {
             Action::Continue => {}
             Action::Quit => break,
+            Action::RunSubprocess(prog, args) => {
+                let args_ref: Vec<&str> = args.iter().map(String::as_str).collect();
+                match run_fullscreen(&prog, &args_ref) {
+                    Ok(status) => {
+                        terminal.clear()?;
+                        app.subprocess_done(status);
+                    }
+                    Err(e) => {
+                        tracing::error!("subprocess {prog} failed: {e}");
+                        terminal.clear()?;
+                    }
+                }
+            }
         }
     }
     Ok(())

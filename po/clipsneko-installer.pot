@@ -63,6 +63,38 @@ msgstr ""
 msgid "keyboard_step.hint"
 msgstr ""
 
+#: src/steps/network.rs
+msgid "network_step.title"
+msgstr ""
+
+#: src/steps/network.rs
+msgid "network_step.status_connected"
+msgstr ""
+
+#: src/steps/network.rs
+msgid "network_step.status_disconnected"
+msgstr ""
+
+#: src/steps/network.rs
+msgid "network_step.label_interface"
+msgstr ""
+
+#: src/steps/network.rs
+msgid "network_step.label_address"
+msgstr ""
+
+#: src/steps/network.rs
+msgid "network_step.label_gateway"
+msgstr ""
+
+#: src/steps/network.rs
+msgid "network_step.hint_connected"
+msgstr ""
+
+#: src/steps/network.rs
+msgid "network_step.hint_disconnected"
+msgstr ""
+
 #: src/steps/mod.rs
 msgid "step.title.language"
 msgstr ""
