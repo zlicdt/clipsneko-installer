@@ -164,11 +164,36 @@ finished it moves from "Not done" to "Done" and stays there.
   `libc 0.2` added to `Cargo.toml` (already an indirect dep via crossterm).
   `design.md` §1 / §6 / §9 and `AGENTS.md` §2 updated. Resolves the
   "Open — log file override" item (decided: no env-var override).
+- **Keyboard step** (`steps/keyboard.rs`): `KeyboardStep` loads the keymap
+  list from `localectl list-keymaps` and detects the live keymap from
+  `localectl status` (the `VC KEYMAP:` line) at construction time, so the
+  picker opens with the live keymap highlighted and marked (▶). The list
+  styling mirrors the language step exactly — `List` + `REVERSED`
+  `highlight_style` + per-row `▶`/space marker bound to `self.selected`
+  (the applied keymap, not the cursor) + `Block` title + a 1-row centered
+  DIM hint below. Up/Down/j/k moves the highlight (wrapping); Space runs
+  `loadkeys` on the highlighted keymap and updates `state.keymap` /
+  `self.selected` (▶ moves, no advance); Enter does the same and advances.
+  `sync_from_state()` restores the pick when re-entered via Back. `localectl`
+  and `loadkeys` go through `util::process::privileged_command()` per
+  `design.md` §9; the `#[allow(dead_code)]` on `privileged_command` was
+  removed now that it has a live caller. Per the step design, command
+  failures are not defended against: `load_keymap_list()` /
+  `current_keymap()` `expect` at startup (panic hook restores the
+  terminal), and `apply()` logs a `tracing::warn!` on non-zero exit /
+  spawn failure but does not block navigation. `state.keymap` is later
+  written to the target's `/etc/vconsole.conf` in the install stage (§5).
+  Pure parsers `parse_keymap_list()` (trim + drop empty lines) and
+  `parse_current_keymap()` (extract `VC KEYMAP:` value, treat `n/a`/empty
+  as unset) are unit-tested in `steps/keyboard/tests.rs` (10 cases).
+  i18n: `keyboard_step.title` / `keyboard_step.hint` added to `.pot`, `en`
+  (identity), and `zh_CN`; the hint text matches `language_step.hint` for
+  visual consistency. Verified green: `cargo fmt --check`, `cargo clippy
+  -- -D warnings`, `cargo build`, `cargo test` (15 tests); `.mo` confirmed
+  to contain 26 msgids including both keyboard strings.
 
 ## Not done
 
-- **Keyboard step** (`steps/keyboard.rs`): list `localectl list-keymaps`,
-  `loadkeys` immediately, persist `state.keymap`.
 - **Network step** (`steps/network.rs`): suspend ratatui, run `nmtui`, verify
   connectivity (`curl -sI http://ip-api.com/json`).
 - **Mirror step** (`steps/mirror.rs`): reflector run + manual `Server =`

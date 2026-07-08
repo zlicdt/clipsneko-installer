@@ -26,7 +26,6 @@ pub fn is_root() -> bool {
 ///     .args(["/dev/sda1", "/mnt"])
 ///     .status()?;
 /// ```
-#[allow(dead_code)] // first used by M2/M4 commands that shell out to root tools.
 pub fn privileged_command(program: &str) -> Command {
     if is_root() {
         Command::new(program)

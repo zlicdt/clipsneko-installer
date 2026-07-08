@@ -3,6 +3,7 @@
 //! created as individual steps get real implementations; until then a single
 //! `StubStep` services all 12 slots so navigation works end-to-end.
 
+mod keyboard;
 mod language;
 
 use crate::state::InstallerState;
@@ -12,6 +13,7 @@ use ratatui::layout::Rect;
 use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 
+pub use keyboard::KeyboardStep;
 pub use language::LanguageStep;
 
 /// Result of a step handling a key.
@@ -114,7 +116,7 @@ impl Step for StubStep {
 pub fn build_steps() -> Vec<Box<dyn Step>> {
     vec![
         Box::new(LanguageStep::new()),
-        Box::new(StubStep::new(StepId::Keyboard)),
+        Box::new(KeyboardStep::new()),
         Box::new(StubStep::new(StepId::Network)),
         Box::new(StubStep::new(StepId::Mirror)),
         Box::new(StubStep::new(StepId::Disk)),

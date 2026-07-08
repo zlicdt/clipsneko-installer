@@ -55,6 +55,14 @@ msgstr "Select installer language"
 msgid "language_step.hint"
 msgstr "Space=Select  Enter=Next"
 
+#: src/steps/keyboard.rs
+msgid "keyboard_step.title"
+msgstr "Select keyboard layout"
+
+#: src/steps/keyboard.rs
+msgid "keyboard_step.hint"
+msgstr "Space=Select  Enter=Next"
+
 #: src/steps/mod.rs
 msgid "step.title.language"
 msgstr "Language"

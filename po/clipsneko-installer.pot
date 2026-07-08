@@ -55,6 +55,14 @@ msgstr ""
 msgid "language_step.hint"
 msgstr ""
 
+#: src/steps/keyboard.rs
+msgid "keyboard_step.title"
+msgstr ""
+
+#: src/steps/keyboard.rs
+msgid "keyboard_step.hint"
+msgstr ""
+
 #: src/steps/mod.rs
 msgid "step.title.language"
 msgstr ""

@@ -55,6 +55,14 @@ msgstr "选择安装程序语言"
 msgid "language_step.hint"
 msgstr "Space=选择  Enter=下一步"
 
+#: src/steps/keyboard.rs
+msgid "keyboard_step.title"
+msgstr "选择键盘布局"
+
+#: src/steps/keyboard.rs
+msgid "keyboard_step.hint"
+msgstr "Space=选择  Enter=下一步"
+
 #: src/steps/mod.rs
 msgid "step.title.language"
 msgstr "语言"
