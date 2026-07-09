@@ -62,16 +62,19 @@ online, and configure mirrors — everything required before any disk work.
 - `src/steps/network.rs` — suspend ratatui, run `nmtui` full-screen, resume;
   on return verify connectivity with `curl -sI http://ip-api.com/json`;
   allow re-launching nmtui on failure; set `state.network_ok`.
-- `src/steps/mirror.rs` — two paths: (A) run
-  `reflector --latest 20 --sort rate --protocol https`, write
-  `/etc/pacman.d/mirrorlist`; (B) read a manual `Server = ...` line, append
-  to `/etc/pacman.d/mirrorlist`. Validate by `pacman -Sy` exit code; retry on
-  failure. Store the chosen source lines in `state.mirror_lines`.
+- `src/steps/mirror.rs` — parse `/etc/pacman.d/mirrorlist` into region
+  blocks (`## <Region>` + `Server =` lines); show a single-select region
+  list (Up/Down/j/k) and a manual `Server =` URL input field below it
+  (Tab toggles focus). On Next: if the input field is non-empty, use it as
+  the sole mirror; otherwise move the selected region's `Server =` lines
+  to the top of the file. Rewrite the mirrorlist, validate with
+  `pacman -Sy` (exit 0 = ok); on failure show a modal error dialog and
+  retry. Store the chosen source lines in `state.mirror_lines`.
 - `src/util/locale_list.rs` — parse `/etc/locale.gen` for the full locale
   list (used later in M4b; built here because the language step surfaces
   locale concepts).
 - `src/util/process.rs` — suspend-ratatui/run-subprocess/resume helper
-  shared by `nmtui`, `cfdisk`, `reflector`, `pacman -Sy`.
+  shared by `nmtui`, `cfdisk`, `pacman -Sy`.
 - Sample runtime config files in the repo: `config/packages.list` and
   `config/repo.conf` — these are the templates the user's PKGBUILD will
   install to `/etc/clipsneko-installer/`. Needed from M1 onward because the
@@ -85,9 +88,10 @@ online, and configure mirrors — everything required before any disk work.
   the effect is visible in the next text input.
 - `nmtui` opens full-screen, returns to the wizard, and the connectivity
   check correctly reports online/offline.
-- Reflector path writes a working mirrorlist; manual-entry path accepts a
-  `Server =` line; `pacman -Sy` validation succeeds/fails as appropriate
-  and the UI lets the user retry on failure.
+- Region list loads from `/etc/pacman.d/mirrorlist`; selecting a region
+  reorders the file with that region's mirrors on top; manual-entry path
+  accepts a `Server =` line; `pacman -Sy` validation succeeds/fails as
+  appropriate and the UI lets the user retry on failure.
 
 ### Unit tests
 

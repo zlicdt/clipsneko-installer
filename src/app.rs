@@ -291,15 +291,40 @@ impl App {
             return Action::Continue;
         }
 
-        // Tab / Shift+Tab: cycle focus between step body and the buttons.
+        // Tab / Shift+Tab focus cycling.
+        //
+        // Two layers: the global cycle (StepBody <-> Back/Next buttons) and,
+        // within StepBody, a step-internal cycle (e.g. mirror's list <->
+        // input). They compose via `Step::consume_tab`: when the step body
+        // has focus the app first offers the Tab to the step; if the step
+        // consumes it (returns true) the app does nothing, otherwise the app
+        // performs the global cycle to the buttons. When a button has focus
+        // the app cycles directly. This keeps the full loop
+        // (StepBody -> buttons -> StepBody) reachable from every position —
+        // a step must return false at the ends of its internal chain so Tab
+        // can bubble up.
         let is_shift_tab = matches!(key.code, KeyCode::BackTab)
             || (key.code == KeyCode::Tab && key.modifiers.contains(KeyModifiers::SHIFT));
-        if is_shift_tab {
-            self.focus = self.focus.prev(self.back_enabled(), self.next_enabled());
-            return Action::Continue;
-        }
-        if key.code == KeyCode::Tab {
-            self.focus = self.focus.next(self.back_enabled(), self.next_enabled());
+        let is_tab = key.code == KeyCode::Tab;
+        if is_shift_tab || is_tab {
+            match self.focus {
+                Focus::StepBody => {
+                    if !self.steps[self.current].consume_tab(is_shift_tab) {
+                        self.focus = if is_shift_tab {
+                            self.focus.prev(self.back_enabled(), self.next_enabled())
+                        } else {
+                            self.focus.next(self.back_enabled(), self.next_enabled())
+                        };
+                    }
+                }
+                _ => {
+                    self.focus = if is_shift_tab {
+                        self.focus.prev(self.back_enabled(), self.next_enabled())
+                    } else {
+                        self.focus.next(self.back_enabled(), self.next_enabled())
+                    };
+                }
+            }
             return Action::Continue;
         }
 

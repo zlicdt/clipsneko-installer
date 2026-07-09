@@ -95,6 +95,46 @@ msgstr "Enter=Next  N=nmtui  R=Recheck"
 msgid "network_step.hint_disconnected"
 msgstr "Enter=nmtui  R=Recheck"
 
+#: src/steps/mirror.rs
+msgid "mirror_step.input_title"
+msgstr "Manual mirror source"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.input_label"
+msgstr "Server"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.list_title"
+msgstr "Select a region"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.hint_list"
+msgstr "Up/Down=Select  Tab=Input  Enter=Next"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.hint_input"
+msgstr "Type URL  Tab=List  Enter=Next"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_title"
+msgstr "Validation failed"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_hint"
+msgstr "Esc/Enter to dismiss and retry."
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_pacman"
+msgstr "pacman -Sy failed. Check your network or try another mirror."
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_write"
+msgstr "Failed to write /etc/pacman.d/mirrorlist."
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_invalid_url"
+msgstr "Invalid Server URL. Must start with http://, https://, ftp:// or rsync://."
+
 #: src/steps/mod.rs
 msgid "step.title.language"
 msgstr "Language"

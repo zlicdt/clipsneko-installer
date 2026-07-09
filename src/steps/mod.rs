@@ -5,6 +5,7 @@
 
 mod keyboard;
 mod language;
+mod mirror;
 mod network;
 
 use crate::state::InstallerState;
@@ -17,6 +18,7 @@ use std::process::ExitStatus;
 
 pub use keyboard::KeyboardStep;
 pub use language::LanguageStep;
+pub use mirror::MirrorStep;
 pub use network::NetworkStep;
 
 /// Result of a step handling a key.
@@ -101,6 +103,25 @@ pub trait Step {
     /// it succeeded or not). Lets the step react — e.g. re-check connectivity
     /// after `nmtui` returns. Default: no-op.
     fn on_subprocess_done(&mut self, _status: ExitStatus, _state: &mut InstallerState) {}
+
+    /// Attempt to consume a Tab/BackTab for internal focus cycling between
+    /// sub-widgets within the step body (e.g. the mirror step toggles
+    /// between its region list and the manual-input field). Returns `true`
+    /// when the step used the key internally (the app must then **not**
+    /// perform its global StepBody ↔ button focus cycle); returns `false`
+    /// when the step declines the key (the app proceeds with the global
+    /// cycle, moving focus to/from the Back/Next buttons).
+    ///
+    /// `is_shift` is `true` for BackTab (Shift+Tab), `false` for Tab.
+    ///
+    /// The default is `false` so that steps with a single focusable widget
+    /// (the common case) always let Tab bubble up to the app's global
+    /// focus cycle. Steps that override this must return `false` at the
+    /// ends of their internal focus chain so the user can still Tab out to
+    /// the buttons — otherwise the global cycle is broken.
+    fn consume_tab(&mut self, _is_shift: bool) -> bool {
+        false
+    }
 }
 
 /// Placeholder step: renders a "not implemented" notice and advances on
@@ -144,7 +165,7 @@ pub fn build_steps() -> Vec<Box<dyn Step>> {
         Box::new(LanguageStep::new()),
         Box::new(KeyboardStep::new()),
         Box::new(NetworkStep::new()),
-        Box::new(StubStep::new(StepId::Mirror)),
+        Box::new(MirrorStep::new()),
         Box::new(StubStep::new(StepId::Disk)),
         Box::new(StubStep::new(StepId::Kernel)),
         Box::new(StubStep::new(StepId::Nvidia)),

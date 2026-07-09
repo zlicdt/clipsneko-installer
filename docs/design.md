@@ -53,11 +53,15 @@ Linear: Back/Next only, no per-item jump from the confirm page.
 3. **Network** — suspend ratatui, run `nmtui`; on return verify with
    `curl -sI http://ip-api.com/json`. Required to proceed.
 4. **Mirror**
-   - Path A: run `reflector --latest 20 --sort rate --protocol https`, write
-     `/etc/pacman.d/mirrorlist`.
-   - Path B: read a manual `Server = ...` line, append to
-     `/etc/pacman.d/mirrorlist`.
-   - Validate by writing then `pacman -Sy`, exit code 0 = ok, retry on failure.
+   - Parse `/etc/pacman.d/mirrorlist` (assumed present and well-formed on
+     the ISO) into region blocks (`## <Region>` header + `Server =` lines).
+   - Show a single-select list of region names; selecting a region moves
+     that region's `Server =` lines to the top of the file, ahead of all
+     other regions (file header comments preserved). Alternatively, a
+     manual `Server =` URL input field below the list.
+   - Tab toggles focus between the list and the input field.
+   - On Next: rewrite the mirrorlist, validate with `pacman -Sy` (exit 0 =
+     ok). On failure, show a modal error dialog; dismiss and retry.
 5. **Disk**
    - Select one main disk from `lsblk`.
    - On existing partition table: warn and require explicit confirmation; then
@@ -124,7 +128,7 @@ grml-zsh-config sudo networkmanager nano vi`
 - `passwd -l root`
 - `useradd -m -G wheel -s /bin/zsh <user>`; `chpasswd`
 - uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`
-- copy live `/etc/pacman.d/mirrorlist` → target (no reflector on target)
+- copy live `/etc/pacman.d/mirrorlist` → target
 - append `[clipsneko]` section to `/mnt/etc/pacman.conf`
 - mkinitcpio: **if nvidia was installed, remove `kms` from HOOKS in
   `/etc/mkinitcpio.conf`**; then `mkinitcpio -P`. (No MODULES additions needed:
@@ -188,7 +192,7 @@ passwordless. This means `sudo` never prompts.
 
 Commands that require root privileges (disk partitioning, formatting,
 mounting, `pacstrap`, `arch-chroot`, `grub-install`, `mkinitcpio`,
-`genfstab`, `partprobe`, `reflector`, `pacman`, `localectl`,
+`genfstab`, `partprobe`, `pacman`, `localectl`,
 `systemctl`, `loadkeys`, `cfdisk`, …) are wrapped via
 `util::process::privileged_command(program)`: when the effective UID is 0
 the command runs directly, otherwise `sudo -- <program>` is used.

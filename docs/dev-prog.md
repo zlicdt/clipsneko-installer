@@ -19,8 +19,8 @@ finished it moves from "Not done" to "Done" and stays there.
   `siglevel` = `Never` for the debug phase).
 - 12-step linear wizard locked (Back/Next only, no per-item jump from the
   confirm page): UI language → keyboard → network (nmtui) → mirror
-  (reflector `--latest 20 --sort rate --protocol https` or manual `Server =`
-  line, validated by `pacman -Sy` exit code) → disk (cfdisk + btrfs `@` /
+  (parse `/etc/pacman.d/mirrorlist` regions, reorder on selection, or
+  manual `Server =` line, validated by `pacman -Sy` exit code) → disk (cfdisk + btrfs `@` /
   `@home` with `compress=zstd:1`, ESP not reformatted if already vfat,
   optional extra partitions for `/home` etc.) → kernel
   (linux/linux-lts/linux-zen/linux-hardened) → nvidia (variant filtered by
@@ -225,11 +225,38 @@ finished it moves from "Not done" to "Done" and stays there.
   Verified green: `cargo fmt --check`, `cargo clippy -- -D warnings`,
   `cargo build`, `cargo test` (25 tests); `.mo` confirmed to contain 34
   msgids.
+- **Mirror step** (`steps/mirror.rs`): `MirrorStep` parses
+  `/etc/pacman.d/mirrorlist` at construction time into region blocks
+  (`## <Region>` header + `Server =` lines). The body shows a single-select
+  region list (Up/Down/j/k, `REVERSED` highlight, `▶` applied marker —
+  same list styling as the language/keyboard steps) and, above it, a
+  one-line input field for a manual `Server =` URL. Tab toggles focus
+  between the list and the input field. On Next: if the input field is
+  non-empty, `normalize_server_line()` validates the URL scheme
+  (http/https/ftp/rsync) and it becomes the sole mirror (prepended to the
+  file); otherwise the selected region's `Server =` lines are moved to the
+  top of the mirrorlist via `reorder_mirrorlist()` (file header comments
+  preserved, other regions keep relative order). The rewritten file is
+  written back via `privileged_command("cp")` from a temp file, then
+  `pacman -Sy` validates (`.output()` so output never reaches the
+  terminal). Exit 0 → `state.mirror_lines` recorded, advance. Non-zero →
+  modal error dialog (Esc/Enter dismisses, retry). Invalid manual URL →
+  modal error. `Step::is_complete()` returns `self.validated`, so Next is
+  disabled until a selection passes validation. `reflector` was dropped
+  from the design entirely (per user direction): `design.md` §4 step 4,
+  §5, §9, `dev-plan.md` M1 deliverables/acceptance all updated. Pure
+  parsers `parse_mirrorlist_regions()`, `reorder_mirrorlist()`,
+  `extract_region_servers()`, `split_header()`, `split_blocks()`, and
+  `normalize_server_line()` are unit-tested in `steps/mirror/tests.rs`
+  (16 cases). i18n: 11 new strings (`mirror_step.input_title`,
+  `.input_label`, `.list_title`, `.hint_list`, `.hint_input`,
+  `.error_title`, `.error_hint`, `.error_pacman`, `.error_write`,
+  `.error_invalid_url`) added to `.pot`, `en`, `zh_CN`. Verified green:
+  `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo build`,
+  `cargo test` (41 tests); `.mo` confirmed to contain 44 msgids.
 
 ## Not done
 
-- **Mirror step** (`steps/mirror.rs`): reflector run + manual `Server =`
-  entry + `pacman -Sy` validation.
 - **Disk step** (`steps/disk.rs`): disk select, cfdisk, partition
   auto-suggest (vfat+ESP→ESP, btrfs→root) with override, ESP no-reformat
   rule, optional extra mounts.

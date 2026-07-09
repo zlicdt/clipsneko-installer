@@ -95,6 +95,46 @@ msgstr ""
 msgid "network_step.hint_disconnected"
 msgstr ""
 
+#: src/steps/mirror.rs
+msgid "mirror_step.input_title"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.input_label"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.list_title"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.hint_list"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.hint_input"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_title"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_hint"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_pacman"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_write"
+msgstr ""
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_invalid_url"
+msgstr ""
+
 #: src/steps/mod.rs
 msgid "step.title.language"
 msgstr ""

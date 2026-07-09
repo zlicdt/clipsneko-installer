@@ -95,6 +95,46 @@ msgstr "Enter=下一步  N=nmtui  R=重新检查"
 msgid "network_step.hint_disconnected"
 msgstr "Enter=nmtui  R=重新检查"
 
+#: src/steps/mirror.rs
+msgid "mirror_step.input_title"
+msgstr "手动输入源"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.input_label"
+msgstr "Server"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.list_title"
+msgstr "选择地区"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.hint_list"
+msgstr "上/下=选择  Tab=输入框  Enter=下一步"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.hint_input"
+msgstr "输入URL  Tab=列表  Enter=下一步"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_title"
+msgstr "验证失败"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_hint"
+msgstr "Esc/Enter 关闭并重试。"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_pacman"
+msgstr "pacman -Sy 失败。请检查网络或尝试其他镜像。"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_write"
+msgstr "写入 /etc/pacman.d/mirrorlist 失败。"
+
+#: src/steps/mirror.rs
+msgid "mirror_step.error_invalid_url"
+msgstr "无效的 Server URL。必须以 http://、https://、ftp:// 或 rsync:// 开头。"
+
 #: src/steps/mod.rs
 msgid "step.title.language"
 msgstr "语言"
