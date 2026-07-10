@@ -21,7 +21,7 @@ fn parse_keymap_list_trims_whitespace() {
 
 #[test]
 fn parse_current_keymap_extracts_vc_keymap() {
-    let input = "   VC KEYMAP: us\n   X11 KEYMAP: us\n   Layout: us\n";
+    let input = "   VC Keymap: us\n   X11 KEYMAP: us\n   Layout: us\n";
     assert_eq!(parse_current_keymap(input).as_deref(), Some("us"));
 }
 
@@ -33,13 +33,13 @@ fn parse_current_keymap_missing_returns_none() {
 
 #[test]
 fn parse_current_keymap_na_returns_none() {
-    let input = "   VC KEYMAP: n/a\n";
+    let input = "   VC Keymap: n/a\n";
     assert_eq!(parse_current_keymap(input), None);
 }
 
 #[test]
 fn parse_current_keymap_na_case_insensitive() {
-    let input = "   VC KEYMAP: N/A\n";
+    let input = "   VC Keymap: N/A\n";
     assert_eq!(parse_current_keymap(input), None);
 }
 
@@ -50,13 +50,13 @@ fn parse_current_keymap_empty_returns_none() {
 
 #[test]
 fn parse_current_keymap_trims_value() {
-    let input = "   VC KEYMAP:   de-latin1  \n";
+    let input = "   VC Keymap:   de-latin1  \n";
     assert_eq!(parse_current_keymap(input).as_deref(), Some("de-latin1"));
 }
 
 #[test]
 fn parse_current_keymap_does_not_match_x11_line() {
-    // "X11 KEYMAP:" must not be confused with "VC KEYMAP:".
+    // "X11 KEYMAP:" must not be confused with "VC Keymap:".
     let input = "  X11 KEYMAP: us\n";
     assert_eq!(parse_current_keymap(input), None);
 }

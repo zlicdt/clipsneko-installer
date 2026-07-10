@@ -7,7 +7,7 @@
 //!
 //! The list of keymaps is loaded once from `localectl list-keymaps` at
 //! construction time; the currently active keymap is detected from
-//! `localectl status` (the `VC KEYMAP:` line) so the picker opens with the
+//! `localectl status` (the `VC Keymap:` line) so the picker opens with the
 //! live keymap highlighted and applied (rendered bold). The chosen
 //! keymap is persisted in `state.keymap` and later written to the target's
 //! `/etc/vconsole.conf` in the install stage (§5).
@@ -265,12 +265,12 @@ fn parse_keymap_list(stdout: &str) -> Vec<String> {
         .collect()
 }
 
-/// Parse `localectl status` output and return the value of the `VC KEYMAP:`
+/// Parse `localectl status` output and return the value of the `VC Keymap:`
 /// field, if present and non-empty. `n/a` is treated as unset.
 fn parse_current_keymap(stdout: &str) -> Option<String> {
     stdout.lines().find_map(|line| {
         let line = line.trim_start();
-        let rest = line.strip_prefix("VC KEYMAP:")?;
+        let rest = line.strip_prefix("VC Keymap:")?;
         let v = rest.trim();
         if v.is_empty() || v.eq_ignore_ascii_case("n/a") {
             None
