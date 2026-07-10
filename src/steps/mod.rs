@@ -3,6 +3,7 @@
 //! created as individual steps get real implementations; until then a single
 //! `StubStep` services all 12 slots so navigation works end-to-end.
 
+mod disk;
 mod keyboard;
 mod language;
 mod mirror;
@@ -16,6 +17,7 @@ use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 use std::process::ExitStatus;
 
+pub use disk::DiskStep;
 pub use keyboard::KeyboardStep;
 pub use language::LanguageStep;
 pub use mirror::MirrorStep;
@@ -122,6 +124,27 @@ pub trait Step {
     fn consume_tab(&mut self, _is_shift: bool) -> bool {
         false
     }
+
+    /// Called when the user activates the on-screen **Next** button (Enter
+    /// while it has focus). Returns `true` when the step consumed the
+    /// press for an internal page switch (the app then leaves the wizard
+    /// on the current step and routes focus back to the step body);
+    /// returns `false` when the step wants the wizard to advance to the
+    /// next step as usual. Lets a step implement sub-pages (the disk step's
+    /// disk-pick → partition-pick flow) without growing the wizard step
+    /// count. The wizard's Back button has a symmetric `on_back_button`.
+    fn on_next_button(&mut self, _state: &mut InstallerState) -> bool {
+        false
+    }
+
+    /// Symmetric counterpart of `on_next_button` for the on-screen **Back**
+    /// button. Returns `true` when the step consumed the press (the app
+    /// leaves the wizard on the current step and routes focus back to the
+    /// step body); `false` when the step wants the wizard to go back to
+    /// the previous step as usual. Default: `false`.
+    fn on_back_button(&mut self, _state: &mut InstallerState) -> bool {
+        false
+    }
 }
 
 /// Placeholder step: renders a "not implemented" notice and advances on
@@ -166,7 +189,7 @@ pub fn build_steps() -> Vec<Box<dyn Step>> {
         Box::new(KeyboardStep::new()),
         Box::new(NetworkStep::new()),
         Box::new(MirrorStep::new()),
-        Box::new(StubStep::new(StepId::Disk)),
+        Box::new(DiskStep::new()),
         Box::new(StubStep::new(StepId::Kernel)),
         Box::new(StubStep::new(StepId::Nvidia)),
         Box::new(StubStep::new(StepId::Timezone)),

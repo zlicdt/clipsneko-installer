@@ -62,18 +62,34 @@ Linear: Back/Next only, no per-item jump from the confirm page.
    - Tab toggles focus between the list and the input field.
    - On Next: rewrite the mirrorlist, validate with `pacman -Sy` (exit 0 =
      ok). On failure, show a modal error dialog; dismiss and retry.
-5. **Disk**
-   - Select one main disk from `lsblk`.
-   - On existing partition table: warn and require explicit confirmation; then
-     proceed.
-   - `cfdisk /dev/<disk>` (pick `gpt` label if empty).
-   - After cfdisk: `partprobe` + re-read `lsblk -J -O`.
-   - Auto-suggest roles: vfat + ESP-type → **ESP**; btrfs → **root**. Ambiguous →
-     user picks per partition.
-   - ESP is **not reformatted** if `blkid TYPE=vfat` already present (only
-     `mkfs.vfat -F32` if user assigned ESP to a non-vfat partition, with warning).
-   - Optional extra partitions (e.g. on another disk) for `/home` etc., with
-     format choice.
+5. **Disk** — two sub-pages within the same step. There is **no** auto-suggested
+   role assignment; every role is chosen by the user by hand.
+
+   Sub-page A (disk picker):
+   - List every block device of type `disk` from `lsblk -J -O -b` (name on the
+     left, human-readable size on the right).
+   - Enter opens `cfdisk /dev/<disk>` full-screen (via `sudo` when not root);
+     on return the installer runs `partprobe` and re-reads `lsblk -J -O -b`.
+   - The user may run cfdisk against multiple disks before leaving the page.
+   - The on-screen Next button advances to sub-page B.
+
+   Sub-page B (partition role picker):
+   - List every partition of type `part` on every disk from the latest `lsblk`
+     (name / size / current FSTYPE).
+   - Selecting a partition (Enter) pops a small dialog asking the user to
+     assign it the **ESP** role or the **Target** role (or cancel).
+     ESP is single-select (assigning a new ESP clears the old one); Target is
+     multi-select (choosing two or more Target partitions enables btrfs RAID
+     at format time — see §5).
+   - The Next button is enabled only when an ESP is assigned and the total size
+     of all Target partitions exceeds 20 GiB.
+   - Pressing Next, if any Target partition currently has a non-empty FSTYPE
+     (it will be reformatted as btrfs → data loss) or the ESP partition is not
+     already vfat (it will be `mkfs.vfat -F32`'d), shows a single blocking
+     confirmation dialog listing every partition that will be wiped; the user
+     must confirm to leave the step. A pure-vfat ESP partition incurs no
+     warning and is not reformatted.
+   - There is no extra-partition / extra-mount mapping in v0.1.
 6. **Kernel** — `linux` / `linux-lts` / `linux-zen` / `linux-hardened` (single
    select).
 7. **nvidia** — "no nvidia" OR one variant from the compatible matrix below
@@ -104,10 +120,14 @@ Linear: Back/Next only, no per-item jump from the confirm page.
 
 12.1 Format & mount:
 
-- root: `mkfs.btrfs -f` on the chosen root partition; subvolumes `@`, `@home`;
-  remount root with `-o compress=zstd:1,subvol=@`; `@home` at `/mnt/home`.
+- root: if a single Target partition was chosen, `mkfs.btrfs -f <part>`. If two
+  or more Target partitions were chosen, the installer prompts the user to
+  pick the data RAID mode (`raid0` or `raid1`; metadata is always `raid1`),
+  then runs `mkfs.btrfs -f -d <mode> -m raid1 <part1> <part2> ...`. Create
+  subvolumes `@`, `@home`; remount root with `-o compress=zstd:1,subvol=@`;
+  `@home` at `/mnt/home`.
 - ESP: skip if already vfat, else `mkfs.vfat -F32`; mount at `/mnt/boot/efi`.
-- Extra partitions per user mapping.
+- No extra-partition mapping in v0.1 (see §4 step 5).
 
 12.2 Live `pacman.conf` — append `[clipsneko]` section using `repo.conf`
 (`SigLevel = Never` for the debug phase).

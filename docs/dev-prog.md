@@ -255,11 +255,77 @@ finished it moves from "Not done" to "Done" and stays there.
   `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo build`,
   `cargo test` (41 tests); `.mo` confirmed to contain 44 msgids.
 
-## Not done
+- **Disk step redesign locked** (per user direction): the disk step is two
+  sub-pages inside one wizard step (the wizard step count stays at 12). There
+  is **no** auto-suggested partition role assignment — every ESP/Target role
+  is chosen by hand. There is **no** extra-partition / extra-mount mapping in
+  v0.1. Target partitions are **multi-select**: two or more enable btrfs
+  RAID at format time (M4a prompts the user for data `raid0`/`raid1`; metadata
+  is fixed at `raid1`). `DiskState` now has `esp_partition: Option<String>`
+  and `target_partitions: Vec<String>`; `main_disk` and `root_partition` and
+  `extra_mounts` were dropped. The UI list style across the whole project was
+  changed: the `▶` selection marker is gone; the *selected/applied* row's own
+  text is rendered **bold** to signal the selected state, while the
+  cursor row is separately indicated by the `REVERSED` highlight style.
+  `design.md` §4 step 5 and §5 and `dev-plan.md` M2/M4a were updated to match.
 
-- **Disk step** (`steps/disk.rs`): disk select, cfdisk, partition
-  auto-suggest (vfat+ESP→ESP, btrfs→root) with override, ESP no-reformat
-  rule, optional extra mounts.
+- **Next/Back button hooks** (`steps/mod.rs`, `app.rs`): the `Step` trait
+  gained `on_next_button(&mut self, &mut InstallerState) -> bool` and the
+  symmetric `on_back_button`. The on-screen Back/Next buttons now consult
+  these before advancing the wizard: a step may return `true` to consume the
+  press for an **internal** sub-page switch (app then routes focus back to the
+  step body) or `false` to let the wizard advance/back as usual. Default is
+  `false`, so every other step behaves exactly as before. This lets the disk
+  step implement its two sub-pages without growing the wizard step count.
+
+- **`util::lsblk`** (`util/lsblk.rs`): typed parser for `lsblk -J -O -b` JSON
+  output via `serde` + `serde_json` (added to `Cargo.toml`). `BlockDevice`
+  captures `name`/`type`/`fstype`/`size` (bytes, with a forgiving deserializer
+  that accepts number, string, or `null`), `pttype`/`parttype`/`partlabel`
+  and nested `children`. `flat_disks` and `flat_parts` flatten the tree into
+  disk-kind and part-kind device lists; `human_size` formats bytes as a
+  compact binary-unit string; `TARGET_MIN_BYTES` = 20 GiB is the threshold
+  the disk step's Target total must reach. `list_devices` shells out to
+  `lsblk` and returns an empty tree on failure (logged via `tracing`).
+  `ESP_PARTTYPE` (`c12a7328-...`) is defined but not yet consulted at runtime
+  (the disk step assigns roles by hand). Pure parsers/flatteners are
+  unit-tested in `util/lsblk/tests.rs` (13 cases).
+
+- **Disk step** (`steps/disk.rs`): `DiskStep` implements two sub-pages within
+  the wizard's step 5. **Sub-page A (disk picker):** `lsblk` disk-kind list
+  with name (left) + human size (right); Enter opens `cfdisk /dev/<disk>`
+  full-screen via `SuspendRun` (`cfdisk_command` prefixes `sudo --` when not
+  root); the user may run cfdisk against multiple disks; on each cfdisk exit
+  `on_subprocess_done` runs `partprobe` (privileged) and re-reads `lsblk`. The
+  on-screen Next button advances to sub-page B. **Sub-page B (partition role
+  picker):** lists every `part` from the latest `lsblk` (name / size / FSTYPE
+  / role tag); Enter pops a role dialog with options ESP / Target / Cancel
+  (Up/Down + Enter; Esc cancels); ESP is single-select (assigning a new one
+  clears the old), Target is multi-select; assignments are written straight to
+  `state.disk`; `is_complete` (Next-button gate) is the ESP-is-set + Target
+  total ≥ 20 GiB rule. On Next (or Enter on step body when valid), if any
+  Target currently carries a non-empty FSTYPE (will be reformatted as btrfs →
+  data loss) or the ESP is not already vfat (will be `mkfs.vfat -F32`'d), a
+  single blocking **unified wipe-warning dialog** is shown listing the wiped
+  partitions with reasons; pure-vfat ESPs incur no warning and are not
+  reformatted. There is **no** auto-suggested role and no extra-partition
+  mapping. `on_back_button` from sub-page B returns to A; on wizard Back-re-
+  entry into the disk step, `activate` resumes sub-page B when state already
+  holds assignments, otherwise A. Pure logic is unit-tested in
+  `steps/disk/tests.rs` (9 cases): `compute_wipe_list` (8 cases covering
+  empty, vfat-ESP-skip, non-vfat-ESP-wipe, target-with-FSTYPE, target-no-
+  FSTYPE, both, partition-not-in-snapshot, pure-vfat-ESP-with-unassigned-
+  target) + `cfdisk_command` path shape (root vs sudo). i18n: 14 new strings
+  (`disk_step.hint_disk`, `.hint_parts`, `.list_title_disk`,
+  `.list_title_parts`, `.role_esp`, `.role_target`, `.role_dialog.title`,
+  `.role_dialog.option_cancel`, `.role_dialog.hint`,
+  `.wipe_dialog.window_title`, `.wipe_dialog.title`,
+  `.wipe_dialog.target_prefix`, `.wipe_dialog.esp_prefix`,
+  `.wipe_dialog.hint`) added to `.pot`, `en`, `zh_CN`. Verified green:
+  `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo build`,
+  `cargo test` (63 tests); `.mo` confirmed to contain 58 msgids.
+
+## Not done
 - **Kernel step** (`steps/kernel.rs`): list linux/linux-lts/linux-zen/
   linux-hardened, single select.
 - **Nvidia step** (`steps/nvidia.rs`): "no nvidia" or one variant from the

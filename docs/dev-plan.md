@@ -110,48 +110,62 @@ M0 (done).
 
 ## M2 — Disk partitioning
 
-The disk step (step 5). The most complex single step: cfdisk integration,
-partition-table re-read, role auto-suggestion with override, ESP
-no-reformat rule, and optional extra mounts.
+The disk step (step 5). Two sub-pages inside the step: a disk picker (run
+cfdisk against one or more disks) and a partition role picker (assign ESP
+and Target roles; ESP single-select, Target multi-select enabling btrfs
+RAID at format time; unified wipe-warning dialog on Next).
 
 ### Deliverables
 
-- `src/steps/disk.rs` — disk selection, existing-partition-table warning +
-  double-confirm, `cfdisk /dev/<disk>` invocation, post-cfdisk
-  `partprobe` + re-read, role auto-suggest + override UI, ESP no-reformat
-  guard, optional extra-partition mapping (device + mountpoint + format
-  choice).
-- `src/util/lsblk.rs` — parse `lsblk -J -O` JSON into a typed partition
-  list (name, fstype, parttype, size, mountpoints).
+- `src/steps/disk.rs` — two sub-pages:
+  - *Sub-page A (disk picker):* list every block device of type `disk` from
+    `lsblk -J -O -b` (name + human-readable size); Enter opens
+    `cfdisk /dev/<disk>` full-screen (via `sudo` when not root); after
+    cfdisk exits the installer runs `partprobe` and re-reads `lsblk`; the
+    user may run cfdisk against multiple disks; the on-screen Next button
+    advances to sub-page B.
+  - *Sub-page B (partition role picker):* list every partition of type
+    `part` on every disk from the latest `lsblk` (name / size / current
+    FSTYPE); Enter on a partition pops a dialog to assign it the ESP role
+    or the Target role (or cancel); ESP is single-select, Target is
+    multi-select; Next is enabled only when an ESP is assigned and the
+    total Target size exceeds 20 GiB; pressing Next, if any Target has a
+    non-empty FSTYPE (data-loss) or the ESP is not already vfat (will be
+    `mkfs.vfat -F32`'d), shows a single blocking confirmation dialog
+    listing every partition that will be wiped; a pure-vfat ESP is not
+    reformatted and incurs no warning.
+- `src/util/lsblk.rs` — parse `lsblk -J -O -b` JSON into a typed
+  `BlockDevice` tree (name, type, fstype, size in bytes, pttype, parttype,
+  partlabel, children); flatten into disk list (type==disk) and partition
+  list (type==part); byte-size parsing.
 
 ### Acceptance
 
-- Disk selection lists block devices from `lsblk`.
-- Selecting a disk with an existing partition table shows the warning and
-  requires explicit confirmation before entering cfdisk.
-- `cfdisk` opens on the selected disk (GPT label if empty); on return the
-  installer re-reads the partition table and shows the new layout.
-- Auto-suggest correctly flags the single vfat+ESP partition as ESP and
-  the single btrfs partition as root; ambiguous layouts surface a
-  per-partition picker the user can override.
-- An ESP that already has `TYPE=vfat` is **not** reformatted; a non-vfat
-  partition assigned the ESP role is formatted with a warning.
-- Extra partitions can be mapped to mountpoints (e.g. `/home` on a second
-  disk).
+- Sub-page A lists all disk-type block devices from `lsblk`.
+- Enter opens `cfdisk` on the highlighted disk; the user can run cfdisk
+  against multiple disks; on return `partprobe` + re-read `lsblk` is run.
+- Sub-page B lists all partitions on every disk after the latest re-read.
+- Enter pops the role dialog; assigning ESP clears any prior ESP; Target is
+  multi-select; Next is disabled until ESP is set and total Target size is
+  > 20 GiB.
+- On Next, if any Target has an existing FSTYPE or the ESP is non-vfat, the
+  unified wipe-warning dialog is shown; confirming leaves the step,
+  cancelling returns to the partition list.
+- A pure-vfat ESP is neither reformatted nor warned about.
 
 ### Unit tests
 
-- `util::lsblk` — parse a fixture `lsblk -J -O` blob into the typed
-  structure (including the ESP parttype UUID `c12a7328-...`).
-- Partition role suggestion — given a list of partitions, the auto-suggest
-  returns the correct ESP/root candidates and flags ambiguity.
-- ESP no-reformat decision — given a partition's `blkid` TYPE and parttype,
-  returns reformat / skip / warn.
+- `util::lsblk` — parse a fixture `lsblk -J -O -b` JSON blob into the typed
+  structure, including flattening disks vs partitions, byte-size parsing,
+  and ESP parttype UUID `c12a7328-...`.
+- Wipe-warning decision — given a partition list with the chosen ESP and
+  Target set, returns the list of partitions that will be wiped (Target with
+  non-empty FSTYPE, plus ESP if not vfat).
 
 ### Dependencies
 
-M0 (disk step does not require M1 to be complete, but running it end-to-end
-needs network from M1 for a fully populated state).
+M0 (disk step does not require M1 to be complete, but running it
+end-to-end needs network from M1 for a fully populated state).
 
 ---
 
@@ -222,22 +236,29 @@ usable standalone for a full install until M4c lands.
 
 #### Deliverables
 
-- `src/installer/partition.rs` — for each selected partition: format if
-  needed (root `mkfs.btrfs -f`; ESP `mkfs.vfat -F32` only if not already
-  vfat); create subvolumes `@` and `@home`; remount root with
-  `-o compress=zstd:1,subvol=@`; mount `@home` at `/mnt/home`; mount ESP
-  at `/mnt/boot/efi`; mount extra partitions per the disk step's mapping.
+- `src/installer/partition.rs` — format & mount:
+  - If a single Target partition was chosen: `mkfs.btrfs -f <part>`. If two
+    or more, prompt the user for the data RAID mode (`raid0` or `raid1`;
+    metadata fixed at `raid1`), then
+    `mkfs.btrfs -f -d <mode> -m raid1 <part1> <part2> ...`.
+  - Create subvolumes `@`, `@home`; remount root with
+    `-o compress=zstd:1,subvol=@`; mount `@home` at `/mnt/home`.
+  - ESP: `mkfs.vfat -F32` only if not already vfat; mount at `/mnt/boot/efi`.
+  - (No extra-partition mapping in v0.1.)
 
 #### Acceptance
 
-- Root partition is formatted as btrfs with `@` and `@home` subvolumes.
+- A single Target partition is formatted with `mkfs.btrfs -f`; two or more
+  Targets are formatted with `mkfs.btrfs -f -d <mode> -m raid1 ...` after the
+  user picks `raid0` or `raid1`.
 - Root is mounted with `compress=zstd:1,subvol=@`; `@home` at `/mnt/home`.
 - Existing-vfat ESP is mounted without reformat; non-vfat ESP is formatted
   then mounted, at `/mnt/boot/efi`.
-- Extra partitions mount at their assigned mountpoints.
 
 #### Unit tests
 
+- Single Target vs multi-Target btrfs command argument construction.
+- RAID argument list construction for `raid0` and `raid1` data modes.
 - Btrfs mount-option string construction
   (`compress=zstd:1,subvol=@` for root, `subvol=@home` for home).
 - Subvolume path computation (`/mnt` vs `/mnt/home` given subvol names).

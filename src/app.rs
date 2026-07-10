@@ -333,13 +333,23 @@ impl App {
         match self.focus {
             Focus::BackButton => {
                 if key.code == KeyCode::Enter {
-                    self.go_back();
+                    let consumed = self.steps[self.current].on_back_button(&mut self.state);
+                    if consumed {
+                        self.focus = Focus::StepBody;
+                    } else {
+                        self.go_back();
+                    }
                 }
                 return Action::Continue;
             }
             Focus::NextButton => {
                 if key.code == KeyCode::Enter {
-                    self.go_next();
+                    let consumed = self.steps[self.current].on_next_button(&mut self.state);
+                    if consumed {
+                        self.focus = Focus::StepBody;
+                    } else {
+                        self.go_next();
+                    }
                 }
                 return Action::Continue;
             }

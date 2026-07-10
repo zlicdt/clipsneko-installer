@@ -190,3 +190,59 @@ msgstr "This step is not implemented yet."
 #: src/steps/mod.rs
 msgid "stub.hint"
 msgstr "Press Enter to continue."
+
+#: src/steps/disk.rs
+msgid "disk_step.hint_disk"
+msgstr "Enter=cfdisk  Up/Down=Select  Tab=Next"
+
+#: src/steps/disk.rs
+msgid "disk_step.hint_parts"
+msgstr "Enter=Assign role  Up/Down=Select  Tab=Next"
+
+#: src/steps/disk.rs
+msgid "disk_step.list_title_disk"
+msgstr "Select a disk to partition"
+
+#: src/steps/disk.rs
+msgid "disk_step.list_title_parts"
+msgstr "Assign partition roles"
+
+#: src/steps/disk.rs
+msgid "disk_step.role_esp"
+msgstr "ESP"
+
+#: src/steps/disk.rs
+msgid "disk_step.role_target"
+msgstr "Target"
+
+#: src/steps/disk.rs
+msgid "disk_step.role_dialog.title"
+msgstr "Assign role for"
+
+#: src/steps/disk.rs
+msgid "disk_step.role_dialog.option_cancel"
+msgstr "Cancel"
+
+#: src/steps/disk.rs
+msgid "disk_step.role_dialog.hint"
+msgstr "Up/Down=Select  Enter=Confirm  Esc=Cancel"
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.window_title"
+msgstr "Warning: data loss"
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.title"
+msgstr "The following partitions will be wiped:"
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.target_prefix"
+msgstr "Target (reformat to btrfs):"
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.esp_prefix"
+msgstr "ESP (format to vfat):"
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.hint"
+msgstr "Enter=Continue  Esc=Cancel"

@@ -27,7 +27,7 @@ use crate::t;
 use crate::util::process::privileged_command;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use ratatui::style::{Modifier, Style};
+use ratatui::style::{Color, Modifier, Style};
 use ratatui::widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
@@ -217,8 +217,17 @@ impl Step for MirrorStep {
             .regions
             .iter()
             .map(|r| {
-                let marker = if *r == self.selected { "▶" } else { " " };
-                ListItem::new(format!("{marker} {r}"))
+                // The currently-applied region (▶ in the old style) is now
+                // bold + a bright color. The cursor row is separately
+                // indicated by the `REVERSED` highlight style.
+                let style = if *r == self.selected {
+                    Style::default()
+                        .add_modifier(Modifier::BOLD)
+                        .fg(Color::White)
+                } else {
+                    Style::default()
+                };
+                ListItem::new(r.clone()).style(style)
             })
             .collect();
         let list = List::new(items)

@@ -190,3 +190,59 @@ msgstr ""
 #: src/steps/mod.rs
 msgid "stub.hint"
 msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.hint_disk"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.hint_parts"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.list_title_disk"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.list_title_parts"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.role_esp"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.role_target"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.role_dialog.title"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.role_dialog.option_cancel"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.role_dialog.hint"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.window_title"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.title"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.target_prefix"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.esp_prefix"
+msgstr ""
+
+#: src/steps/disk.rs
+msgid "disk_step.wipe_dialog.hint"
+msgstr ""

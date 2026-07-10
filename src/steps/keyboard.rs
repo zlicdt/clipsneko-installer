@@ -10,9 +10,9 @@
 //! The list of keymaps is loaded once from `localectl list-keymaps` at
 //! construction time; the currently active keymap is detected from
 //! `localectl status` (the `VC KEYMAP:` line) so the picker opens with the
-//! live keymap highlighted and marked (▶). The chosen keymap is persisted in
-//! `state.keymap` and later written to the target's `/etc/vconsole.conf` in
-//! the install stage (§5).
+//! live keymap highlighted and applied (rendered bold+bright). The chosen
+//! keymap is persisted in `state.keymap` and later written to the target's
+//! `/etc/vconsole.conf` in the install stage (§5).
 //!
 //! Per the keyboard step design, `localectl list-keymaps` and `loadkeys` are
 //! assumed to always succeed on the ClipsNeko Live ISO: a failure at startup
@@ -25,7 +25,7 @@ use crate::t;
 use crate::util::process::privileged_command;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use ratatui::style::{Modifier, Style};
+use ratatui::style::{Color, Modifier, Style};
 use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
@@ -126,12 +126,18 @@ impl Step for KeyboardStep {
             .keymaps
             .iter()
             .map(|k| {
-                // The marker (▶) follows the *selected/applied* keymap, not
-                // the cursor. The cursor row itself is indicated by the
-                // `REVERSED` highlight style. This separates "what's active"
-                // from "where the keyboard is" — mirroring the language step.
-                let marker = if *k == self.selected { "▶" } else { " " };
-                ListItem::new(format!("{marker} {k}"))
+                // The row that is *selected/applied* (via Space/Enter) is
+                // rendered bold + a bright color so it stands out. The cursor
+                // row is separately indicated by the `REVERSED` highlight
+                // style (mirrors the language step).
+                let style = if *k == self.selected {
+                    Style::default()
+                        .add_modifier(Modifier::BOLD)
+                        .fg(Color::White)
+                } else {
+                    Style::default()
+                };
+                ListItem::new(k.clone()).style(style)
             })
             .collect();
 

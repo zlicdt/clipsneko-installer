@@ -11,6 +11,11 @@
 //! (see `design.md` §4.1). It is not persisted across runs: the Live ISO
 //! starts fresh each boot, and the target system's locale is configured in
 //! the install stage (§5).
+//!
+//! Per the project-wide list style (no "▶" marker): the *selected/applied*
+//! row's own text is bold + a bright color to signal selected state. The
+//! cursor row is indicated by the `REVERSED` highlight style, independent of
+//! which row is currently applied.
 
 use crate::i18n::{set_language, UiLang};
 use crate::state::InstallerState;
@@ -18,7 +23,7 @@ use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use ratatui::style::{Modifier, Style};
+use ratatui::style::{Color, Modifier, Style};
 use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
@@ -117,15 +122,22 @@ impl Step for LanguageStep {
         let items: Vec<ListItem> = ALL_LANGS
             .iter()
             .map(|l| {
-                // The marker (▶) follows the *selected/applied* language, not
-                // the cursor. The cursor row itself is indicated by the
-                // `REVERSED` highlight style. This separates "what's active"
-                // from "where the keyboard is" — e.g. after launching with
-                // En active and pressing Down once, the cursor is on ZhCn
-                // (reversed bg) while the ▶ stays next to "English" until
-                // the user presses Space to apply ZhCn.
-                let marker = if *l == self.selected { "▶" } else { " " };
-                ListItem::new(format!("{marker} {}", l.label()))
+                // The row that is *selected/applied* (via Space/Enter on a
+                // previous visit) gets its text bold + a bright color so it
+                // stands out from the rest. The cursor row is separately
+                // indicated by the `REVERSED` highlight style. This separates
+                // "what's active" from "where the keyboard is" — e.g. after
+                // launching with En applied and pressing Down once, the cursor
+                // is on ZhCn (reversed bg) while "English" stays bold+bright
+                // until Space/Enter applies ZhCn.
+                let style = if *l == self.selected {
+                    Style::default()
+                        .add_modifier(Modifier::BOLD)
+                        .fg(Color::White)
+                } else {
+                    Style::default()
+                };
+                ListItem::new(l.label().to_string()).style(style)
             })
             .collect();
 

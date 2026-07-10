@@ -24,15 +24,14 @@ pub struct InstallerState {
     pub hostname: Option<String>,
 }
 
-/// Partition / mount role assignments produced by the disk step.
+/// Partition role assignments produced by the disk step. Only ESP and one
+/// or more Target partitions are tracked — there is no extra-partition /
+/// extra-mount mapping in v0.1 (see `design.md` §4 step 5). Two or more Target
+/// partitions enable btrfs RAID at format time (see `design.md` §5).
 #[derive(Debug, Default)]
 pub struct DiskState {
-    pub main_disk: Option<String>,
     pub esp_partition: Option<String>,
-    pub root_partition: Option<String>,
-    /// (partition device, mount point) pairs for additional mounts such as
-    /// `/home` on a second disk.
-    pub extra_mounts: Vec<(String, String)>,
+    pub target_partitions: Vec<String>,
 }
 
 /// Kernel package chosen in step 6.
