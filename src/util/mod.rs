@@ -4,5 +4,7 @@
 //! the `lsblk` JSON parser. Future M3 util modules (`geoip`, `password`,
 //! `locale_list`) will live here too.
 
+pub mod locale_list;
 pub mod lsblk;
 pub mod process;
+pub mod ui;

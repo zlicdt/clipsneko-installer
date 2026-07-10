@@ -54,9 +54,10 @@ online, and configure mirrors — everything required before any disk work.
 
 ### Deliverables
 
-- `src/steps/language.rs` — list `UiLang::En` / `UiLang::ZhCn` via
-  `UiLang::label()`; on change call `set_language()` so the rest of the UI
-  re-translates live; write `state.ui_lang`.
+- `src/steps/language.rs` — two independent lists: `UiLang::En` / `UiLang::ZhCn`
+  for the installer, and every UTF-8 target locale parsed from locale.gen.
+  Apply UI language live through `set_language()`; persist `state.ui_lang` and
+  `state.target_locale` independently.
 - `src/steps/keyboard.rs` — list keymaps from `localectl list-keymaps`;
   `loadkeys` immediately on selection; persist `state.keymap`.
 - `src/steps/network.rs` — suspend ratatui, run `nmtui` full-screen, resume;
@@ -69,21 +70,24 @@ online, and configure mirrors — everything required before any disk work.
   the sole mirror; otherwise move the selected region's `Server =` lines
   to the top of the file. Rewrite the mirrorlist, validate with
   `pacman -Sy` (exit 0 = ok); on failure show a modal error dialog and
-  retry. Store the chosen source lines in `state.mirror_lines`.
-- `src/util/locale_list.rs` — parse `/etc/locale.gen` for the full locale
-  list (used later in M4b; built here because the language step surfaces
-  locale concepts).
+  retry. Keeping a manual entry as the sole active server ensures validation
+  cannot silently fall back to a stock mirror. Store the chosen source lines
+  in `state.mirror_lines`.
+- `src/util/locale_list.rs` — parse commented and enabled `/etc/locale.gen`
+  entries into the available UTF-8 target-locale list.
 - `src/util/process.rs` — suspend-ratatui/run-subprocess/resume helper
-  shared by `nmtui`, `cfdisk`, `pacman -Sy`.
-- Sample runtime config files in the repo: `config/packages.list` and
-  `config/repo.conf` — these are the templates the user's PKGBUILD will
-  install to `/etc/clipsneko-installer/`. Needed from M1 onward because the
-  installer exits if they are missing at startup.
+  shared by interactive tools such as `nmtui` and `cfdisk`. Non-interactive
+  commands such as `pacman -Sy` capture output without leaving the TUI.
+- Sample runtime package file in the repo: `config/packages.list`. The user's
+  PKGBUILD installs it to `/etc/clipsneko-installer/packages.list`; the
+  installer exits if it is missing at startup. Repository configuration comes
+  from the Live ISO's existing `pacman.conf`, not a separate runtime file.
 
 ### Acceptance
 
 - Language picker switches the whole UI between English and 简体中文 live;
-  the zh_CN `.mo` is visually verified.
+  the independent target-locale picker defaults to `en_US.UTF-8`; the zh_CN
+  `.mo` is visually verified.
 - Keyboard list loads from `localectl`; selecting one runs `loadkeys` and
   the effect is visible in the next text input.
 - `nmtui` opens full-screen, returns to the wizard, and the connectivity
@@ -95,8 +99,8 @@ online, and configure mirrors — everything required before any disk work.
 
 ### Unit tests
 
-- `locale_list` — parse a fixture `/etc/locale.gen` and return the enabled
-  locales (ignoring comments and blank lines).
+- `locale_list` — parse commented/enabled UTF-8 entries, ignore prose, legacy
+  charmaps, duplicates, and blank lines.
 - `util::process` — the suspend/resume bookkeeping (not the actual spawn);
   e.g. the helper restores raw mode even if the subprocess errors.
 - Mirror `Server =` line format validation (regex / structure, not the
@@ -118,49 +122,45 @@ RAID at format time; unified wipe-warning dialog on Next).
 ### Deliverables
 
 - `src/steps/disk.rs` — two sub-pages:
-  - *Sub-page A (disk picker):* list every block device of type `disk` from
-    `lsblk -J -O -b` (name + human-readable size); Enter opens
-    `cfdisk /dev/<disk>` full-screen (via `sudo` when not root); after
-    cfdisk exits the installer runs `partprobe` and re-reads `lsblk`; the
-    user may run cfdisk against multiple disks; the on-screen Next button
-    advances to sub-page B.
+  - *Sub-page A (disk picker):* parse the fixed lsblk JSON columns into a
+    device/model/transport/size/status table; exclude zram, disable the Live ISO
+    backing disk and read-only disks, but allow other removable disks. Enter
+    opens `cfdisk /dev/<disk>` full-screen. Returning clears all assignments,
+    runs `partprobe`, and refreshes lsblk; the on-screen Next button advances to
+    sub-page B.
   - *Sub-page B (partition role picker):* list every partition of type
     `part` on every disk from the latest `lsblk` (name / size / current
-    FSTYPE); Enter on a partition pops a dialog to assign it the ESP role
-    or the Target role (or cancel); ESP is single-select, Target is
-    multi-select; Next is enabled only when an ESP is assigned and the
-    total Target size exceeds 20 GiB; pressing Next, if any Target has a
-    non-empty FSTYPE (data-loss) or the ESP is not already vfat (will be
-    `mkfs.vfat -F32`'d), shows a single blocking confirmation dialog
-    listing every partition that will be wiped; a pure-vfat ESP is not
-    reformatted and incurs no warning.
-- `src/util/lsblk.rs` — parse `lsblk -J -O -b` JSON into a typed
-  `BlockDevice` tree (name, type, fstype, size in bytes, pttype, parttype,
-  partlabel, children); flatten into disk list (type==disk) and partition
-  list (type==part); byte-size parsing.
+    FSTYPE / label / role); protected Live-media partitions cannot be assigned.
+    Enter chooses explicit ESP / Target / Unassigned; roles are mutually
+    exclusive and ESP requires the GPT ESP type. Multiple Targets require a
+    RAID0/RAID1 data-profile choice and a conservative usable-capacity check
+    strictly above 20 GiB. Pressing Next shows a blocking confirmation listing
+    every Target plus a non-vfat ESP; a pure-vfat ESP is reused.
+- `src/util/lsblk.rs` — parse the fixed lsblk JSON schema into a typed device
+  tree; expose physical disks (excluding zram), partitions, Live-media
+  detection, ESP-type validation, and byte-size formatting.
 
 ### Acceptance
 
-- Sub-page A lists all disk-type block devices from `lsblk`.
-- Enter opens `cfdisk` on the highlighted disk; the user can run cfdisk
-  against multiple disks; on return `partprobe` + re-read `lsblk` is run.
+- Sub-page A excludes zram, visibly disables Live/read-only disks, and shows
+  model/transport/size/status for every remaining disk candidate.
+- Enter opens `cfdisk` only on an enabled disk; returning clears assignments
+  before partprobe + lsblk refresh. Non-zero partprobe is a retryable modal.
 - Sub-page B lists all partitions on every disk after the latest re-read.
-- Enter pops the role dialog; assigning ESP clears any prior ESP; Target is
-  multi-select; Next is disabled until ESP is set and total Target size is
-  > 20 GiB.
-- On Next, if any Target has an existing FSTYPE or the ESP is non-vfat, the
-  unified wipe-warning dialog is shown; confirming leaves the step,
-  cancelling returns to the partition list.
+- Enter pops the explicit ESP/Target/Unassigned dialog; protected partitions
+  are rejected, ESP type is validated, and assigned state is visible.
+- Multiple Targets require RAID0/RAID1 selection. Profile-adjusted usable
+  capacity must be > 20 GiB.
+- On Next, every Target and any non-vfat ESP appears in one wipe-warning
+  dialog; confirming leaves the step, cancelling returns to the table.
 - A pure-vfat ESP is neither reformatted nor warned about.
 
 ### Unit tests
 
-- `util::lsblk` — parse a fixture `lsblk -J -O -b` JSON blob into the typed
-  structure, including flattening disks vs partitions, byte-size parsing,
-  and ESP parttype UUID `c12a7328-...`.
-- Wipe-warning decision — given a partition list with the chosen ESP and
-  Target set, returns the list of partitions that will be wiped (Target with
-  non-empty FSTYPE, plus ESP if not vfat).
+- `util::lsblk` — fixed-schema parsing, zram exclusion, tree flattening,
+  Live-media detection, sizes, and ESP parttype UUID.
+- Role mutual exclusion, protected partitions, post-refresh reconciliation,
+  usable RAID0/RAID1 capacity, strict 20 GiB boundary, and wipe-list contents.
 
 ### Dependencies
 
@@ -171,7 +171,7 @@ end-to-end needs network from M1 for a fully populated state).
 
 ## M3 — Selection & identity
 
-Steps 6-11: kernel, nvidia, timezone, user, hostname, confirm. After M3
+Steps 6-11: kernel, NVIDIA, timezone, user, hostname, confirm. After M3
 the wizard holds a complete, validated pre-install configuration and the
 confirm screen can show a full summary.
 
@@ -179,16 +179,17 @@ confirm screen can show a full summary.
 
 - `src/steps/kernel.rs` — single-select from `linux` / `linux-lts` /
   `linux-zen` / `linux-hardened`.
-- `src/steps/nvidia.rs` — "no nvidia" or one variant from
-  `nvidia` / `nvidia-dkms` / `nvidia-open-dkms` / `nvidia-lts`, with
-  incompatible options disabled based on the chosen kernel (see the matrix
-  in `design.md` §4 step 7).
+- `src/steps/nvidia.rs` — "no NVIDIA" or one package from the current
+  `nvidia-open` / `nvidia-open-lts` / `nvidia-open-dkms` matrix, filtered by
+  the chosen kernel (see `design.md` §4 step 7). DKMS selection also adds the
+  matching kernel-headers package to the install package set.
 - `src/steps/timezone.rs` — `curl -s http://ip-api.com/json` → `timezone`
   field default; fallback UTC; manual override by typing `Region/City` or
   picking from `/usr/share/zoneinfo/`.
 - `src/steps/user.rs` — username (`^[a-z_][a-z0-9_-]*$`), optional GECOS,
-  password + confirm with a strength bar; writes `state.user` (password
-  itself never stored, only `password_set`).
+  password + confirm with a strength bar; writes account metadata to
+  `state.user` and keeps the confirmed password only in a non-Debug
+  `SecretString` that zeroizes on Drop.
 - `src/steps/hostname.rs` — input validated
   `^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$`.
 - `src/steps/confirm.rs` — full summary of all state; linear Back/Next;
@@ -196,12 +197,13 @@ confirm screen can show a full summary.
   install step.
 - `src/util/geoip.rs` — ip-api.com fetch + JSON parse.
 - `src/util/password.rs` — strength heuristic (length, char classes,
-  common-password check) returning a weak/fair/good/strong level.
+  common-password check) returning a weak/fair/good/strong level; secret
+  wrapper backed by the justified `zeroize` crate.
 
 ### Acceptance
 
 - Kernel single-select records the choice in `state.kernel`.
-- Nvidia variant list is correctly filtered by the chosen kernel;
+- NVIDIA variant list is correctly filtered by the chosen kernel;
   incompatible options are visible but not selectable.
 - Timezone defaults to the GeoIP result when online, UTC when not; manual
   override accepts only `Region/City` strings that exist under
@@ -214,7 +216,8 @@ confirm screen can show a full summary.
 
 ### Unit tests
 
-- Nvidia-kernel compatibility matrix (all 4 kernels × all 4 variants).
+- NVIDIA-kernel compatibility matrix (all kernels × current open variants),
+  including selected-kernel header derivation for DKMS.
 - Username regex (valid/invalid boundary cases).
 - Hostname regex (length, leading/trailing hyphen, uppercase rejection).
 - Password strength heuristic (empty, short, all-lower, mixed, common
@@ -223,7 +226,7 @@ confirm screen can show a full summary.
 
 ### Dependencies
 
-M2 (confirm reads disk state; nvidia reads kernel state).
+M2 (confirm reads disk state; NVIDIA reads kernel state).
 
 ---
 
@@ -238,8 +241,8 @@ usable standalone for a full install until M4c lands.
 
 - `src/installer/partition.rs` — format & mount:
   - If a single Target partition was chosen: `mkfs.btrfs -f <part>`. If two
-    or more, prompt the user for the data RAID mode (`raid0` or `raid1`;
-    metadata fixed at `raid1`), then
+    or more, use the data RAID mode already stored by the disk step (`raid0`
+    or `raid1`; metadata fixed at `raid1`), then
     `mkfs.btrfs -f -d <mode> -m raid1 <part1> <part2> ...`.
   - Create subvolumes `@`, `@home`; remount root with
     `-o compress=zstd:1,subvol=@`; mount `@home` at `/mnt/home`.
@@ -249,8 +252,8 @@ usable standalone for a full install until M4c lands.
 #### Acceptance
 
 - A single Target partition is formatted with `mkfs.btrfs -f`; two or more
-  Targets are formatted with `mkfs.btrfs -f -d <mode> -m raid1 ...` after the
-  user picks `raid0` or `raid1`.
+  Targets are formatted with `mkfs.btrfs -f -d <mode> -m raid1 ...` using the
+  profile validated in M2.
 - Root is mounted with `compress=zstd:1,subvol=@`; `@home` at `/mnt/home`.
 - Existing-vfat ESP is mounted without reformat; non-vfat ESP is formatted
   then mounted, at `/mnt/boot/efi`.
@@ -272,32 +275,31 @@ M3 (full state).
 
 #### Deliverables
 
-- `src/installer/pacstrap.rs` — append `[clipsneko]` section to the live
-  `/etc/pacman.conf` from `repo.conf`; construct and run the `pacstrap`
-  command from state (base, base-devel, chosen kernel, linux-firmware,
-  `packages.list` contents, chosen nvidia package, grub, grub-btrfs,
-  efibootmgr, zsh, grml-zsh-config, sudo, networkmanager, nano, vi);
+- `src/installer/pacstrap.rs` — construct and run `pacstrap -P` from state:
+  the authoritative static `packages.list` contents plus the chosen kernel,
+  linux-firmware, and the chosen NVIDIA package/kernel headers. The Live ISO's
+  existing `pacman.conf` already contains the ClipsNeko repository, and `-P`
+  copies `pacman.conf` plus `pacman.d` to the target;
   run `genfstab -U /mnt >> /mnt/etc/fstab` and ensure btrfs entries carry
   `compress=zstd:1`.
 - `src/installer/chroot.rs` — under `arch-chroot /mnt`: timezone symlink +
   `hwclock --systohc`; `/etc/locale.gen` per state → `locale-gen`; write
   `/etc/locale.conf` and `/etc/vconsole.conf`; `/etc/hostname` + `/etc/hosts`;
-  `passwd -l root`; `useradd -m -G wheel -s /bin/zsh` + `chpasswd`;
-  uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`; copy live
-  mirrorlist to target; append `[clipsneko]` to target `/etc/pacman.conf`;
-  remove `kms` from `HOOKS` in `/etc/mkinitcpio.conf` if nvidia was
+  `passwd -l root`; `useradd -m -G wheel -s /bin/zsh`; pipe credentials to
+  `chpasswd` through stdin, then immediately zeroize the in-memory secret;
+  uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`; rely on the pacman
+  configuration copied by `pacstrap -P`;
+  remove `kms` from `HOOKS` in `/etc/mkinitcpio.conf` if NVIDIA was
   installed; `mkinitcpio -P`.
 
 #### Acceptance
 
-- Live `pacman.conf` gains the `[clipsneko]` section with the configured
-  `Server` and `SigLevel = Never`.
-- `pacstrap` installs exactly the packages derived from state + the
-  external `packages.list`.
+- `pacstrap -P` installs exactly the static packages plus packages derived
+  from state, and copies the Live ISO's pacman configuration to the target.
 - `/mnt/etc/fstab` is generated and btrfs entries carry `compress=zstd:1`.
 - Inside the chroot: timezone, locale, vconsole, hostname, hosts, root
-  lock, user creation, sudoers, mirrorlist copy, target pacman.conf, and
-  mkinitcpio (with `kms` removed when nvidia is chosen) are all applied.
+  lock, user creation, sudoers, copied pacman configuration, and mkinitcpio
+  (with `kms` removed when NVIDIA is chosen) are all applied.
 
 #### Unit tests
 
@@ -305,8 +307,9 @@ M3 (full state).
   and `packages.list`.
 - `mkinitcpio.conf` HOOKS `kms`-removal (string edit, idempotent).
 - `/etc/locale.gen` editing (enable a set of locales).
+- `chpasswd` stdin construction never exposes the secret through command
+  arguments, Debug, tracing, or logs; success and Drop both zeroize it.
 - `/etc/sudoers` `%wheel` uncomment logic (string edit).
-- `[clipsneko]` pacman.conf section text generation from `repo.conf`.
 - `genfstab` output post-processing to guarantee `compress=zstd:1` on
   btrfs lines.
 
@@ -358,8 +361,6 @@ with the user before this milestone can start.
 - `src/installer/postinstall.rs` — the user-mode script hook, per the
   user's spec (blocked).
 - F1 help screen content and rendering.
-- `CLIPSNEKO_LOG_FILE` and/or `CLIPSNEKO_CONFIG_DIR` env-var overrides for
-  non-root dev testing, **if** the user approves (open items below).
 - Final end-to-end install test on a test VM: a full run from language
   pick through reboot produces a bootable ClipsNeko system.
 
@@ -368,8 +369,6 @@ with the user before this milestone can start.
 - The postinstall hook runs the specified script as the new user inside
   the chroot, with the agreed env, and its output is captured to the log.
 - F1 shows a help screen listing all keybindings.
-- (If approved) the binary runs without root for dev by pointing
-  `CLIPSNEKO_LOG_FILE` and `CLIPSNEKO_CONFIG_DIR` at writable paths.
 - A full end-to-end install on a VM boots into a working system with the
   created user, locked root, zsh shell, NetworkManager, and GRUB.
 
@@ -386,11 +385,6 @@ M4c; postinstall hook blocked on user direction.
 
 ## Open items (need user decision)
 
-- **`CLIPSNEKO_LOG_FILE` override** — allow a non-root log path for dev
-  testing, or keep `/var/log/clipsneko-installer.log` root-only?
-- **`CLIPSNEKO_CONFIG_DIR` override** — allow a non-`/etc/clipsneko-installer/`
-  config dir for dev testing, or require the sample `config/*` files to be
-  copied to `/etc/` manually?
 - **F1 help screen content** — what to show (keybindings only? per-step
   help? both?).
 - **Postinstall hook** (M5 blocker) — script path on disk, package that

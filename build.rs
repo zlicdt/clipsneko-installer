@@ -1,7 +1,6 @@
 // build.rs — compile .po files to .mo at build time so the binary can load
-// translations from OUT_DIR during development. Production packaging should
-// installing the .mo files into /usr/share/locale and set CLIPSNEKO_LOCALEDIR
-// at runtime (or patch the default below).
+// translations from OUT_DIR during development. Production packaging installs
+// the .mo files into the GNU-standard /usr/share/locale directory.
 
 use std::env;
 use std::path::{Path, PathBuf};
@@ -23,7 +22,7 @@ fn main() {
             .join("LC_MESSAGES")
             .join(format!("{DOMAIN}.po"));
         if !po_path.exists() {
-            continue;
+            panic!("missing translation catalog: {}", po_path.display());
         }
         let mo_dir = locale_root.join(lang).join("LC_MESSAGES");
         std::fs::create_dir_all(&mo_dir).expect("failed to create LC_MESSAGES dir in OUT_DIR");
@@ -40,8 +39,8 @@ fn main() {
         println!("cargo:rerun-if-changed={}", po_path.display());
     }
 
-    // Expose the dev locale dir to the binary. Production overrides via the
-    // CLIPSNEKO_LOCALEDIR environment variable at runtime.
+    // Expose the development locale dir to debug builds. Release builds use
+    // /usr/share/locale directly (see src/i18n.rs).
     println!(
         "cargo:rustc-env=CLIPSNEKO_DEV_LOCALEDIR={}",
         locale_root.display()

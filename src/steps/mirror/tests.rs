@@ -87,6 +87,74 @@ fn reorder_header_stays_at_top() {
 }
 
 #[test]
+fn manual_mirrorlist_keeps_only_manual_server() {
+    let manual = "Server = https://example.com/archlinux/$repo/os/$arch";
+    let rewritten = manual_mirrorlist(SAMPLE, manual);
+    let servers: Vec<&str> = rewritten
+        .lines()
+        .filter(|line| line.starts_with("Server = "))
+        .collect();
+
+    assert_eq!(servers, vec![manual]);
+    assert!(rewritten.contains("Arch Linux repository mirrorlist"));
+    assert!(!rewritten.contains("## China"));
+}
+
+#[test]
+fn tab_cycle_prepares_correct_internal_endpoint() {
+    let mut step = MirrorStep {
+        regions: vec!["Worldwide".to_string()],
+        raw: SAMPLE.to_string(),
+        list_state: ListState::default(),
+        selected: String::new(),
+        input: String::new(),
+        focus: MirrorFocus::List,
+        error: ErrorDialog::default(),
+    };
+
+    assert!(step.consume_tab(false));
+    assert_eq!(step.focus, MirrorFocus::Input);
+    assert!(!step.consume_tab(false));
+    assert_eq!(step.focus, MirrorFocus::List);
+
+    assert!(!step.consume_tab(true));
+    assert_eq!(step.focus, MirrorFocus::Input);
+    assert!(step.consume_tab(true));
+    assert_eq!(step.focus, MirrorFocus::List);
+}
+
+#[test]
+fn long_manual_url_keeps_tail_and_cursor_visible() {
+    let mut list_state = ListState::default();
+    list_state.select(Some(0));
+    let mut step = MirrorStep {
+        regions: vec!["Worldwide".to_string()],
+        raw: SAMPLE.to_string(),
+        list_state,
+        selected: String::new(),
+        input: "https://example.com/a/very/long/path/to/archlinux/$repo/os/$arch".to_string(),
+        focus: MirrorFocus::Input,
+        error: ErrorDialog::default(),
+    };
+    let state = InstallerState::default();
+    let backend = ratatui::backend::TestBackend::new(60, 12);
+    let mut terminal = ratatui::Terminal::new(backend).unwrap();
+
+    terminal
+        .draw(|frame| step.render(frame, frame.area(), &state, true))
+        .unwrap();
+    let rendered: String = terminal
+        .backend()
+        .buffer()
+        .content()
+        .iter()
+        .map(|cell| cell.symbol())
+        .collect();
+
+    assert!(rendered.contains("$repo/os/$arch█"));
+}
+
+#[test]
 fn extract_servers_for_region() {
     let servers = extract_region_servers(SAMPLE, "China");
     assert_eq!(servers.len(), 2);

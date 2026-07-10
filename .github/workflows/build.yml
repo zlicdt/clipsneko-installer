@@ -14,12 +14,28 @@ jobs:
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          components: rustfmt
-      
+          components: rustfmt, clippy
+
       - name: Install gettext
         run: |
           sudo apt update
           sudo apt install -y gettext
 
-      - name: Build
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Lint
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Test
+        run: cargo test
+
+      - name: Check translations
+        run: |
+          msgfmt --check --check-header -o /dev/null po/en/LC_MESSAGES/clipsneko-installer.po
+          msgfmt --check --check-header -o /dev/null po/zh_CN/LC_MESSAGES/clipsneko-installer.po
+          msgcmp --use-fuzzy po/en/LC_MESSAGES/clipsneko-installer.po po/clipsneko-installer.pot
+          msgcmp --use-fuzzy po/zh_CN/LC_MESSAGES/clipsneko-installer.po po/clipsneko-installer.pot
+
+      - name: Build release
         run: cargo build --release

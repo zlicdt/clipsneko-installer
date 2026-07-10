@@ -10,7 +10,6 @@ const FIXTURE: &str = r#"{
       "type": "disk",
       "fstype": null,
       "size": 500107862016,
-      "pttype": "gpt",
       "parttype": null,
       "partlabel": null,
       "children": [
@@ -19,7 +18,6 @@ const FIXTURE: &str = r#"{
           "type": "part",
           "fstype": "vfat",
           "size": 536870912,
-          "pttype": null,
           "parttype": "c12a7328-f81f-11d2-ba4b-00a0c93ec93b",
           "partlabel": "EFI System Partition",
           "children": null
@@ -29,7 +27,6 @@ const FIXTURE: &str = r#"{
           "type": "part",
           "fstype": "btrfs",
           "size": 499658414080,
-          "pttype": null,
           "parttype": "0fc63daf-8483-4772-8e79-3d69d8477de4",
           "partlabel": "root",
           "children": null
@@ -41,7 +38,6 @@ const FIXTURE: &str = r#"{
       "type": "disk",
       "fstype": null,
       "size": 1000204886016,
-      "pttype": "dos",
       "parttype": null,
       "partlabel": null,
       "children": null
@@ -51,7 +47,6 @@ const FIXTURE: &str = r#"{
       "type": "rom",
       "fstype": "iso9660",
       "size": 1048576,
-      "pttype": null,
       "parttype": null,
       "partlabel": null,
       "children": null
@@ -62,17 +57,16 @@ const FIXTURE: &str = r#"{
 
 #[test]
 fn parse_basic_tree() {
-    let root = parse_lsblk(FIXTURE).expect("fixture should parse");
+    let root = parse_lsblk(FIXTURE.as_bytes()).expect("fixture should parse");
     assert_eq!(root.blockdevices.len(), 3);
     assert_eq!(root.blockdevices[0].name, "sda");
     assert_eq!(root.blockdevices[0].kind, "disk");
-    assert_eq!(root.blockdevices[0].pttype.as_deref(), Some("gpt"));
     assert_eq!(root.blockdevices[2].kind, "rom");
 }
 
 #[test]
 fn parse_null_fstype_becomes_none() {
-    let root = parse_lsblk(FIXTURE).unwrap();
+    let root = parse_lsblk(FIXTURE.as_bytes()).unwrap();
     assert!(root.blockdevices[0].fstype.is_none());
     assert_eq!(
         root.blockdevices[0].children.as_ref().unwrap()[0]
@@ -84,7 +78,7 @@ fn parse_null_fstype_becomes_none() {
 
 #[test]
 fn parse_size_number() {
-    let root = parse_lsblk(FIXTURE).unwrap();
+    let root = parse_lsblk(FIXTURE.as_bytes()).unwrap();
     assert_eq!(root.blockdevices[0].size, 500107862016);
     let esp = &root.blockdevices[0].children.as_ref().unwrap()[0];
     assert_eq!(esp.size, 536870912);
@@ -92,20 +86,20 @@ fn parse_size_number() {
 
 #[test]
 fn parse_esp_parttype() {
-    let root = parse_lsblk(FIXTURE).unwrap();
+    let root = parse_lsblk(FIXTURE.as_bytes()).unwrap();
     let esp = &root.blockdevices[0].children.as_ref().unwrap()[0];
     assert_eq!(esp.parttype.as_deref(), Some(ESP_PARTTYPE));
 }
 
 #[test]
-fn parse_invalid_json_returns_none() {
-    assert!(parse_lsblk("not json").is_none());
-    assert!(parse_lsblk("").is_none());
+fn parse_invalid_json_returns_error() {
+    assert!(parse_lsblk(b"not json").is_err());
+    assert!(parse_lsblk(b"").is_err());
 }
 
 #[test]
 fn flat_disks_skips_roms_and_parts() {
-    let root = parse_lsblk(FIXTURE).unwrap();
+    let root = parse_lsblk(FIXTURE.as_bytes()).unwrap();
     let disks = flat_disks(&root.blockdevices);
     assert_eq!(disks.len(), 2);
     assert_eq!(disks[0].name, "sda");
@@ -114,7 +108,7 @@ fn flat_disks_skips_roms_and_parts() {
 
 #[test]
 fn flat_parts_collects_all_partitions() {
-    let root = parse_lsblk(FIXTURE).unwrap();
+    let root = parse_lsblk(FIXTURE.as_bytes()).unwrap();
     let parts = flat_parts(&root.blockdevices);
     assert_eq!(parts.len(), 2);
     assert_eq!(parts[0].name, "sda1");
@@ -125,7 +119,7 @@ fn flat_parts_collects_all_partitions() {
 
 #[test]
 fn flat_parts_empty_tree() {
-    let root = parse_lsblk(r#"{"blockdevices": []}"#).unwrap();
+    let root = parse_lsblk(br#"{"blockdevices": []}"#).unwrap();
     assert!(flat_parts(&root.blockdevices).is_empty());
     assert!(flat_disks(&root.blockdevices).is_empty());
 }
@@ -144,7 +138,7 @@ fn flat_parts_handles_nested_partitions() {
          ]}
       ]
     }"#;
-    let root = parse_lsblk(nested).unwrap();
+    let root = parse_lsblk(nested.as_bytes()).unwrap();
     let parts = flat_parts(&root.blockdevices);
     assert_eq!(parts.len(), 2);
     assert_eq!(parts[0].name, "sda1");
@@ -167,16 +161,26 @@ fn target_min_bytes_is_20_gib() {
 }
 
 #[test]
-fn de_flex_u64_accepts_string_too() {
-    // A forked lsblk that quotes size as a string still parses.
-    let s = r#"{"blockdevices":[{"name":"x","type":"disk","size":"500107862016"}]}"#;
-    let root = parse_lsblk(s).unwrap();
-    assert_eq!(root.blockdevices[0].size, 500107862016);
+fn flat_disks_excludes_zram() {
+    let json = br#"{"blockdevices":[
+      {"name":"zram0","type":"disk","size":4294967296},
+      {"name":"sda","type":"disk","size":500107862016}
+    ]}"#;
+    let root = parse_lsblk(json).unwrap();
+    let disks = flat_disks(&root.blockdevices);
+    assert_eq!(disks.len(), 1);
+    assert_eq!(disks[0].name, "sda");
 }
 
 #[test]
-fn de_flex_u64_accepts_null_as_zero() {
-    let s = r#"{"blockdevices":[{"name":"x","type":"disk","size":null}]}"#;
-    let root = parse_lsblk(s).unwrap();
-    assert_eq!(root.blockdevices[0].size, 0);
+fn detects_live_media_mount_on_child_partition() {
+    let json = br#"{"blockdevices":[{
+      "name":"sda","type":"disk","size":500107862016,
+      "children":[{
+        "name":"sda1","type":"part","size":1000000000,
+        "mountpoints":["/run/archiso/bootmnt"]
+      }]
+    }]}"#;
+    let root = parse_lsblk(json).unwrap();
+    assert!(is_live_media_disk(&root.blockdevices[0]));
 }

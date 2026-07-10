@@ -7,8 +7,7 @@
 //! `util::process::run_fullscreen`); after `nmtui` exits, connectivity is
 //! re-checked automatically. The user can also press `R` to re-check
 //! without launching `nmtui`, or `N` to launch `nmtui` even when already
-//! connected. Esc is not handled here — `app.rs` intercepts it as a global
-//! quit request.
+//! connected. Esc is handled by `app.rs` as Back.
 //!
 //! The Next button is disabled (greyed out, not focusable) until
 //! `state.network_ok` is true. This is enforced via `Step::is_complete()`,
@@ -22,6 +21,7 @@
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
+use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
@@ -52,10 +52,10 @@ impl NetworkStep {
     /// the local fields and `state.network_ok`. Blocking: `curl` may take up
     /// to 5 seconds on timeout. Called on entry (`activate`) and after
     /// `nmtui` returns (`on_subprocess_done`), and when the user presses `R`.
-    fn recheck(&mut self, state: &mut InstallerState) {
-        state.network_ok = check_connectivity();
-        self.ips = gather_local_ips();
-        if let Some((gateway, interface)) = gather_default_route() {
+    fn recheck(&mut self, state: &mut InstallerState) -> Result<()> {
+        state.network_ok = check_connectivity()?;
+        self.ips = gather_local_ips()?;
+        if let Some((gateway, interface)) = gather_default_route()? {
             self.gateway = Some(gateway);
             self.interface = Some(interface);
         } else {
@@ -69,6 +69,7 @@ impl NetworkStep {
             self.gateway,
             self.interface
         );
+        Ok(())
     }
 }
 
@@ -77,15 +78,21 @@ impl Step for NetworkStep {
         StepId::Network
     }
 
-    fn activate(&mut self, state: &mut InstallerState) {
-        self.recheck(state);
+    fn activate(&mut self, state: &mut InstallerState) -> Result<()> {
+        self.recheck(state)
     }
 
     fn is_complete(&self, state: &InstallerState) -> bool {
         state.network_ok
     }
 
-    fn render(&mut self, frame: &mut Frame, area: Rect, state: &InstallerState) {
+    fn render(
+        &mut self,
+        frame: &mut Frame,
+        area: Rect,
+        state: &InstallerState,
+        _body_focused: bool,
+    ) {
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints([Constraint::Min(0), Constraint::Length(1)])
@@ -100,15 +107,16 @@ impl Step for NetworkStep {
 
         let mut lines: Vec<Line> = Vec::new();
         if connected {
+            let not_available = t!("common.not_available");
             lines.push(Line::from(t!("network_step.status_connected")));
             lines.push(Line::from(""));
             lines.push(Line::from(format!(
                 "{}:  {}",
                 t!("network_step.label_interface"),
-                self.interface.as_deref().unwrap_or("N/A")
+                self.interface.as_deref().unwrap_or(&not_available)
             )));
             let ip_str = if self.ips.is_empty() {
-                "N/A".to_string()
+                not_available.clone()
             } else {
                 self.ips.join(", ")
             };
@@ -120,7 +128,7 @@ impl Step for NetworkStep {
             lines.push(Line::from(format!(
                 "{}:  {}",
                 t!("network_step.label_gateway"),
-                self.gateway.as_deref().unwrap_or("N/A")
+                self.gateway.as_deref().unwrap_or(&not_available)
             )));
         } else {
             lines.push(Line::from(t!("network_step.status_disconnected")));
@@ -139,14 +147,14 @@ impl Step for NetworkStep {
         );
     }
 
-    fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> StepAction {
+    fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> Result<StepAction> {
         if key.kind != KeyEventKind::Press {
-            return StepAction::None;
+            return Ok(StepAction::None);
         }
 
         let connected = state.network_ok;
 
-        match key.code {
+        Ok(match key.code {
             KeyCode::Enter => {
                 if connected {
                     StepAction::Next
@@ -158,20 +166,20 @@ impl Step for NetworkStep {
                 StepAction::SuspendRun("nmtui".to_string(), Vec::new())
             }
             KeyCode::Char('r') | KeyCode::Char('R') => {
-                self.recheck(state);
+                self.recheck(state)?;
                 StepAction::None
             }
-            // Esc is not handled here; app.rs intercepts it as quit.
+            // Esc is handled by app.rs as Back.
             _ => StepAction::None,
-        }
+        })
     }
 
     fn on_subprocess_done(
         &mut self,
         _status: std::process::ExitStatus,
         state: &mut InstallerState,
-    ) {
-        self.recheck(state);
+    ) -> Result<()> {
+        self.recheck(state)
     }
 }
 
@@ -217,12 +225,12 @@ fn parse_default_route(stdout: &str) -> Option<(String, String)> {
 /// are captured to memory instead of inheriting the parent terminal —
 /// printing HTTP headers into ratatui's raw-mode session would corrupt the
 /// screen.
-fn check_connectivity() -> bool {
-    Command::new("curl")
+fn check_connectivity() -> Result<bool> {
+    let output = Command::new("curl")
         .args(["--max-time", "5", "-sI", "http://ip-api.com/json"])
         .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false)
+        .context("running curl connectivity check")?;
+    Ok(output.status.success())
 }
 
 /// Run `hostname -i` and parse the output into a list of IP address strings.
@@ -230,22 +238,36 @@ fn check_connectivity() -> bool {
 /// inetutils' `hostname` (the version shipped on the ClipsNeko ISO); the
 /// uppercase `-I` is a busybox/hostnamectl extension and is not available
 /// there.
-fn gather_local_ips() -> Vec<String> {
-    Command::new("hostname")
+fn gather_local_ips() -> Result<Vec<String>> {
+    let output = Command::new("hostname")
         .arg("-i")
         .output()
-        .map(|o| parse_hostname_i(&String::from_utf8_lossy(&o.stdout)))
-        .unwrap_or_default()
+        .context("running hostname -i")?;
+    if !output.status.success() {
+        bail!(
+            "hostname -i failed: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        );
+    }
+    Ok(parse_hostname_i(&String::from_utf8_lossy(&output.stdout)))
 }
 
 /// Run `ip route show default` and parse the gateway + interface. Returns
 /// `None` if there is no default route or parsing fails.
-fn gather_default_route() -> Option<(String, String)> {
-    Command::new("ip")
+fn gather_default_route() -> Result<Option<(String, String)>> {
+    let output = Command::new("ip")
         .args(["route", "show", "default"])
         .output()
-        .ok()
-        .and_then(|o| parse_default_route(&String::from_utf8_lossy(&o.stdout)))
+        .context("running ip route show default")?;
+    if !output.status.success() {
+        bail!(
+            "ip route show default failed: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        );
+    }
+    Ok(parse_default_route(&String::from_utf8_lossy(
+        &output.stdout,
+    )))
 }
 
 #[cfg(test)]

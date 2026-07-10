@@ -20,7 +20,6 @@ use std::process::Command;
 
 /// True when the current process has effective UID 0 (i.e. already root,
 /// no `sudo` prefix needed).
-#[allow(dead_code)] // first used by M2/M4 commands that shell out to root tools.
 pub fn is_root() -> bool {
     // SAFETY: `geteuid` is a read-only syscall with no preconditions.
     unsafe { libc::geteuid() == 0 }
@@ -58,19 +57,21 @@ pub fn privileged_command(program: &str) -> Command {
 /// to the caller for logging).
 pub fn run_fullscreen(program: &str, args: &[&str]) -> std::io::Result<std::process::ExitStatus> {
     disable_raw_mode()?;
-    execute!(std::io::stdout(), LeaveAlternateScreen)?;
+    if let Err(e) = execute!(std::io::stdout(), LeaveAlternateScreen) {
+        let _ = enable_raw_mode();
+        return Err(e);
+    }
 
     let result = Command::new(program).args(args).status();
 
-    // Always try to resume ratatui, even if the subprocess failed to spawn.
-    // If resume itself fails the terminal is in a bad state, but logging is
-    // the best we can do — the panic hook will clean up on exit.
-    if let Err(e) = execute!(std::io::stdout(), EnterAlternateScreen) {
-        tracing::error!("failed to re-enter alternate screen: {e}");
-    }
-    if let Err(e) = enable_raw_mode() {
-        tracing::error!("failed to re-enable raw mode: {e}");
-    }
+    // Always attempt both resume operations, even if the subprocess failed to
+    // spawn or re-entering the alternate screen fails. Continuing with an
+    // unknown terminal state is unsafe, so a resume failure takes precedence
+    // over the subprocess result.
+    let enter_result = execute!(std::io::stdout(), EnterAlternateScreen);
+    let raw_result = enable_raw_mode();
+    enter_result?;
+    raw_result?;
 
     result
 }

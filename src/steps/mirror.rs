@@ -19,16 +19,18 @@
 //!   0 → `state.mirror_lines` recorded, advance. Non-zero → a modal error
 //!   dialog shows the failure; the user dismisses it and retries.
 //!
-//! Esc is not handled here — `app.rs` intercepts it as a global quit.
+//! Esc is handled by `app.rs` as Back unless the step's error modal is open.
 
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
+use crate::util::ui::centered_rect;
+use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use ratatui::style::{Color, Modifier, Style};
-use ratatui::widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph};
+use ratatui::style::{Modifier, Style};
+use ratatui::widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph, Wrap};
 use ratatui::Frame;
 
 /// Path to the pacman mirrorlist. On the ClipsNeko ISO this is always
@@ -69,19 +71,19 @@ pub struct MirrorStep {
     focus: MirrorFocus,
     /// Error dialog state.
     error: ErrorDialog,
-    /// True once a mirror selection has validated successfully via
-    /// `pacman -Sy`. Gates `is_complete` / the Next button.
-    validated: bool,
 }
 
 impl MirrorStep {
-    pub fn new() -> Self {
+    pub fn new() -> Result<Self> {
         let raw = std::fs::read_to_string(MIRRORLIST_PATH)
-            .unwrap_or_else(|e| panic!("failed to read {MIRRORLIST_PATH}: {e}"));
+            .with_context(|| format!("reading {MIRRORLIST_PATH}"))?;
         let regions = parse_mirrorlist_regions(&raw);
+        if regions.is_empty() {
+            bail!("{MIRRORLIST_PATH} contains no region blocks");
+        }
         let mut list_state = ListState::default();
         list_state.select(Some(0));
-        Self {
+        Ok(Self {
             regions,
             raw,
             list_state,
@@ -89,8 +91,7 @@ impl MirrorStep {
             input: String::new(),
             focus: MirrorFocus::List,
             error: ErrorDialog::default(),
-            validated: false,
-        }
+        })
     }
 
     /// The region under the current highlight cursor.
@@ -114,7 +115,7 @@ impl MirrorStep {
     /// selection, run `pacman -Sy`, and on success record the choice and
     /// mark the step validated. On failure, surface a modal error. Returns
     /// `Next` if the caller should advance, `None` otherwise.
-    fn validate_and_advance(&mut self, state: &mut InstallerState) -> StepAction {
+    fn validate_and_advance(&mut self, state: &mut InstallerState) -> Result<StepAction> {
         let input_trimmed = self.input.trim().to_string();
         let selection = if !input_trimmed.is_empty() {
             match normalize_server_line(&input_trimmed) {
@@ -124,7 +125,7 @@ impl MirrorStep {
                         visible: true,
                         message: t!("mirror_step.error_invalid_url"),
                     };
-                    return StepAction::None;
+                    return Ok(StepAction::None);
                 }
             }
         } else {
@@ -133,36 +134,19 @@ impl MirrorStep {
 
         let new_text = match &selection {
             Selection::Region(region) => reorder_mirrorlist(&self.raw, region),
-            Selection::Manual(line) => {
-                let mut s = String::new();
-                s.push_str(line);
-                s.push('\n');
-                s.push('\n');
-                s.push_str(&self.raw);
-                s
-            }
+            Selection::Manual(line) => manual_mirrorlist(&self.raw, line),
         };
 
-        if let Err(e) = write_mirrorlist(MIRRORLIST_PATH, &new_text) {
-            tracing::error!("failed to write {MIRRORLIST_PATH}: {e}");
-            self.error = ErrorDialog {
-                visible: true,
-                message: t!("mirror_step.error_write"),
-            };
-            return StepAction::None;
-        }
+        write_mirrorlist(MIRRORLIST_PATH, &new_text)
+            .with_context(|| format!("writing {MIRRORLIST_PATH}"))?;
 
-        let status = privileged_command("pacman").arg("-Sy").output();
-        let ok = match &status {
-            Ok(o) => o.status.success(),
-            Err(e) => {
-                tracing::error!("pacman -Sy spawn failed: {e}");
-                false
-            }
-        };
+        let output = privileged_command("pacman")
+            .arg("-Sy")
+            .output()
+            .context("running pacman -Sy")?;
+        let ok = output.status.success();
 
         if ok {
-            self.validated = true;
             state.mirror_lines = match &selection {
                 Selection::Region(region) => extract_region_servers(&self.raw, region),
                 Selection::Manual(line) => vec![line.clone()],
@@ -171,18 +155,15 @@ impl MirrorStep {
                 Selection::Region(r) => r.clone(),
                 Selection::Manual(l) => l.clone(),
             };
-            StepAction::Next
+            Ok(StepAction::Next)
         } else {
-            let stderr_msg = match &status {
-                Ok(o) => String::from_utf8_lossy(&o.stderr).trim().to_string(),
-                Err(e) => e.to_string(),
-            };
+            let stderr_msg = String::from_utf8_lossy(&output.stderr).trim().to_string();
             tracing::warn!("pacman -Sy failed: {stderr_msg}");
             self.error = ErrorDialog {
                 visible: true,
                 message: t!("mirror_step.error_pacman"),
             };
-            StepAction::None
+            Ok(StepAction::None)
         }
     }
 }
@@ -198,11 +179,17 @@ impl Step for MirrorStep {
         StepId::Mirror
     }
 
-    fn is_complete(&self, _state: &InstallerState) -> bool {
-        self.validated
+    fn has_modal(&self) -> bool {
+        self.error.visible
     }
 
-    fn render(&mut self, frame: &mut Frame, area: Rect, _state: &InstallerState) {
+    fn render(
+        &mut self,
+        frame: &mut Frame,
+        area: Rect,
+        _state: &InstallerState,
+        body_focused: bool,
+    ) {
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
@@ -221,22 +208,25 @@ impl Step for MirrorStep {
                 // bold + a bright color. The cursor row is separately
                 // indicated by the `REVERSED` highlight style.
                 let style = if *r == self.selected {
-                    Style::default()
-                        .add_modifier(Modifier::BOLD)
-                        .fg(Color::White)
+                    Style::default().add_modifier(Modifier::BOLD)
                 } else {
                     Style::default()
                 };
                 ListItem::new(r.clone()).style(style)
             })
             .collect();
+        let list_highlight = if body_focused && self.focus == MirrorFocus::List {
+            Style::default().add_modifier(Modifier::REVERSED)
+        } else {
+            Style::default()
+        };
         let list = List::new(items)
             .block(
                 Block::default()
                     .borders(Borders::ALL)
                     .title(t!("mirror_step.list_title")),
             )
-            .highlight_style(Style::default().add_modifier(Modifier::REVERSED));
+            .highlight_style(list_highlight);
         frame.render_stateful_widget(list, chunks[0], &mut self.list_state);
 
         // Manual input field (bottom, above the hint): a single-line bordered box.
@@ -244,17 +234,22 @@ impl Step for MirrorStep {
         // reversing the whole box — a single visible caret is clearer than
         // inverting the entire field.
         let input_label = t!("mirror_step.input_label");
-        let cursor = if self.focus == MirrorFocus::Input {
+        let cursor = if body_focused && self.focus == MirrorFocus::Input {
             "█"
         } else {
             ""
         };
         let input_display = format!("{input_label}: {}{cursor}", self.input);
-        let input_box = Paragraph::new(input_display).block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(t!("mirror_step.input_title")),
-        );
+        let input_width = ratatui::text::Line::from(input_display.as_str()).width();
+        let visible_width = chunks[1].width.saturating_sub(2) as usize;
+        let horizontal_scroll = input_width.saturating_sub(visible_width) as u16;
+        let input_box = Paragraph::new(input_display)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title(t!("mirror_step.input_title")),
+            )
+            .scroll((0, horizontal_scroll));
         frame.render_widget(input_box, chunks[1]);
 
         // Bottom hint.
@@ -275,9 +270,9 @@ impl Step for MirrorStep {
         }
     }
 
-    fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> StepAction {
+    fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> Result<StepAction> {
         if key.kind != KeyEventKind::Press {
-            return StepAction::None;
+            return Ok(StepAction::None);
         }
 
         // Error dialog swallows all keys except Esc/Enter which dismiss it.
@@ -288,15 +283,15 @@ impl Step for MirrorStep {
                 }
                 _ => {}
             }
-            return StepAction::None;
+            return Ok(StepAction::None);
         }
 
         // Tab/BackTab are routed through `consume_tab` by app.rs, not here.
         if key.code == KeyCode::Tab || key.code == KeyCode::BackTab {
-            return StepAction::None;
+            return Ok(StepAction::None);
         }
 
-        match self.focus {
+        Ok(match self.focus {
             MirrorFocus::List => match key.code {
                 KeyCode::Down | KeyCode::Char('j') => {
                     self.move_highlight(1);
@@ -306,11 +301,11 @@ impl Step for MirrorStep {
                     self.move_highlight(-1);
                     StepAction::None
                 }
-                KeyCode::Enter => self.validate_and_advance(state),
+                KeyCode::Enter => return self.validate_and_advance(state),
                 _ => StepAction::None,
             },
             MirrorFocus::Input => match key.code {
-                KeyCode::Enter => self.validate_and_advance(state),
+                KeyCode::Enter => return self.validate_and_advance(state),
                 KeyCode::Backspace => {
                     self.input.pop();
                     StepAction::None
@@ -321,14 +316,13 @@ impl Step for MirrorStep {
                 }
                 _ => StepAction::None,
             },
-        }
+        })
     }
 
     fn consume_tab(&mut self, is_shift: bool) -> bool {
-        // Internal focus chain: List <-> Input. At either end, return false
-        // so the Tab/BackTab bubbles up to app.rs's global StepBody <-> button
-        // cycle — this keeps the full loop (StepBody -> buttons -> StepBody)
-        // reachable from every focus position.
+        // The complete forward chain is List -> Input -> Back -> Next -> List.
+        // Before bubbling out at either end, prepare the opposite endpoint so
+        // re-entering the step body from the footer completes the cycle.
         match (self.focus, is_shift) {
             (MirrorFocus::List, false) => {
                 // Tab from List -> Input (consumed).
@@ -336,7 +330,8 @@ impl Step for MirrorStep {
                 true
             }
             (MirrorFocus::Input, false) => {
-                // Tab from Input -> bubble to app (goes to Back/Next button).
+                // Tab from Input -> footer; re-entry starts at List.
+                self.focus = MirrorFocus::List;
                 false
             }
             (MirrorFocus::Input, true) => {
@@ -345,16 +340,21 @@ impl Step for MirrorStep {
                 true
             }
             (MirrorFocus::List, true) => {
-                // BackTab from List -> bubble to app (goes to Next/Back button).
+                // BackTab from List -> footer; reverse re-entry starts at Input.
+                self.focus = MirrorFocus::Input;
                 false
             }
         }
+    }
+
+    fn on_next_button(&mut self, state: &mut InstallerState) -> Result<StepAction> {
+        self.validate_and_advance(state)
     }
 }
 
 impl MirrorStep {
     fn render_error_dialog(&self, frame: &mut Frame) {
-        let area = centered_rect(60, 7, frame.area());
+        let area = centered_rect(80, 8, frame.area());
         let text = vec![
             ratatui::text::Line::from(""),
             ratatui::text::Line::from(self.error.message.clone()),
@@ -367,7 +367,8 @@ impl MirrorStep {
                     .borders(Borders::ALL)
                     .title(t!("mirror_step.error_title")),
             )
-            .alignment(Alignment::Center);
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: true });
         frame.render_widget(Clear, area);
         frame.render_widget(dialog, area);
     }
@@ -415,6 +416,19 @@ fn reorder_mirrorlist(text: &str, region: &str) -> String {
         out.push_str(&b.text);
     }
     out
+}
+
+/// Build a mirrorlist containing only the stock file header and one manual
+/// server. Keeping old active servers here would let `pacman -Sy` fall back to
+/// them and incorrectly validate a broken manual URL.
+fn manual_mirrorlist(text: &str, server_line: &str) -> String {
+    let (mut header, _body) = split_header(text);
+    if !header.ends_with('\n') {
+        header.push('\n');
+    }
+    header.push_str(server_line);
+    header.push('\n');
+    header
 }
 
 /// Extract all `Server = ...` lines belonging to `region` from `text`.
@@ -543,24 +557,6 @@ fn write_mirrorlist(path: &str, text: &str) -> std::io::Result<()> {
         )));
     }
     Ok(())
-}
-
-/// Centered rect helper for the error dialog. `width_pct` is a percentage of
-/// `area.width`; `height_rows` is a fixed row count (clamped to area height).
-fn centered_rect(width_pct: u16, height_rows: u16, area: Rect) -> Rect {
-    let h = height_rows.min(area.height);
-    let y = area.y + (area.height - h) / 2;
-    let w_pad = (100u16).saturating_sub(width_pct) / 2;
-    let horizontal = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([
-            Constraint::Percentage(w_pad),
-            Constraint::Percentage(width_pct),
-            Constraint::Percentage(w_pad),
-        ])
-        .split(area);
-    let inner = horizontal[1];
-    Rect::new(inner.x, y, inner.width, h)
 }
 
 #[cfg(test)]

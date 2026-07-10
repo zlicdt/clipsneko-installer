@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-07 00:00+0800\n"
+"POT-Creation-Date: 2026-07-11 01:29+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -15,234 +15,350 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app.rs
-msgid "app.title"
-msgstr ""
-
-#: src/app.rs
+#: src/app.rs:218
 msgid "app.step_indicator"
 msgstr ""
 
-#: src/app.rs
+#: src/app.rs:215
+msgid "app.title"
+msgstr ""
+
+#: src/app.rs:256
 msgid "button.back"
 msgstr ""
 
-#: src/app.rs
+#: src/app.rs:291
+msgid "button.cancel"
+msgstr ""
+
+#: src/app.rs:270
 msgid "button.next"
 msgstr ""
 
-#: src/app.rs
+#: src/app.rs:295
 msgid "button.quit"
 msgstr ""
 
-#: src/app.rs
-msgid "footer.hint"
+#: src/steps/network.rs:110
+msgid "common.not_available"
 msgstr ""
 
-#: src/app.rs
-msgid "quit_dialog.title"
+#: src/steps/disk.rs:331 src/steps/disk.rs:403
+msgid "disk_step.column_device"
 msgstr ""
 
-#: src/app.rs
-msgid "quit_dialog.hint"
+#: src/steps/disk.rs:405
+msgid "disk_step.column_filesystem"
 msgstr ""
 
-#: src/steps/language.rs
-msgid "language_step.title"
+#: src/steps/disk.rs:406
+msgid "disk_step.column_label"
 msgstr ""
 
-#: src/steps/language.rs
-msgid "language_step.hint"
+#: src/steps/disk.rs:332
+msgid "disk_step.column_model"
 msgstr ""
 
-#: src/steps/keyboard.rs
-msgid "keyboard_step.title"
+#: src/steps/disk.rs:407
+msgid "disk_step.column_role"
 msgstr ""
 
-#: src/steps/keyboard.rs
-msgid "keyboard_step.hint"
+#: src/steps/disk.rs:334 src/steps/disk.rs:404
+msgid "disk_step.column_size"
 msgstr ""
 
-#: src/steps/network.rs
-msgid "network_step.title"
+#: src/steps/disk.rs:335
+msgid "disk_step.column_status"
 msgstr ""
 
-#: src/steps/network.rs
-msgid "network_step.status_connected"
+#: src/steps/disk.rs:333
+msgid "disk_step.column_transport"
 msgstr ""
 
-#: src/steps/network.rs
-msgid "network_step.status_disconnected"
+#: src/steps/disk.rs:299
+msgid "disk_step.error_capacity"
 msgstr ""
 
-#: src/steps/network.rs
-msgid "network_step.label_interface"
+#: src/steps/disk.rs:501
+msgid "disk_step.error_hint"
 msgstr ""
 
-#: src/steps/network.rs
-msgid "network_step.label_address"
+#: src/steps/disk.rs:247
+msgid "disk_step.error_invalid_esp"
 msgstr ""
 
-#: src/steps/network.rs
-msgid "network_step.label_gateway"
+#: src/steps/disk.rs:127
+msgid "disk_step.error_partprobe"
 msgstr ""
 
-#: src/steps/network.rs
-msgid "network_step.hint_connected"
+#: src/steps/disk.rs:220
+msgid "disk_step.error_protected_part"
 msgstr ""
 
-#: src/steps/network.rs
-msgid "network_step.hint_disconnected"
+#: src/steps/disk.rs:506
+msgid "disk_step.error_title"
 msgstr ""
 
-#: src/steps/mirror.rs
-msgid "mirror_step.input_title"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.input_label"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.list_title"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.hint_list"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.hint_input"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_title"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_hint"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_pacman"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_write"
-msgstr ""
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_invalid_url"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.language"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.keyboard_layout"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.network"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.mirror_list"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.disk_partitioning"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.kernel"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.nvidia_driver"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.timezone"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.user_account"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.hostname"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.confirm_installation"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "step.title.installing"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "stub.body"
-msgstr ""
-
-#: src/steps/mod.rs
-msgid "stub.hint"
-msgstr ""
-
-#: src/steps/disk.rs
+#: src/steps/disk.rs:758
 msgid "disk_step.hint_disk"
 msgstr ""
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:759
 msgid "disk_step.hint_parts"
 msgstr ""
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:358
 msgid "disk_step.list_title_disk"
 msgstr ""
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:430
 msgid "disk_step.list_title_parts"
 msgstr ""
 
-#: src/steps/disk.rs
-msgid "disk_step.role_esp"
+#: src/steps/disk.rs:483
+msgid "disk_step.raid_dialog.hint"
 msgstr ""
 
-#: src/steps/disk.rs
-msgid "disk_step.role_target"
+#: src/steps/disk.rs:470
+msgid "disk_step.raid_dialog.raid0"
 msgstr ""
 
-#: src/steps/disk.rs
-msgid "disk_step.role_dialog.title"
+#: src/steps/disk.rs:471
+msgid "disk_step.raid_dialog.raid1"
 msgstr ""
 
-#: src/steps/disk.rs
-msgid "disk_step.role_dialog.option_cancel"
+#: src/steps/disk.rs:488
+msgid "disk_step.raid_dialog.title"
 msgstr ""
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:767
+msgid "disk_step.raid_label"
+msgstr ""
+
+#: src/steps/disk.rs:459
 msgid "disk_step.role_dialog.hint"
 msgstr ""
 
-#: src/steps/disk.rs
-msgid "disk_step.wipe_dialog.window_title"
+#: src/steps/disk.rs:440
+msgid "disk_step.role_dialog.title"
 msgstr ""
 
-#: src/steps/disk.rs
-msgid "disk_step.wipe_dialog.title"
+#: src/steps/disk.rs:380 src/steps/disk.rs:567
+msgid "disk_step.role_esp"
 msgstr ""
 
-#: src/steps/disk.rs
-msgid "disk_step.wipe_dialog.target_prefix"
+#: src/steps/disk.rs:378
+msgid "disk_step.role_protected"
 msgstr ""
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:382 src/steps/disk.rs:568
+msgid "disk_step.role_target"
+msgstr ""
+
+#: src/steps/disk.rs:384 src/steps/disk.rs:569
+msgid "disk_step.role_unassigned"
+msgstr ""
+
+#: src/steps/disk.rs:561
+msgid "disk_step.status_available"
+msgstr ""
+
+#: src/steps/disk.rs:555
+msgid "disk_step.status_live_media"
+msgstr ""
+
+#: src/steps/disk.rs:557
+msgid "disk_step.status_read_only"
+msgstr ""
+
+#: src/steps/disk.rs:559
+msgid "disk_step.status_removable"
+msgstr ""
+
+#: src/steps/disk.rs:620
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr ""
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:526
 msgid "disk_step.wipe_dialog.hint"
+msgstr ""
+
+#: src/steps/disk.rs:614
+msgid "disk_step.wipe_dialog.target_prefix"
+msgstr ""
+
+#: src/steps/disk.rs:519
+msgid "disk_step.wipe_dialog.title"
+msgstr ""
+
+#: src/steps/disk.rs:531
+msgid "disk_step.wipe_dialog.window_title"
+msgstr ""
+
+#: src/app.rs:262
+msgid "footer.hint"
+msgstr ""
+
+#: src/steps/keyboard.rs:172
+msgid "keyboard_step.hint"
+msgstr ""
+
+#: src/steps/keyboard.rs:166
+msgid "keyboard_step.title"
+msgstr ""
+
+#: src/steps/language.rs:26
+msgid "language.name.english"
+msgstr ""
+
+#: src/steps/language.rs:27
+msgid "language.name.simplified_chinese"
+msgstr ""
+
+#: src/steps/language.rs:194
+msgid "language_step.hint_target"
+msgstr ""
+
+#: src/steps/language.rs:193
+msgid "language_step.hint_ui"
+msgstr ""
+
+#: src/steps/language.rs:187
+msgid "language_step.target_title"
+msgstr ""
+
+#: src/steps/language.rs:165
+msgid "language_step.ui_title"
+msgstr ""
+
+#: src/steps/mirror.rs:362
+msgid "mirror_step.error_hint"
+msgstr ""
+
+#: src/steps/mirror.rs:126
+msgid "mirror_step.error_invalid_url"
+msgstr ""
+
+#: src/steps/mirror.rs:164
+msgid "mirror_step.error_pacman"
+msgstr ""
+
+#: src/steps/mirror.rs:368
+msgid "mirror_step.error_title"
+msgstr ""
+
+#: src/steps/mirror.rs:259
+msgid "mirror_step.hint_input"
+msgstr ""
+
+#: src/steps/mirror.rs:257
+msgid "mirror_step.hint_list"
+msgstr ""
+
+#: src/steps/mirror.rs:236
+msgid "mirror_step.input_label"
+msgstr ""
+
+#: src/steps/mirror.rs:250
+msgid "mirror_step.input_title"
+msgstr ""
+
+#: src/steps/mirror.rs:227
+msgid "mirror_step.list_title"
+msgstr ""
+
+#: src/steps/network.rs:103
+msgid "network_step.hint_connected"
+msgstr ""
+
+#: src/steps/network.rs:105
+msgid "network_step.hint_disconnected"
+msgstr ""
+
+#: src/steps/network.rs:125
+msgid "network_step.label_address"
+msgstr ""
+
+#: src/steps/network.rs:130
+msgid "network_step.label_gateway"
+msgstr ""
+
+#: src/steps/network.rs:115
+msgid "network_step.label_interface"
+msgstr ""
+
+#: src/steps/network.rs:111
+msgid "network_step.status_connected"
+msgstr ""
+
+#: src/steps/network.rs:134
+msgid "network_step.status_disconnected"
+msgstr ""
+
+#: src/steps/network.rs:139
+msgid "network_step.title"
+msgstr ""
+
+#: src/app.rs:304
+msgid "quit_dialog.hint"
+msgstr ""
+
+#: src/app.rs:300
+msgid "quit_dialog.title"
+msgstr ""
+
+#: src/steps/mod.rs:75
+msgid "step.title.confirm_installation"
+msgstr ""
+
+#: src/steps/mod.rs:69
+msgid "step.title.disk_partitioning"
+msgstr ""
+
+#: src/steps/mod.rs:74
+msgid "step.title.hostname"
+msgstr ""
+
+#: src/steps/mod.rs:76
+msgid "step.title.installing"
+msgstr ""
+
+#: src/steps/mod.rs:70
+msgid "step.title.kernel"
+msgstr ""
+
+#: src/steps/mod.rs:66
+msgid "step.title.keyboard_layout"
+msgstr ""
+
+#: src/steps/mod.rs:65
+msgid "step.title.language"
+msgstr ""
+
+#: src/steps/mod.rs:68
+msgid "step.title.mirror_list"
+msgstr ""
+
+#: src/steps/mod.rs:67
+msgid "step.title.network"
+msgstr ""
+
+#: src/steps/mod.rs:71
+msgid "step.title.nvidia_driver"
+msgstr ""
+
+#: src/steps/mod.rs:72
+msgid "step.title.timezone"
+msgstr ""
+
+#: src/steps/mod.rs:73
+msgid "step.title.user_account"
+msgstr ""
+
+#: src/steps/mod.rs:188
+msgid "stub.body"
+msgstr ""
+
+#: src/steps/mod.rs:188
+msgid "stub.hint"
 msgstr ""

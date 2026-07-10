@@ -11,6 +11,7 @@ mod network;
 
 use crate::state::InstallerState;
 use crate::t;
+use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::Rect;
 use ratatui::widgets::Paragraph;
@@ -27,11 +28,7 @@ pub use network::NetworkStep;
 pub enum StepAction {
     None,
     Next,
-    /// Emitted by a step that wants to go back. Currently no step emits this
-    /// (Esc is intercepted by `app.rs` as quit; Back is the on-screen button),
-    /// but the variant is kept for forward-compat with steps that have their
-    /// own cancel logic.
-    #[allow(dead_code)]
+    /// Move through the current step's Back path.
     Back,
     /// Emitted by a step that wants the whole wizard to exit (e.g. the install
     /// step after a successful run).
@@ -85,14 +82,16 @@ impl StepId {
 /// selection index, etc.) and read/write the shared `InstallerState`.
 pub trait Step {
     fn id(&self) -> StepId;
-    fn render(&mut self, frame: &mut Frame, area: Rect, state: &InstallerState);
-    fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> StepAction;
+    fn render(&mut self, frame: &mut Frame, area: Rect, state: &InstallerState, body_focused: bool);
+    fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> Result<StepAction>;
 
     /// Called when this step becomes the current step (on initial entry and
     /// on every Back/Next navigation into it). Lets the step run entry-time
     /// side effects such as a connectivity check or refreshing device lists.
     /// Default: no-op.
-    fn activate(&mut self, _state: &mut InstallerState) {}
+    fn activate(&mut self, _state: &mut InstallerState) -> Result<()> {
+        Ok(())
+    }
 
     /// Whether this step is complete enough for the Next button to be
     /// enabled. Steps that require a validated choice before proceeding
@@ -101,10 +100,24 @@ pub trait Step {
         true
     }
 
+    /// Whether this step currently shows a modal overlay that must receive all
+    /// keyboard input before the app handles global keys or footer focus.
+    /// Modal steps override this while their dialog is visible so keys cannot
+    /// activate controls behind the overlay.
+    fn has_modal(&self) -> bool {
+        false
+    }
+
     /// Called after a `StepAction::SuspendRun` subprocess finishes (whether
     /// it succeeded or not). Lets the step react — e.g. re-check connectivity
     /// after `nmtui` returns. Default: no-op.
-    fn on_subprocess_done(&mut self, _status: ExitStatus, _state: &mut InstallerState) {}
+    fn on_subprocess_done(
+        &mut self,
+        _status: ExitStatus,
+        _state: &mut InstallerState,
+    ) -> Result<()> {
+        Ok(())
+    }
 
     /// Attempt to consume a Tab/BackTab for internal focus cycling between
     /// sub-widgets within the step body (e.g. the mirror step toggles
@@ -125,31 +138,25 @@ pub trait Step {
         false
     }
 
-    /// Called when the user activates the on-screen **Next** button (Enter
-    /// while it has focus). Returns `true` when the step consumed the
-    /// press for an internal page switch (the app then leaves the wizard
-    /// on the current step and routes focus back to the step body);
-    /// returns `false` when the step wants the wizard to advance to the
-    /// next step as usual. Lets a step implement sub-pages (the disk step's
-    /// disk-pick → partition-pick flow) without growing the wizard step
-    /// count. The wizard's Back button has a symmetric `on_back_button`.
-    fn on_next_button(&mut self, _state: &mut InstallerState) -> bool {
-        false
+    /// Called when the user activates the on-screen **Next** button. The
+    /// default matches Enter-based forward navigation. A step can commit its
+    /// current selection before returning `Next`, return `None` to stay put
+    /// (for an internal page switch or validation dialog), or emit another
+    /// action when needed.
+    fn on_next_button(&mut self, _state: &mut InstallerState) -> Result<StepAction> {
+        Ok(StepAction::Next)
     }
 
     /// Symmetric counterpart of `on_next_button` for the on-screen **Back**
-    /// button. Returns `true` when the step consumed the press (the app
-    /// leaves the wizard on the current step and routes focus back to the
-    /// step body); `false` when the step wants the wizard to go back to
-    /// the previous step as usual. Default: `false`.
-    fn on_back_button(&mut self, _state: &mut InstallerState) -> bool {
-        false
+    /// button. The default moves to the previous wizard step; a step with an
+    /// internal sub-page can return `None` after handling the transition.
+    fn on_back_button(&mut self, _state: &mut InstallerState) -> Result<StepAction> {
+        Ok(StepAction::Back)
     }
 }
 
 /// Placeholder step: renders a "not implemented" notice and advances on
-/// Enter. Esc/Back is no longer handled here — app.rs intercepts Esc as a
-/// global quit request, so the only way back is the on-screen Back button.
+/// Enter. App-level Esc follows the same Back path as the footer button.
 pub struct StubStep {
     id: StepId,
 }
@@ -165,30 +172,36 @@ impl Step for StubStep {
         self.id
     }
 
-    fn render(&mut self, frame: &mut Frame, area: Rect, _state: &InstallerState) {
+    fn render(
+        &mut self,
+        frame: &mut Frame,
+        area: Rect,
+        _state: &InstallerState,
+        _body_focused: bool,
+    ) {
         let body = format!("{}\n\n{}", t!("stub.body"), t!("stub.hint"),);
         frame.render_widget(Paragraph::new(body), area);
     }
 
-    fn handle_key(&mut self, key: KeyEvent, _state: &mut InstallerState) -> StepAction {
+    fn handle_key(&mut self, key: KeyEvent, _state: &mut InstallerState) -> Result<StepAction> {
         if key.kind != KeyEventKind::Press {
-            return StepAction::None;
+            return Ok(StepAction::None);
         }
-        match key.code {
+        Ok(match key.code {
             KeyCode::Enter => StepAction::Next,
             _ => StepAction::None,
-        }
+        })
     }
 }
 
 /// Build the full 12-step wizard. Steps with a real implementation are wired
 /// in here; the rest are stubs swapped out as their UI is written.
-pub fn build_steps() -> Vec<Box<dyn Step>> {
-    vec![
-        Box::new(LanguageStep::new()),
-        Box::new(KeyboardStep::new()),
+pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
+    Ok(vec![
+        Box::new(LanguageStep::new()?),
+        Box::new(KeyboardStep::new()?),
         Box::new(NetworkStep::new()),
-        Box::new(MirrorStep::new()),
+        Box::new(MirrorStep::new()?),
         Box::new(DiskStep::new()),
         Box::new(StubStep::new(StepId::Kernel)),
         Box::new(StubStep::new(StepId::Nvidia)),
@@ -197,5 +210,5 @@ pub fn build_steps() -> Vec<Box<dyn Step>> {
         Box::new(StubStep::new(StepId::Hostname)),
         Box::new(StubStep::new(StepId::Confirm)),
         Box::new(StubStep::new(StepId::Install)),
-    ]
+    ])
 }

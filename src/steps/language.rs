@@ -1,110 +1,117 @@
-//! Language selection step — pick the installer UI language (en / zh_CN).
-//!
-//! Interaction (per `design.md` §6): Up/Down or j/k moves the highlight; Space
-//! selects the highlighted language and applies it live via `set_language()`
-//! so the rest of the UI re-translates immediately; Enter selects and
-//! advances to the next step. Esc is no longer handled here — `app.rs`
-//! intercepts it as a global quit request; the only way back is the on-screen
-//! Back button.
-//!
-//! The installer UI language is independent of the target system's locale
-//! (see `design.md` §4.1). It is not persisted across runs: the Live ISO
-//! starts fresh each boot, and the target system's locale is configured in
-//! the install stage (§5).
-//!
-//! Per the project-wide list style (no "▶" marker): the *selected/applied*
-//! row's own text is bold + a bright color to signal selected state. The
-//! cursor row is indicated by the `REVERSED` highlight style, independent of
-//! which row is currently applied.
+//! Independent installer-language and target-locale selection.
 
 use crate::i18n::{set_language, UiLang};
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
+use crate::util::locale_list::list_utf8_locales;
+use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::style::{Modifier, Style};
 use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
-/// All supported UI languages in the order they appear in the picker.
-const ALL_LANGS: [UiLang; 3] = [UiLang::En, UiLang::ZhCn, UiLang::ZhTw];
+const ALL_LANGS: [UiLang; 2] = [UiLang::En, UiLang::ZhCn];
+const DEFAULT_TARGET_LOCALE: &str = "en_US.UTF-8";
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum LanguageFocus {
+    UiLanguage,
+    TargetLocale,
+}
+
+fn language_label(lang: UiLang) -> String {
+    match lang {
+        UiLang::En => t!("language.name.english"),
+        UiLang::ZhCn => t!("language.name.simplified_chinese"),
+    }
+}
 
 pub struct LanguageStep {
-    /// Cursor position in the list (which row is highlighted). Owned here so
-    /// `render(&mut self)` can pass `&mut self.list_state` to
-    /// `render_stateful_widget` — cloning the state (as a `&self` render
-    /// would require) loses ratatui's offset bookkeeping and can wedge the
-    /// list.
-    list_state: ListState,
-    /// The language whose translation catalog is currently active. Kept in
-    /// sync with `state.ui_lang` by `apply()`; used purely for rendering the
-    /// selection marker.
-    selected: UiLang,
+    ui_state: ListState,
+    locale_state: ListState,
+    locales: Vec<String>,
+    selected_ui: UiLang,
+    selected_locale: String,
+    focus: LanguageFocus,
 }
 
 impl LanguageStep {
-    pub fn new() -> Self {
-        let mut list_state = ListState::default();
-        list_state.select(Some(0));
-        Self {
-            list_state,
-            selected: UiLang::En,
-        }
+    pub fn new() -> Result<Self> {
+        let locales = list_utf8_locales()?;
+        let locale_index = locales
+            .iter()
+            .position(|locale| locale == DEFAULT_TARGET_LOCALE)
+            .context("en_US.UTF-8 is absent from /etc/locale.gen")?;
+        let mut ui_state = ListState::default();
+        ui_state.select(Some(0));
+        let mut locale_state = ListState::default();
+        locale_state.select(Some(locale_index));
+        Ok(Self {
+            ui_state,
+            locale_state,
+            locales,
+            selected_ui: UiLang::En,
+            selected_locale: DEFAULT_TARGET_LOCALE.to_string(),
+            focus: LanguageFocus::UiLanguage,
+        })
     }
 
-    /// Reconcile local state with the shared `InstallerState`. Needed when the
-    /// user returns to this step from a later step via Back: `state.ui_lang`
-    /// may have been set during a previous visit and the local `selected`
-    /// field is updated to match so the marker and highlight are consistent.
-    /// Only touches `list_state` when `selected` actually changes, so normal
-    /// highlight navigation (which doesn't touch `selected`) is preserved.
     fn sync_from_state(&mut self, state: &InstallerState) {
-        let want = state.ui_lang.unwrap_or(UiLang::En);
-        if want != self.selected {
-            self.selected = want;
-            let idx = ALL_LANGS
-                .iter()
-                .position(|l| *l == self.selected)
-                .unwrap_or(0);
-            self.list_state.select(Some(idx));
+        let ui = state.ui_lang.unwrap_or(UiLang::En);
+        if ui != self.selected_ui {
+            self.selected_ui = ui;
+            let index = ALL_LANGS.iter().position(|lang| *lang == ui).unwrap_or(0);
+            self.ui_state.select(Some(index));
         }
-    }
-
-    /// Apply `lang` via gettext and record it in the shared state. On failure
-    /// (the locale is not generated on the running system), fall back to
-    /// English silently: the ISO build is responsible for generating both
-    /// `en_US.UTF-8` and `zh_CN.UTF-8`, so this path is defensive only. The
-    /// failure is still logged via `tracing::warn!` for diagnostics.
-    fn apply(&mut self, lang: UiLang, state: &mut InstallerState) {
-        if let Err(e) = set_language(lang) {
-            tracing::warn!(
-                "set_language({:?}) failed: {e}; falling back to English",
-                lang
-            );
-            self.selected = UiLang::En;
-            state.ui_lang = Some(UiLang::En);
-            if let Err(e2) = set_language(UiLang::En) {
-                tracing::error!("set_language(En) fallback also failed: {e2}");
+        if let Some(locale) = state.target_locale.as_ref() {
+            if locale != &self.selected_locale {
+                self.selected_locale = locale.clone();
+                if let Some(index) = self.locales.iter().position(|item| item == locale) {
+                    self.locale_state.select(Some(index));
+                }
             }
-            return;
         }
-        self.selected = lang;
+    }
+
+    fn apply_ui_language(&mut self, lang: UiLang, state: &mut InstallerState) -> Result<()> {
+        set_language(lang).with_context(|| format!("applying UI language {lang:?}"))?;
+        self.selected_ui = lang;
         state.ui_lang = Some(lang);
+        Ok(())
     }
 
-    /// The language under the current highlight cursor.
-    fn highlighted(&self) -> UiLang {
-        let idx = self.list_state.selected().unwrap_or(0);
-        ALL_LANGS[idx]
+    fn apply_target_locale(&mut self, locale: String, state: &mut InstallerState) {
+        self.selected_locale = locale.clone();
+        state.target_locale = Some(locale);
     }
 
-    /// Move the highlight by `delta` positions, wrapping around at the ends.
+    fn highlighted_ui(&self) -> UiLang {
+        ALL_LANGS[self.ui_state.selected().unwrap_or(0)]
+    }
+
+    fn highlighted_locale(&self) -> String {
+        self.locales[self.locale_state.selected().unwrap_or(0)].clone()
+    }
+
     fn move_highlight(&mut self, delta: i32) {
-        let len = ALL_LANGS.len() as i32;
-        let cur = self.list_state.selected().unwrap_or(0) as i32;
-        let next = (cur + delta).rem_euclid(len) as usize;
-        self.list_state.select(Some(next));
+        let (state, len) = match self.focus {
+            LanguageFocus::UiLanguage => (&mut self.ui_state, ALL_LANGS.len()),
+            LanguageFocus::TargetLocale => (&mut self.locale_state, self.locales.len()),
+        };
+        let current = state.selected().unwrap_or(0) as i32;
+        state.select(Some((current + delta).rem_euclid(len as i32) as usize));
+    }
+
+    fn apply_focused(&mut self, state: &mut InstallerState) -> Result<()> {
+        match self.focus {
+            LanguageFocus::UiLanguage => self.apply_ui_language(self.highlighted_ui(), state),
+            LanguageFocus::TargetLocale => {
+                self.apply_target_locale(self.highlighted_locale(), state);
+                Ok(())
+            }
+        }
     }
 }
 
@@ -113,61 +120,93 @@ impl Step for LanguageStep {
         StepId::Language
     }
 
-    fn render(&mut self, frame: &mut Frame, area: Rect, _state: &InstallerState) {
-        let chunks = Layout::default()
+    fn activate(&mut self, state: &mut InstallerState) -> Result<()> {
+        self.sync_from_state(state);
+        state.ui_lang.get_or_insert(self.selected_ui);
+        state
+            .target_locale
+            .get_or_insert_with(|| self.selected_locale.clone());
+        Ok(())
+    }
+
+    fn render(
+        &mut self,
+        frame: &mut Frame,
+        area: Rect,
+        _state: &InstallerState,
+        body_focused: bool,
+    ) {
+        let vertical = Layout::default()
             .direction(Direction::Vertical)
             .constraints([Constraint::Min(0), Constraint::Length(1)])
             .split(area);
+        let columns = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([Constraint::Percentage(40), Constraint::Percentage(60)])
+            .split(vertical[0]);
 
-        let items: Vec<ListItem> = ALL_LANGS
-            .iter()
-            .map(|l| {
-                // The row that is *selected/applied* (via Space/Enter on a
-                // previous visit) gets its text bold + a bright color so it
-                // stands out from the rest. The cursor row is separately
-                // indicated by the `REVERSED` highlight style. This separates
-                // "what's active" from "where the keyboard is" — e.g. after
-                // launching with En applied and pressing Down once, the cursor
-                // is on ZhCn (reversed bg) while "English" stays bold+bright
-                // until Space/Enter applies ZhCn.
-                let style = if *l == self.selected {
-                    Style::default()
-                        .add_modifier(Modifier::BOLD)
-                        .fg(Color::White)
-                } else {
-                    Style::default()
-                };
-                ListItem::new(l.label().to_string()).style(style)
-            })
-            .collect();
-
-        let list = List::new(items)
+        let ui_items = ALL_LANGS.iter().map(|lang| {
+            let style = if *lang == self.selected_ui {
+                Style::default().add_modifier(Modifier::BOLD)
+            } else {
+                Style::default()
+            };
+            ListItem::new(language_label(*lang)).style(style)
+        });
+        let ui_highlight = if body_focused && self.focus == LanguageFocus::UiLanguage {
+            Style::default().add_modifier(Modifier::REVERSED)
+        } else {
+            Style::default()
+        };
+        let ui_list = List::new(ui_items)
             .block(
                 Block::default()
                     .borders(Borders::ALL)
-                    .title(t!("language_step.title")),
+                    .title(t!("language_step.ui_title")),
             )
-            .highlight_style(Style::default().add_modifier(Modifier::REVERSED));
+            .highlight_style(ui_highlight);
+        frame.render_stateful_widget(ui_list, columns[0], &mut self.ui_state);
 
-        frame.render_stateful_widget(list, chunks[0], &mut self.list_state);
+        let locale_items = self.locales.iter().map(|locale| {
+            let style = if locale == &self.selected_locale {
+                Style::default().add_modifier(Modifier::BOLD)
+            } else {
+                Style::default()
+            };
+            ListItem::new(locale.clone()).style(style)
+        });
+        let locale_highlight = if body_focused && self.focus == LanguageFocus::TargetLocale {
+            Style::default().add_modifier(Modifier::REVERSED)
+        } else {
+            Style::default()
+        };
+        let locale_list = List::new(locale_items)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title(t!("language_step.target_title")),
+            )
+            .highlight_style(locale_highlight);
+        frame.render_stateful_widget(locale_list, columns[1], &mut self.locale_state);
 
-        let hint = t!("language_step.hint");
+        let hint = match self.focus {
+            LanguageFocus::UiLanguage => t!("language_step.hint_ui"),
+            LanguageFocus::TargetLocale => t!("language_step.hint_target"),
+        };
         frame.render_widget(
             Paragraph::new(hint)
                 .alignment(Alignment::Center)
                 .style(Style::default().add_modifier(Modifier::DIM)),
-            chunks[1],
+            vertical[1],
         );
     }
 
-    fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> StepAction {
+    fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> Result<StepAction> {
         if key.kind != KeyEventKind::Press {
-            return StepAction::None;
+            return Ok(StepAction::None);
         }
-
         self.sync_from_state(state);
-
-        match key.code {
+        Ok(match key.code {
             KeyCode::Down | KeyCode::Char('j') => {
                 self.move_highlight(1);
                 StepAction::None
@@ -177,18 +216,49 @@ impl Step for LanguageStep {
                 StepAction::None
             }
             KeyCode::Char(' ') => {
-                let lang = self.highlighted();
-                self.apply(lang, state);
+                self.apply_focused(state)?;
                 StepAction::None
             }
-            KeyCode::Enter => {
-                let lang = self.highlighted();
-                self.apply(lang, state);
-                StepAction::Next
-            }
-            // Esc is no longer handled here; app.rs intercepts it as quit.
+            KeyCode::Enter => match self.focus {
+                LanguageFocus::UiLanguage => {
+                    self.apply_focused(state)?;
+                    self.focus = LanguageFocus::TargetLocale;
+                    StepAction::None
+                }
+                LanguageFocus::TargetLocale => {
+                    self.apply_focused(state)?;
+                    StepAction::Next
+                }
+            },
             _ => StepAction::None,
+        })
+    }
+
+    fn consume_tab(&mut self, is_shift: bool) -> bool {
+        match (self.focus, is_shift) {
+            (LanguageFocus::UiLanguage, false) => {
+                self.focus = LanguageFocus::TargetLocale;
+                true
+            }
+            (LanguageFocus::TargetLocale, false) => {
+                self.focus = LanguageFocus::UiLanguage;
+                false
+            }
+            (LanguageFocus::TargetLocale, true) => {
+                self.focus = LanguageFocus::UiLanguage;
+                true
+            }
+            (LanguageFocus::UiLanguage, true) => {
+                self.focus = LanguageFocus::TargetLocale;
+                false
+            }
         }
+    }
+
+    fn on_next_button(&mut self, state: &mut InstallerState) -> Result<StepAction> {
+        self.apply_ui_language(self.highlighted_ui(), state)?;
+        self.apply_target_locale(self.highlighted_locale(), state);
+        Ok(StepAction::Next)
     }
 }
 

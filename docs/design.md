@@ -17,21 +17,24 @@ user amends them in writing. Pending items are explicitly marked **(deferred)**.
 See `AGENTS.md` §2. Highlights:
 
 - Rust + ratatui + crossterm; gettext-rs; anyhow/thiserror; tracing.
-- Runtime config: `/etc/clipsneko-installer/packages.list`, `repo.conf`.
+- Runtime config: `/etc/clipsneko-installer/packages.list`.
+- The Live ISO's `/etc/pacman.conf` already configures the ClipsNeko package
+  repository. The installer reuses and copies it through `pacstrap -P`.
 
 ## 3. Project layout
 
 ```
 src/
-  main.rs app.rs state.rs repo_conf.rs i18n.rs
+  main.rs app.rs state.rs i18n.rs
   steps/    language keyboard network mirror disk
             kernel nvidia timezone user hostname confirm install
   installer/ partition pacstrap chroot mkinitcpio bootloader postinstall
-  util/     process lsblk geoip password locale_list
+  util/     process lsblk ui geoip password locale_list
+config/     packages.list
 po/         clipsneko-installer.pot
             en/LC_MESSAGES/clipsneko-installer.po
             zh_CN/LC_MESSAGES/clipsneko-installer.po
-docs/       dev-prog.md  design.md
+docs/       dev-plan.md dev-prog.md design.md
 AGENTS.md
 ```
 
@@ -39,15 +42,15 @@ AGENTS.md
 
 Linear: Back/Next only, no per-item jump from the confirm page.
 
-1. **UI language** — en / zh_CN. Only changes installer display language.
-   Up/Down (or j/k) moves the highlight; Space selects the highlighted
-   language and calls `set_language()` immediately so the whole UI
-   re-translates live; Enter selects and advances. Default highlight is
-   English on entry. The choice is not persisted across runs (Live ISO
-   starts fresh; target-system locale is configured in §5). The ISO build
-   must generate both `en_US.UTF-8` and `zh_CN.UTF-8`; `set_language()`
-   failure is defensive-only and falls back to English (logged via
-   `tracing`).
+1. **Language and locale** — two independent lists on one step:
+   - Installer UI language: en / zh_CN. Space applies the highlighted language
+     live through gettext; it changes `LC_MESSAGES` only.
+   - Target-system locale: every UTF-8 locale parsed from `/etc/locale.gen`,
+     defaulting to `en_US.UTF-8`; stored separately in state for M4b.
+   - Tab/Shift+Tab moves between the two lists and footer buttons. Enter on the
+     UI list applies it and moves to the target list; Enter on the target list
+     records it and advances. Locale/catalog failures are fatal Live ISO
+     invariant failures, with no language fallback.
 2. **Keyboard** — list from `localectl list-keymaps`; `loadkeys` immediately;
    persisted to target `/etc/vconsole.conf`.
 3. **Network** — suspend ratatui, run `nmtui`; on return verify with
@@ -58,7 +61,9 @@ Linear: Back/Next only, no per-item jump from the confirm page.
    - Show a single-select list of region names; selecting a region moves
      that region's `Server =` lines to the top of the file, ahead of all
      other regions (file header comments preserved). Alternatively, a
-     manual `Server =` URL input field below the list.
+     manual `Server =` URL input field below the list. A manual entry becomes
+     the sole active server so `pacman -Sy` validates that entry rather than
+     silently falling back to a region server.
    - Tab toggles focus between the list and the input field.
    - On Next: rewrite the mirrorlist, validate with `pacman -Sy` (exit 0 =
      ok). On failure, show a modal error dialog; dismiss and retry.
@@ -66,41 +71,52 @@ Linear: Back/Next only, no per-item jump from the confirm page.
    role assignment; every role is chosen by the user by hand.
 
    Sub-page A (disk picker):
-   - List every block device of type `disk` from `lsblk -J -O -b` (name on the
-     left, human-readable size on the right).
+   - Read a fixed lsblk JSON schema containing device, model, transport, size,
+     removable/read-only state, mountpoints, filesystem, GPT type, and label.
+     Exclude zram pseudo-disks. Show physical candidates in a responsive table.
+   - The disk containing `/run/archiso/` and read-only disks remain visible but
+     disabled. Other removable disks remain selectable.
    - Enter opens `cfdisk /dev/<disk>` full-screen (via `sudo` when not root);
-     on return the installer runs `partprobe` and re-reads `lsblk -J -O -b`.
+     on return all prior role assignments are cleared, then the installer runs
+     `partprobe` and re-reads lsblk. A non-zero partprobe result is a blocking,
+     retryable disk error; spawn failure is fatal.
    - The user may run cfdisk against multiple disks before leaving the page.
    - The on-screen Next button advances to sub-page B.
 
    Sub-page B (partition role picker):
-   - List every partition of type `part` on every disk from the latest `lsblk`
-     (name / size / current FSTYPE).
+   - List every partition in a responsive device/size/filesystem/label/role
+     table. Partitions belonging to disabled disks are protected and cannot be
+     assigned.
    - Selecting a partition (Enter) pops a small dialog asking the user to
-     assign it the **ESP** role or the **Target** role (or cancel).
+     assign it the **ESP**, **Target**, or explicit **Unassigned** role.
      ESP is single-select (assigning a new ESP clears the old one); Target is
      multi-select (choosing two or more Target partitions enables btrfs RAID
-     at format time — see §5).
-   - The Next button is enabled only when an ESP is assigned and the total size
-     of all Target partitions exceeds 20 GiB.
-   - Pressing Next, if any Target partition currently has a non-empty FSTYPE
-     (it will be reformatted as btrfs → data loss) or the ESP partition is not
-     already vfat (it will be `mkfs.vfat -F32`'d), shows a single blocking
-     confirmation dialog listing every partition that will be wiped; the user
-     must confirm to leave the step. A pure-vfat ESP partition incurs no
-     warning and is not reformatted.
+     at format time — see §5). The roles are mutually exclusive for a given
+     partition. The ESP must carry the GPT ESP type UUID.
+   - With multiple Targets, Next asks for the btrfs data profile (`raid0` or
+     `raid1`; metadata remains `raid1`). Usable capacity is checked against the
+     strict `> 20 GiB` requirement: RAID0 is conservatively limited by the
+     smallest-device stripe size; RAID1 is limited by two-copy overhead and
+     space outside the largest device.
+   - Before leaving, a blocking dialog lists **every** Target because all are
+     formatted as btrfs, plus the ESP only when it is not already vfat. The
+     user must explicitly confirm data loss.
    - There is no extra-partition / extra-mount mapping in v0.1.
 6. **Kernel** — `linux` / `linux-lts` / `linux-zen` / `linux-hardened` (single
    select).
-7. **nvidia** — "no nvidia" OR one variant from the compatible matrix below
-   (incompatible options disabled in the UI). Default: `nvidia-dkms`.
+7. **NVIDIA** — "no NVIDIA" OR one variant from the compatible matrix below
+   (incompatible options disabled in the UI). Default: `nvidia-open-dkms`.
 
-   | kernel          | allowed nvidia packages                                  |
-   |-----------------|----------------------------------------------------------|
-   | linux           | nvidia, nvidia-dkms, nvidia-open-dkms, nvidia-lts        |
-   | linux-lts       | nvidia-lts, nvidia-dkms, nvidia-open-dkms                |
-   | linux-zen       | nvidia-dkms, nvidia-open-dkms                            |
-   | linux-hardened  | nvidia-dkms, nvidia-open-dkms                            |
+   | kernel          | allowed NVIDIA packages                 |
+   |-----------------|-----------------------------------------|
+   | linux           | nvidia-open / nvidia-open-dkms          |
+   | linux-lts       | nvidia-open-lts / nvidia-open-dkms      |
+   | linux-zen       | nvidia-open-dkms                        |
+   | linux-hardened  | nvidia-open-dkms                        |
+
+   `nvidia-open-dkms` also adds the matching selected-kernel headers package
+   (`linux-headers`, `linux-lts-headers`, `linux-zen-headers`, or
+   `linux-hardened-headers`) to the pacstrap package set.
 
 8. **Timezone** — `curl -s http://ip-api.com/json` → `timezone` field; fallback
    UTC; user may override by typing `Region/City` or picking from
@@ -121,20 +137,24 @@ Linear: Back/Next only, no per-item jump from the confirm page.
 12.1 Format & mount:
 
 - root: if a single Target partition was chosen, `mkfs.btrfs -f <part>`. If two
-  or more Target partitions were chosen, the installer prompts the user to
-  pick the data RAID mode (`raid0` or `raid1`; metadata is always `raid1`),
-  then runs `mkfs.btrfs -f -d <mode> -m raid1 <part1> <part2> ...`. Create
+  or more Target partitions were chosen, use the data RAID mode already chosen
+  in the disk step (`raid0` or `raid1`; metadata is always `raid1`) and run
+  `mkfs.btrfs -f -d <mode> -m raid1 <part1> <part2> ...`. Create
   subvolumes `@`, `@home`; remount root with `-o compress=zstd:1,subvol=@`;
   `@home` at `/mnt/home`.
 - ESP: skip if already vfat, else `mkfs.vfat -F32`; mount at `/mnt/boot/efi`.
 - No extra-partition mapping in v0.1 (see §4 step 5).
 
-12.2 Live `pacman.conf` — append `[clipsneko]` section using `repo.conf`
-(`SigLevel = Never` for the debug phase).
+12.2 Package source — use the Live ISO's existing `/etc/pacman.conf`, which
+already contains the ClipsNeko repository. Packages with names beginning in
+`clipsneko-` may therefore be listed in `packages.list` like ordinary packages.
+The installer does not parse or generate repository configuration.
 
-12.3 `pacstrap /mnt base base-devel <chosen kernel> linux-firmware
-<packages.list contents> <chosen nvidia pkg> grub grub-btrfs efibootmgr zsh
-grml-zsh-config sudo networkmanager nano vi`
+12.3 `pacstrap -P /mnt <packages.list contents> <chosen kernel>
+linux-firmware <chosen NVIDIA package and required kernel headers>`.
+`packages.list` is the authoritative static package set; the installer only
+adds packages derived from wizard state. `-P` copies the Live ISO's
+`pacman.conf` and `pacman.d` configuration to the target.
 
 12.4 `genfstab -U /mnt >> /mnt/etc/fstab` — verify btrfs entries carry
 `compress=zstd:1,subvol=@` / `subvol=@home`.
@@ -142,18 +162,17 @@ grml-zsh-config sudo networkmanager nano vi`
 12.5 `arch-chroot /mnt`:
 
 - timezone symlink + `hwclock --systohc`
-- `/etc/locale.gen` per state list → `locale-gen`; write `/etc/locale.conf`
-  (`LANG=...`) and `/etc/vconsole.conf` (`KEYMAP=...`)
+- enable the selected target locale in `/etc/locale.gen`, run `locale-gen`,
+  write `/etc/locale.conf` (`LANG=...`) and `/etc/vconsole.conf` (`KEYMAP=...`)
 - `/etc/hostname` + `/etc/hosts`
 - `passwd -l root`
 - `useradd -m -G wheel -s /bin/zsh <user>`; `chpasswd`
 - uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`
-- copy live `/etc/pacman.d/mirrorlist` → target
-- append `[clipsneko]` section to `/mnt/etc/pacman.conf`
-- mkinitcpio: **if nvidia was installed, remove `kms` from HOOKS in
+- use the pacman configuration copied by `pacstrap -P`
+- mkinitcpio: **if NVIDIA was installed, remove `kms` from HOOKS in
   `/etc/mkinitcpio.conf`**; then `mkinitcpio -P`. (No MODULES additions needed:
   the default `filesystems` HOOK + btrfs-progs already cover btrfs, and current
-  nvidia packages need no MODULES entries.)
+  NVIDIA packages need no MODULES entries.)
 - `grub-install --target=x86_64-efi --efi-directory=/boot/efi
   --bootloader-id=clipsneko`
 - `grub-mkconfig -o /boot/grub/grub.cfg`
@@ -171,19 +190,24 @@ root shell on live env.
 - **Space**: toggle / select the highlighted item (step body only).
 - **Enter**: in the step body, confirm / select / advance (a step may emit
   `Next` to advance, so Enter still works without Tab-ing to the Next
-  button); on a focused button, activate it.
-- **Esc**: request quit — opens the quit-confirmation dialog. Esc is no
-  longer used for going back.
-- **Ctrl+C**: same as Esc — opens the quit-confirmation dialog.
+  button); on a focused button, activate it. Activating the Next button goes
+  through the same per-step commit/validation path as body Enter.
+- **Esc**: cancel the active modal; otherwise follow the Back-button path
+  (internal disk page first, then previous wizard step).
+- **Ctrl+C**: open quit confirmation from any page or step-owned modal.
 - **Back button**: go to the previous step (disabled on the first step).
 - **Next button**: go to the next step (disabled on the last step).
-- **F1**: help (not implemented yet).
+- **F1**: help (not implemented or advertised in the footer yet).
 - Install phase: **Spinner + progress text** on screen, log only to file;
   **L**: view log after completion.
 
-The quit-confirmation dialog shows a `[ Quit ]` button and the hint
-"Esc to cancel, Enter to quit." Enter confirms and exits; Esc cancels and
-returns to the wizard. `Y` is no longer used.
+The quit-confirmation dialog shows `[ Cancel ]` and `[ Quit ]`, initially
+focused on Cancel. Left/Right or Tab changes focus, Enter activates the focused
+button, and Esc always cancels.
+
+Step-owned modal dialogs receive all keyboard input before global shortcuts or
+footer focus. Esc therefore cancels the active step dialog, and Tab cannot
+activate controls behind it.
 
 ## 7. Deferred items (pending user direction)
 
@@ -194,12 +218,23 @@ returns to the wizard. `Y` is no longer used.
 - Password-strength algorithm tune-up (initial: lightweight heuristic).
 - Install-failure rollback.
 
+Password handoff is locked: keep the confirmed password only in a dedicated
+in-memory `SecretString` that does not implement `Debug`; pipe
+`<username>:<password>` to `chpasswd` through stdin; never place it in command
+arguments, summaries, tracing fields, or logs. On success, zeroize it
+immediately; its `Drop` implementation zeroizes again on failure or early exit.
+The `zeroize` crate is justified when the user step is implemented.
+
 ## 8. i18n workflow
 
 - `en` is the POT source.
 - Add a UI string → wrap in `t!(...)`; update `.pot` and both `.po` files in
   the same change.
 - `zh_CN` must not lag `en` by more than one session.
+- Changing the installer language sets `LC_MESSAGES` only; it does not alter
+  other process locale categories or the target-system locale.
+- Debug builds load build-generated catalogs from OUT_DIR. Release builds use
+  the GNU-standard `/usr/share/locale` path with no runtime path override.
 
 ## 9. Privilege model and logging
 
@@ -224,6 +259,18 @@ Commands that do not require root (`nmtui` via polkit, HTTP fetches to
 This is the required pattern for all future modules that shell out — see
 `AGENTS.md` §2 and the `util::process` module.
 
+### Error boundary
+
+- Live ISO invariants are fatal and propagate with context after restoring the
+  terminal: missing commands/config/catalogs, sudo/spawn failure, malformed
+  fixed command output, missing locales/keymaps, and privileged file-write
+  failure. These do not receive fallback UI.
+- User/external states remain recoverable in the TUI: offline connectivity,
+  invalid or unreachable mirror input, user cancellation, destructive-action
+  confirmation, and a non-zero partprobe result caused by device state.
+- Terminal restoration is always attempted and any restoration failure is
+  fatal; the app never continues with an unknown terminal state.
+
 ### Logging
 
 - Log file: `$XDG_CACHE_HOME/clipsneko-installer/log`, falling back to
@@ -232,3 +279,5 @@ This is the required pattern for all future modules that shell out — see
 - A `panic` hook restores the terminal (disables raw mode, leaves the
   alternate screen) so a crash never leaves the user stuck in a dead
   terminal.
+- Before entering the alternate screen, startup verifies that the required
+  `/etc/clipsneko-installer/packages.list` runtime file exists.

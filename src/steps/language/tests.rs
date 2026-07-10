@@ -5,7 +5,9 @@ use ratatui::Terminal;
 fn render_to_string(step: &mut LanguageStep, state: &InstallerState) -> String {
     let backend = TestBackend::new(60, 12);
     let mut terminal = Terminal::new(backend).unwrap();
-    terminal.draw(|f| step.render(f, f.area(), state)).unwrap();
+    terminal
+        .draw(|f| step.render(f, f.area(), state, true))
+        .unwrap();
     terminal
         .backend()
         .buffer()
@@ -17,7 +19,8 @@ fn render_to_string(step: &mut LanguageStep, state: &InstallerState) -> String {
 
 #[test]
 fn renders_both_language_labels() {
-    let mut step = LanguageStep::new();
+    set_language(UiLang::En).unwrap();
+    let mut step = LanguageStep::new().unwrap();
     let state = InstallerState::default();
     let s = render_to_string(&mut step, &state);
     // CJK characters occupy two cells; the continuation cell's symbol is
@@ -36,41 +39,66 @@ fn highlight_moves_on_down_without_wedging() {
     // offset bookkeeping and could wedge after a few Up/Down presses.
     // This test drives several highlight moves and re-renders each time,
     // asserting no panic and the expected label under the highlight.
-    let mut step = LanguageStep::new();
+    let mut step = LanguageStep::new().unwrap();
     let mut state = InstallerState::default();
 
     // Initial: highlight on English (index 0).
-    assert_eq!(step.highlighted(), UiLang::En);
+    assert_eq!(step.highlighted_ui(), UiLang::En);
 
     // Down → ZhCn.
     step.handle_key(
         crossterm::event::KeyEvent::new(KeyCode::Down, crossterm::event::KeyModifiers::NONE),
         &mut state,
-    );
-    assert_eq!(step.highlighted(), UiLang::ZhCn);
+    )
+    .unwrap();
+    assert_eq!(step.highlighted_ui(), UiLang::ZhCn);
     let _ = render_to_string(&mut step, &state);
 
-    // Down again → ZhTw.
+    // Down again wraps back to English.
     step.handle_key(
         crossterm::event::KeyEvent::new(KeyCode::Down, crossterm::event::KeyModifiers::NONE),
         &mut state,
-    );
-    assert_eq!(step.highlighted(), UiLang::ZhTw);
+    )
+    .unwrap();
+    assert_eq!(step.highlighted_ui(), UiLang::En);
     let _ = render_to_string(&mut step, &state);
 
-    // One more Down wraps back to En.
+    // One more Down returns to ZhCn.
     step.handle_key(
         crossterm::event::KeyEvent::new(KeyCode::Down, crossterm::event::KeyModifiers::NONE),
         &mut state,
-    );
-    assert_eq!(step.highlighted(), UiLang::En);
+    )
+    .unwrap();
+    assert_eq!(step.highlighted_ui(), UiLang::ZhCn);
     let _ = render_to_string(&mut step, &state);
 
-    // Up wraps to ZhTw.
+    // Up returns to English.
     step.handle_key(
         crossterm::event::KeyEvent::new(KeyCode::Up, crossterm::event::KeyModifiers::NONE),
         &mut state,
-    );
-    assert_eq!(step.highlighted(), UiLang::ZhTw);
+    )
+    .unwrap();
+    assert_eq!(step.highlighted_ui(), UiLang::En);
     let _ = render_to_string(&mut step, &state);
+}
+
+#[test]
+fn activation_populates_independent_defaults() {
+    let mut step = LanguageStep::new().unwrap();
+    let mut state = InstallerState::default();
+
+    step.activate(&mut state).unwrap();
+
+    assert_eq!(state.ui_lang, Some(UiLang::En));
+    assert_eq!(state.target_locale.as_deref(), Some("en_US.UTF-8"));
+}
+
+#[test]
+fn tab_cycles_ui_locale_and_footer_boundaries() {
+    let mut step = LanguageStep::new().unwrap();
+    assert_eq!(step.focus, LanguageFocus::UiLanguage);
+    assert!(step.consume_tab(false));
+    assert_eq!(step.focus, LanguageFocus::TargetLocale);
+    assert!(!step.consume_tab(false));
+    assert_eq!(step.focus, LanguageFocus::UiLanguage);
 }

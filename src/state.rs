@@ -13,6 +13,7 @@ use crate::i18n::UiLang;
 #[derive(Debug, Default)]
 pub struct InstallerState {
     pub ui_lang: Option<UiLang>,
+    pub target_locale: Option<String>,
     pub keymap: Option<String>,
     pub network_ok: bool,
     pub mirror_lines: Vec<String>,
@@ -32,6 +33,14 @@ pub struct InstallerState {
 pub struct DiskState {
     pub esp_partition: Option<String>,
     pub target_partitions: Vec<String>,
+    pub raid_mode: Option<BtrfsRaidMode>,
+}
+
+/// Btrfs data profile used when multiple Target partitions are selected.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BtrfsRaidMode {
+    Raid0,
+    Raid1,
 }
 
 /// Kernel package chosen in step 6.
@@ -48,14 +57,14 @@ pub enum KernelChoice {
 pub enum NvidiaChoice {
     #[default]
     None,
-    Nvidia,
-    NvidiaDkms,
+    NvidiaOpen,
     NvidiaOpenDkms,
-    NvidiaLts,
+    NvidiaOpenLts,
 }
 
-/// User account info collected in step 9. The password itself is never
-/// stored here; `password_set` only records that a password was confirmed.
+/// Non-secret user account info collected in step 9. The password lives in a
+/// separate non-Debug, zeroizing secret wrapper until chpasswd consumes it;
+/// `password_set` only records that confirmation succeeded.
 #[derive(Debug, Default)]
 pub struct UserInfo {
     pub username: String,

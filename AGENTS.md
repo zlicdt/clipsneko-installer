@@ -21,9 +21,10 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
   (fixed path under `$XDG_CACHE_HOME`, falling back to `$HOME/.cache`; no env-var
   override). A panic hook restores the terminal on crash.
 - Runtime config (must exist or the installer exits with a clear error):
-  - `/etc/clipsneko-installer/packages.list` — one package name per line.
-  - `/etc/clipsneko-installer/repo.conf` — `name`, `server_url`, `siglevel`
-    (default `Never` for the debug phase).
+  `/etc/clipsneko-installer/packages.list` — one package name per line.
+- The Live ISO's `/etc/pacman.conf` already contains the ClipsNeko repository.
+  The installer must use `pacstrap -P` so pacman configuration is copied to
+  the target; it must not maintain a separate repository configuration.
 
 ## 3. Language of code and docs
 
@@ -78,8 +79,7 @@ snapshot of where the project stands right now.
 - The agent MUST NOT run `git commit`, `git push`, `git tag`, `git commit --amend`,
   or any write-side git command. The user commits manually.
 - The agent MAY run read-only git commands (`status`, `diff`, `log`) to inspect.
-- Never stage secrets, keys, or the user's `/etc/clipsneko-installer/repo.conf`
-  runtime data.
+- Never stage secrets or keys.
 
 ## 9. Verification before declaring a task done
 

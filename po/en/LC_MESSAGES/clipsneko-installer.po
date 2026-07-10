@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-07 00:00+0800\n"
+"POT-Creation-Date: 2026-07-11 01:29+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: English\n"
@@ -15,234 +15,353 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app.rs
-msgid "app.title"
-msgstr "ClipsNeko Linux Installer"
-
-#: src/app.rs
+#: src/app.rs:218
 msgid "app.step_indicator"
 msgstr "Step"
 
-#: src/app.rs
+#: src/app.rs:215
+msgid "app.title"
+msgstr "ClipsNeko Linux Installer"
+
+#: src/app.rs:256
 msgid "button.back"
 msgstr "Back"
 
-#: src/app.rs
+#: src/app.rs:291
+msgid "button.cancel"
+msgstr "Cancel"
+
+#: src/app.rs:270
 msgid "button.next"
 msgstr "Next"
 
-#: src/app.rs
+#: src/app.rs:295
 msgid "button.quit"
 msgstr "Quit"
 
-#: src/app.rs
-msgid "footer.hint"
-msgstr "Tab=Focus  F1=Help  Esc=Quit"
+#: src/steps/network.rs:110
+msgid "common.not_available"
+msgstr "Not available"
 
-#: src/app.rs
-msgid "quit_dialog.title"
-msgstr "Are you sure you want to quit?"
+#: src/steps/disk.rs:331 src/steps/disk.rs:403
+msgid "disk_step.column_device"
+msgstr "Device"
 
-#: src/app.rs
-msgid "quit_dialog.hint"
-msgstr "Esc to cancel, Enter to quit."
+#: src/steps/disk.rs:405
+msgid "disk_step.column_filesystem"
+msgstr "Filesystem"
 
-#: src/steps/language.rs
-msgid "language_step.title"
-msgstr "Select installer language"
+#: src/steps/disk.rs:406
+msgid "disk_step.column_label"
+msgstr "Label"
 
-#: src/steps/language.rs
-msgid "language_step.hint"
-msgstr "Space=Select  Enter=Next"
+#: src/steps/disk.rs:332
+msgid "disk_step.column_model"
+msgstr "Model"
 
-#: src/steps/keyboard.rs
-msgid "keyboard_step.title"
-msgstr "Select keyboard layout"
+#: src/steps/disk.rs:407
+msgid "disk_step.column_role"
+msgstr "Role"
 
-#: src/steps/keyboard.rs
-msgid "keyboard_step.hint"
-msgstr "Space=Select  Enter=Next"
+#: src/steps/disk.rs:334 src/steps/disk.rs:404
+msgid "disk_step.column_size"
+msgstr "Size"
 
-#: src/steps/network.rs
-msgid "network_step.title"
-msgstr "Configure network"
+#: src/steps/disk.rs:335
+msgid "disk_step.column_status"
+msgstr "Status"
 
-#: src/steps/network.rs
-msgid "network_step.status_connected"
-msgstr "✓ Connected"
+#: src/steps/disk.rs:333
+msgid "disk_step.column_transport"
+msgstr "Transport"
 
-#: src/steps/network.rs
-msgid "network_step.status_disconnected"
-msgstr "✗ Not connected"
+#: src/steps/disk.rs:299
+msgid "disk_step.error_capacity"
+msgstr ""
+"Usable Target capacity must be greater than 20 GiB for the selected profile."
 
-#: src/steps/network.rs
-msgid "network_step.label_interface"
-msgstr "Interface"
+#: src/steps/disk.rs:501
+msgid "disk_step.error_hint"
+msgstr "Esc/Enter to dismiss."
 
-#: src/steps/network.rs
-msgid "network_step.label_address"
-msgstr "Address"
+#: src/steps/disk.rs:247
+msgid "disk_step.error_invalid_esp"
+msgstr "This partition is not a GPT EFI System Partition."
 
-#: src/steps/network.rs
-msgid "network_step.label_gateway"
-msgstr "Gateway"
+#: src/steps/disk.rs:127
+msgid "disk_step.error_partprobe"
+msgstr ""
+"partprobe could not refresh the partition table. Reopen cfdisk and try again."
 
-#: src/steps/network.rs
-msgid "network_step.hint_connected"
-msgstr "Enter=Next  N=nmtui  R=Recheck"
+#: src/steps/disk.rs:220
+msgid "disk_step.error_protected_part"
+msgstr "This partition belongs to protected Live or read-only media."
 
-#: src/steps/network.rs
-msgid "network_step.hint_disconnected"
-msgstr "Enter=nmtui  R=Recheck"
+#: src/steps/disk.rs:506
+msgid "disk_step.error_title"
+msgstr "Disk configuration error"
 
-#: src/steps/mirror.rs
-msgid "mirror_step.input_title"
-msgstr "Manual mirror source"
-
-#: src/steps/mirror.rs
-msgid "mirror_step.input_label"
-msgstr "Server"
-
-#: src/steps/mirror.rs
-msgid "mirror_step.list_title"
-msgstr "Select a region"
-
-#: src/steps/mirror.rs
-msgid "mirror_step.hint_list"
-msgstr "Up/Down=Select  Tab=Input  Enter=Next"
-
-#: src/steps/mirror.rs
-msgid "mirror_step.hint_input"
-msgstr "Type URL  Tab=List  Enter=Next"
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_title"
-msgstr "Validation failed"
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_hint"
-msgstr "Esc/Enter to dismiss and retry."
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_pacman"
-msgstr "pacman -Sy failed. Check your network or try another mirror."
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_write"
-msgstr "Failed to write /etc/pacman.d/mirrorlist."
-
-#: src/steps/mirror.rs
-msgid "mirror_step.error_invalid_url"
-msgstr "Invalid Server URL. Must start with http://, https://, ftp:// or rsync://."
-
-#: src/steps/mod.rs
-msgid "step.title.language"
-msgstr "Language"
-
-#: src/steps/mod.rs
-msgid "step.title.keyboard_layout"
-msgstr "Keyboard Layout"
-
-#: src/steps/mod.rs
-msgid "step.title.network"
-msgstr "Network"
-
-#: src/steps/mod.rs
-msgid "step.title.mirror_list"
-msgstr "Mirror List"
-
-#: src/steps/mod.rs
-msgid "step.title.disk_partitioning"
-msgstr "Disk Partitioning"
-
-#: src/steps/mod.rs
-msgid "step.title.kernel"
-msgstr "Kernel"
-
-#: src/steps/mod.rs
-msgid "step.title.nvidia_driver"
-msgstr "Nvidia Driver"
-
-#: src/steps/mod.rs
-msgid "step.title.timezone"
-msgstr "Timezone"
-
-#: src/steps/mod.rs
-msgid "step.title.user_account"
-msgstr "User Account"
-
-#: src/steps/mod.rs
-msgid "step.title.hostname"
-msgstr "Hostname"
-
-#: src/steps/mod.rs
-msgid "step.title.confirm_installation"
-msgstr "Confirm Installation"
-
-#: src/steps/mod.rs
-msgid "step.title.installing"
-msgstr "Installing"
-
-#: src/steps/mod.rs
-msgid "stub.body"
-msgstr "This step is not implemented yet."
-
-#: src/steps/mod.rs
-msgid "stub.hint"
-msgstr "Press Enter to continue."
-
-#: src/steps/disk.rs
+#: src/steps/disk.rs:758
 msgid "disk_step.hint_disk"
-msgstr "Enter=cfdisk  Up/Down=Select  Tab=Next"
+msgstr "Enter=cfdisk  Up/Down=Select  Tab=Focus"
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:759
 msgid "disk_step.hint_parts"
-msgstr "Enter=Assign role  Up/Down=Select  Tab=Next"
+msgstr "Enter=Role  R=RAID  Up/Down=Select  Tab=Focus"
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:358
 msgid "disk_step.list_title_disk"
 msgstr "Select a disk to partition"
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:430
 msgid "disk_step.list_title_parts"
 msgstr "Assign partition roles"
 
-#: src/steps/disk.rs
-msgid "disk_step.role_esp"
-msgstr "ESP"
+#: src/steps/disk.rs:483
+msgid "disk_step.raid_dialog.hint"
+msgstr "Up/Down=Select  Enter=Confirm  Esc=Cancel"
 
-#: src/steps/disk.rs
-msgid "disk_step.role_target"
-msgstr "Target"
+#: src/steps/disk.rs:470
+msgid "disk_step.raid_dialog.raid0"
+msgstr "RAID0 (capacity)"
 
-#: src/steps/disk.rs
-msgid "disk_step.role_dialog.title"
-msgstr "Assign role for"
+#: src/steps/disk.rs:471
+msgid "disk_step.raid_dialog.raid1"
+msgstr "RAID1 (redundancy)"
 
-#: src/steps/disk.rs
-msgid "disk_step.role_dialog.option_cancel"
-msgstr "Cancel"
+#: src/steps/disk.rs:488
+msgid "disk_step.raid_dialog.title"
+msgstr "Select btrfs data profile"
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:767
+msgid "disk_step.raid_label"
+msgstr "Data profile"
+
+#: src/steps/disk.rs:459
 msgid "disk_step.role_dialog.hint"
 msgstr "Up/Down=Select  Enter=Confirm  Esc=Cancel"
 
-#: src/steps/disk.rs
+#: src/steps/disk.rs:440
+msgid "disk_step.role_dialog.title"
+msgstr "Assign role for"
+
+#: src/steps/disk.rs:380 src/steps/disk.rs:567
+msgid "disk_step.role_esp"
+msgstr "ESP"
+
+#: src/steps/disk.rs:378
+msgid "disk_step.role_protected"
+msgstr "Protected"
+
+#: src/steps/disk.rs:382 src/steps/disk.rs:568
+msgid "disk_step.role_target"
+msgstr "Installation Target"
+
+#: src/steps/disk.rs:384 src/steps/disk.rs:569
+msgid "disk_step.role_unassigned"
+msgstr "Unassigned"
+
+#: src/steps/disk.rs:561
+msgid "disk_step.status_available"
+msgstr "Available"
+
+#: src/steps/disk.rs:555
+msgid "disk_step.status_live_media"
+msgstr "Live media"
+
+#: src/steps/disk.rs:557
+msgid "disk_step.status_read_only"
+msgstr "Read-only"
+
+#: src/steps/disk.rs:559
+msgid "disk_step.status_removable"
+msgstr "Removable"
+
+#: src/steps/disk.rs:620
+msgid "disk_step.wipe_dialog.esp_prefix"
+msgstr "ESP (FAT32):"
+
+#: src/steps/disk.rs:526
+msgid "disk_step.wipe_dialog.hint"
+msgstr "Enter=Continue  Esc=Cancel"
+
+#: src/steps/disk.rs:614
+msgid "disk_step.wipe_dialog.target_prefix"
+msgstr "Installation Target (btrfs):"
+
+#: src/steps/disk.rs:519
+msgid "disk_step.wipe_dialog.title"
+msgstr "These partitions will be formatted; all data on them will be lost:"
+
+#: src/steps/disk.rs:531
 msgid "disk_step.wipe_dialog.window_title"
 msgstr "Warning: data loss"
 
-#: src/steps/disk.rs
-msgid "disk_step.wipe_dialog.title"
-msgstr "The following partitions will be wiped:"
+#: src/app.rs:262
+msgid "footer.hint"
+msgstr "Tab=Focus  Ctrl+C=Quit"
 
-#: src/steps/disk.rs
-msgid "disk_step.wipe_dialog.target_prefix"
-msgstr "Target (reformat to btrfs):"
+#: src/steps/keyboard.rs:172
+msgid "keyboard_step.hint"
+msgstr "Space=Select  Enter=Next"
 
-#: src/steps/disk.rs
-msgid "disk_step.wipe_dialog.esp_prefix"
-msgstr "ESP (format to vfat):"
+#: src/steps/keyboard.rs:166
+msgid "keyboard_step.title"
+msgstr "Select keyboard layout"
 
-#: src/steps/disk.rs
-msgid "disk_step.wipe_dialog.hint"
-msgstr "Enter=Continue  Esc=Cancel"
+#: src/steps/language.rs:26
+msgid "language.name.english"
+msgstr "English"
+
+#: src/steps/language.rs:27
+msgid "language.name.simplified_chinese"
+msgstr "简体中文"
+
+#: src/steps/language.rs:194
+msgid "language_step.hint_target"
+msgstr "Up/Down=Select  Space=Apply  Enter=Next  Shift+Tab=UI"
+
+#: src/steps/language.rs:193
+msgid "language_step.hint_ui"
+msgstr "Up/Down=Select  Space=Apply  Enter/Tab=Target locale"
+
+#: src/steps/language.rs:187
+msgid "language_step.target_title"
+msgstr "Target system locale"
+
+#: src/steps/language.rs:165
+msgid "language_step.ui_title"
+msgstr "Installer language"
+
+#: src/steps/mirror.rs:362
+msgid "mirror_step.error_hint"
+msgstr "Esc/Enter to dismiss and retry."
+
+#: src/steps/mirror.rs:126
+msgid "mirror_step.error_invalid_url"
+msgstr ""
+"Invalid Server URL. Must start with http://, https://, ftp:// or rsync://."
+
+#: src/steps/mirror.rs:164
+msgid "mirror_step.error_pacman"
+msgstr "pacman -Sy failed. Check your network or try another mirror."
+
+#: src/steps/mirror.rs:368
+msgid "mirror_step.error_title"
+msgstr "Validation failed"
+
+#: src/steps/mirror.rs:259
+msgid "mirror_step.hint_input"
+msgstr "Type URL  Shift+Tab=Regions  Tab=Buttons  Enter=Apply"
+
+#: src/steps/mirror.rs:257
+msgid "mirror_step.hint_list"
+msgstr "Up/Down=Select  Tab=Input  Enter=Apply"
+
+#: src/steps/mirror.rs:236
+msgid "mirror_step.input_label"
+msgstr "Server"
+
+#: src/steps/mirror.rs:250
+msgid "mirror_step.input_title"
+msgstr "Manual mirror source"
+
+#: src/steps/mirror.rs:227
+msgid "mirror_step.list_title"
+msgstr "Select a region"
+
+#: src/steps/network.rs:103
+msgid "network_step.hint_connected"
+msgstr "Enter=Next  N=nmtui  R=Recheck"
+
+#: src/steps/network.rs:105
+msgid "network_step.hint_disconnected"
+msgstr "Enter=nmtui  R=Recheck"
+
+#: src/steps/network.rs:125
+msgid "network_step.label_address"
+msgstr "Address"
+
+#: src/steps/network.rs:130
+msgid "network_step.label_gateway"
+msgstr "Gateway"
+
+#: src/steps/network.rs:115
+msgid "network_step.label_interface"
+msgstr "Interface"
+
+#: src/steps/network.rs:111
+msgid "network_step.status_connected"
+msgstr "✓ Connected"
+
+#: src/steps/network.rs:134
+msgid "network_step.status_disconnected"
+msgstr "✗ Not connected"
+
+#: src/steps/network.rs:139
+msgid "network_step.title"
+msgstr "Configure network"
+
+#: src/app.rs:304
+msgid "quit_dialog.hint"
+msgstr "Left/Right=Select  Enter=Confirm  Esc=Cancel"
+
+#: src/app.rs:300
+msgid "quit_dialog.title"
+msgstr "Are you sure you want to quit?"
+
+#: src/steps/mod.rs:75
+msgid "step.title.confirm_installation"
+msgstr "Confirm Installation"
+
+#: src/steps/mod.rs:69
+msgid "step.title.disk_partitioning"
+msgstr "Disk Partitioning"
+
+#: src/steps/mod.rs:74
+msgid "step.title.hostname"
+msgstr "Hostname"
+
+#: src/steps/mod.rs:76
+msgid "step.title.installing"
+msgstr "Installing"
+
+#: src/steps/mod.rs:70
+msgid "step.title.kernel"
+msgstr "Kernel"
+
+#: src/steps/mod.rs:66
+msgid "step.title.keyboard_layout"
+msgstr "Keyboard Layout"
+
+#: src/steps/mod.rs:65
+msgid "step.title.language"
+msgstr "Language"
+
+#: src/steps/mod.rs:68
+msgid "step.title.mirror_list"
+msgstr "Mirror List"
+
+#: src/steps/mod.rs:67
+msgid "step.title.network"
+msgstr "Network"
+
+#: src/steps/mod.rs:71
+msgid "step.title.nvidia_driver"
+msgstr "NVIDIA Driver"
+
+#: src/steps/mod.rs:72
+msgid "step.title.timezone"
+msgstr "Timezone"
+
+#: src/steps/mod.rs:73
+msgid "step.title.user_account"
+msgstr "User Account"
+
+#: src/steps/mod.rs:188
+msgid "stub.body"
+msgstr "This step is not implemented yet."
+
+#: src/steps/mod.rs:188
+msgid "stub.hint"
+msgstr "Press Enter to continue."
