@@ -18,7 +18,7 @@ it moves from "Not done" to "Done" and stays there.
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. The POT
-  and en/zh_CN catalogs contain the same 128 message IDs with no untranslated,
+  and en/zh_CN catalogs contain the same 147 message IDs with no untranslated,
   fuzzy, or obsolete entries. zh_TW support was removed because it had no
   catalog and is outside the locked language set.
 - UI language changes only `LC_MESSAGES` and remains independent of the target
@@ -127,6 +127,18 @@ it moves from "Not done" to "Done" and stays there.
   and footer Next share the same commit path, and re-entry restores the saved
   value. The install design writes it to `/etc/hostname` and adds a
   `127.0.1.1` mapping in `/etc/hosts`.
+- **Confirmation step:** a scrollable installation-summary paragraph lists
+  locale, keymap, kernel, NVIDIA, hostname, timezone, username, every affected
+  disk, the ESP, every Target partition, and the btrfs RAID profile when more
+  than one Target exists. The account password is deliberately excluded from
+  the summary; missing fields render as the shared "not available" value. Enter
+  and footer Next open a centered, Cancel-first destructive-action dialog only
+  when the summary is complete (all required state present and RAID mode set
+  for multi-target); an incomplete summary cannot open it. Tab/Left/Right
+  toggle dialog focus, Enter on Install advances with `StepAction::Next`, and
+  Enter on Cancel or Esc dismisses the dialog. The modal locks global
+  navigation while open, and Up/Down/j/k, PageUp/PageDown, and Home/End scroll
+  long summaries.
 - Password storage is implemented as a non-Debug `SecretString` backed by
   `zeroize`. Both editable password buffers and the confirmed state secret are
   zeroized on clear or Drop; M4b will feed `<username>:<password>` only through
@@ -136,7 +148,7 @@ it moves from "Not done" to "Done" and stays there.
   `passwd -l root`; the installer creates the wheel user and leaves root-account
   policy unchanged.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (120 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (127 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -153,11 +165,11 @@ it moves from "Not done" to "Done" and stays there.
   output, protected Live media, responsive tables in both languages, role
   assignment, RAID profiles, and wipe dialogs still need an interactive
   multi-disk Live ISO/VM check.
-- **M3 selection and identity:** the kernel, NVIDIA, timezone, user-account, and
-  hostname steps still need an interactive bilingual Live ISO/VM check,
-  including real GeoIP, `timedatectl` data, centered-form layouts, input focus,
-  masking, strength colors, and hostname validation. Confirmation remains a
-  stub; its summary and final confirmation UI are not yet code.
+- **M3 selection and identity:** the kernel, NVIDIA, timezone, user-account,
+  hostname, and confirmation steps still need an interactive bilingual Live
+  ISO/VM check, including real GeoIP, `timedatectl` data, centered-form
+  layouts, input focus, masking, strength colors, hostname validation, and the
+  final summary/destructive-dialog review before install.
 - **M4a install stage:** btrfs format/RAID/subvolume and ESP format/mount logic
   is not implemented.
 - **M4b install stage:** packages.list loading, dynamic package derivation,
