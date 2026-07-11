@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 13:53+0800\n"
+"POT-Creation-Date: 2026-07-11 14:44+0800\n"
 "PO-Revision-Date: 2026-07-11 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Japanese\n"
@@ -27,7 +27,7 @@ msgstr "ClipsNeko Linux インストーラー"
 msgid "button.back"
 msgstr "戻る"
 
-#: src/app.rs:294 src/steps/confirm.rs:79
+#: src/steps/confirm.rs:79 src/app.rs:294
 msgid "button.cancel"
 msgstr "キャンセル"
 
@@ -39,17 +39,17 @@ msgstr "次へ"
 msgid "button.quit"
 msgstr "終了"
 
-#: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
-#: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
-#: src/steps/confirm.rs:345 src/steps/network.rs:111
+#: src/steps/confirm.rs:266 src/steps/confirm.rs:284 src/steps/confirm.rs:292
+#: src/steps/confirm.rs:310 src/steps/confirm.rs:316 src/steps/confirm.rs:331
+#: src/steps/confirm.rs:341 src/steps/confirm.rs:360 src/steps/network.rs:111
 msgid "common.not_available"
 msgstr "利用不可"
 
-#: src/steps/confirm.rs:283 src/steps/confirm.rs:289
+#: src/steps/confirm.rs:291 src/steps/confirm.rs:297
 msgid "confirm_step.affected_disk"
 msgstr "影響を受けるディスク"
 
-#: src/steps/confirm.rs:325
+#: src/steps/confirm.rs:333
 msgid "confirm_step.data_profile"
 msgstr "データプロファイル"
 
@@ -71,7 +71,7 @@ msgstr "インストール"
 msgid "confirm_step.dialog.title"
 msgstr "インストールの確認"
 
-#: src/steps/confirm.rs:296
+#: src/steps/confirm.rs:304
 msgid "confirm_step.esp"
 msgstr "EFI システムパーティション"
 
@@ -79,27 +79,31 @@ msgstr "EFI システムパーティション"
 msgid "confirm_step.hint"
 msgstr "上/下=スクロール  Enter=インストール内容を確認"
 
-#: src/steps/confirm.rs:262
+#: src/steps/confirm.rs:270
 msgid "confirm_step.hostname"
 msgstr "ホスト名"
 
-#: src/steps/confirm.rs:254
+#: src/steps/confirm.rs:262
 msgid "confirm_step.kernel"
 msgstr "カーネル"
 
-#: src/steps/confirm.rs:250
+#: src/steps/confirm.rs:258
 msgid "confirm_step.keyboard"
 msgstr "キーボード"
 
-#: src/steps/confirm.rs:246
+#: src/steps/confirm.rs:250
 msgid "confirm_step.locale"
-msgstr "対象ロケール"
+msgstr "既定のロケール（LANG）"
 
-#: src/steps/confirm.rs:352
+#: src/steps/confirm.rs:254
+msgid "confirm_step.locales"
+msgstr "有効なロケール（locale.gen）"
+
+#: src/steps/confirm.rs:367
 msgid "confirm_step.no_nvidia"
 msgstr "NVIDIA ドライバーなし"
 
-#: src/steps/confirm.rs:260
+#: src/steps/confirm.rs:268
 msgid "confirm_step.nvidia"
 msgstr "NVIDIA ドライバー"
 
@@ -107,15 +111,15 @@ msgstr "NVIDIA ドライバー"
 msgid "confirm_step.summary_title"
 msgstr "インストール概要"
 
-#: src/steps/confirm.rs:307 src/steps/confirm.rs:313
+#: src/steps/confirm.rs:315 src/steps/confirm.rs:321
 msgid "confirm_step.target_partition"
 msgstr "インストール対象"
 
-#: src/steps/confirm.rs:266
+#: src/steps/confirm.rs:274
 msgid "confirm_step.timezone"
 msgstr "タイムゾーン"
 
-#: src/steps/confirm.rs:270
+#: src/steps/confirm.rs:278
 msgid "confirm_step.username"
 msgstr "ユーザー名"
 
@@ -123,11 +127,11 @@ msgstr "ユーザー名"
 msgid "disk_step.column_device"
 msgstr "デバイス"
 
-#: src/steps/disk.rs:445
+#: src/steps/disk.rs:447
 msgid "disk_step.column_filesystem"
 msgstr "ファイルシステム"
 
-#: src/steps/disk.rs:446
+#: src/steps/disk.rs:445
 msgid "disk_step.column_label"
 msgstr "ラベル"
 
@@ -135,7 +139,7 @@ msgstr "ラベル"
 msgid "disk_step.column_model"
 msgstr "モデル"
 
-#: src/steps/disk.rs:447
+#: src/steps/disk.rs:446 src/steps/disk.rs:615
 msgid "disk_step.column_role"
 msgstr "役割"
 
@@ -180,11 +184,11 @@ msgstr ""
 msgid "disk_step.error_title"
 msgstr "ディスク構成エラー"
 
-#: src/steps/disk.rs:800
+#: src/steps/disk.rs:816
 msgid "disk_step.hint_disk"
 msgstr "Enter=cfdisk  上/下=選択  Tab=フォーカス"
 
-#: src/steps/disk.rs:801
+#: src/steps/disk.rs:817
 msgid "disk_step.hint_parts"
 msgstr "Enter=役割  R=RAID  上/下=選択  Tab=フォーカス"
 
@@ -212,7 +216,7 @@ msgstr "RAID1（冗長性）"
 msgid "disk_step.raid_dialog.title"
 msgstr "btrfs データプロファイルを選択"
 
-#: src/steps/disk.rs:809
+#: src/steps/disk.rs:825
 msgid "disk_step.raid_label"
 msgstr "データプロファイル"
 
@@ -224,19 +228,19 @@ msgstr "上/下=選択  Enter=確定  Esc=キャンセル"
 msgid "disk_step.role_dialog.title"
 msgstr "役割を割り当て："
 
-#: src/steps/disk.rs:420 src/steps/disk.rs:607
+#: src/steps/disk.rs:420 src/steps/disk.rs:607 src/steps/disk.rs:617
 msgid "disk_step.role_esp"
 msgstr "ESP"
 
-#: src/steps/disk.rs:418
+#: src/steps/disk.rs:418 src/steps/disk.rs:616
 msgid "disk_step.role_protected"
 msgstr "保護済み"
 
-#: src/steps/disk.rs:422 src/steps/disk.rs:608
+#: src/steps/disk.rs:422 src/steps/disk.rs:608 src/steps/disk.rs:618
 msgid "disk_step.role_target"
 msgstr "インストール対象"
 
-#: src/steps/disk.rs:424 src/steps/disk.rs:609
+#: src/steps/disk.rs:424 src/steps/disk.rs:609 src/steps/disk.rs:619
 msgid "disk_step.role_unassigned"
 msgstr "未割り当て"
 
@@ -256,7 +260,7 @@ msgstr "読み取り専用"
 msgid "disk_step.status_removable"
 msgstr "リムーバブル"
 
-#: src/steps/disk.rs:662
+#: src/steps/disk.rs:678
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr "ESP (FAT32):"
 
@@ -264,7 +268,7 @@ msgstr "ESP (FAT32):"
 msgid "disk_step.wipe_dialog.hint"
 msgstr "Enter=続行  Esc=キャンセル"
 
-#: src/steps/disk.rs:656
+#: src/steps/disk.rs:672
 msgid "disk_step.wipe_dialog.target_prefix"
 msgstr "インストール対象 (btrfs):"
 
@@ -444,19 +448,19 @@ msgstr "简体中文"
 msgid "language.name.traditional_chinese"
 msgstr "繁體中文"
 
-#: src/steps/language.rs:210
+#: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr "上/下=選択  Space=適用  Enter=次へ  Shift+Tab=UI"
+msgstr "上/下=選択  Space=切替  Enter=既定/次へ  [*]=既定"
 
-#: src/steps/language.rs:209
+#: src/steps/language.rs:284
 msgid "language_step.hint_ui"
-msgstr "上/下=選択  Space=適用  Enter/Tab=対象ロケール"
+msgstr "上/下=選択  Space=適用  Enter/Tab=対象ロケール一覧"
 
-#: src/steps/language.rs:202
+#: src/steps/language.rs:277
 msgid "language_step.target_title"
-msgstr "対象システムのロケール"
+msgstr "対象システムのロケール（複数選択）"
 
-#: src/steps/language.rs:179
+#: src/steps/language.rs:244
 msgid "language_step.ui_title"
 msgstr "インストーラーの言語"
 

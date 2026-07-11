@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 13:53+0800\n"
+"POT-Creation-Date: 2026-07-11 14:44+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -27,7 +27,7 @@ msgstr ""
 msgid "button.back"
 msgstr ""
 
-#: src/app.rs:294 src/steps/confirm.rs:79
+#: src/steps/confirm.rs:79 src/app.rs:294
 msgid "button.cancel"
 msgstr ""
 
@@ -39,17 +39,17 @@ msgstr ""
 msgid "button.quit"
 msgstr ""
 
-#: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
-#: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
-#: src/steps/confirm.rs:345 src/steps/network.rs:111
+#: src/steps/confirm.rs:266 src/steps/confirm.rs:284 src/steps/confirm.rs:292
+#: src/steps/confirm.rs:310 src/steps/confirm.rs:316 src/steps/confirm.rs:331
+#: src/steps/confirm.rs:341 src/steps/confirm.rs:360 src/steps/network.rs:111
 msgid "common.not_available"
 msgstr ""
 
-#: src/steps/confirm.rs:283 src/steps/confirm.rs:289
+#: src/steps/confirm.rs:291 src/steps/confirm.rs:297
 msgid "confirm_step.affected_disk"
 msgstr ""
 
-#: src/steps/confirm.rs:325
+#: src/steps/confirm.rs:333
 msgid "confirm_step.data_profile"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "confirm_step.dialog.title"
 msgstr ""
 
-#: src/steps/confirm.rs:296
+#: src/steps/confirm.rs:304
 msgid "confirm_step.esp"
 msgstr ""
 
@@ -77,27 +77,31 @@ msgstr ""
 msgid "confirm_step.hint"
 msgstr ""
 
-#: src/steps/confirm.rs:262
+#: src/steps/confirm.rs:270
 msgid "confirm_step.hostname"
 msgstr ""
 
-#: src/steps/confirm.rs:254
+#: src/steps/confirm.rs:262
 msgid "confirm_step.kernel"
 msgstr ""
 
-#: src/steps/confirm.rs:250
+#: src/steps/confirm.rs:258
 msgid "confirm_step.keyboard"
 msgstr ""
 
-#: src/steps/confirm.rs:246
+#: src/steps/confirm.rs:250
 msgid "confirm_step.locale"
 msgstr ""
 
-#: src/steps/confirm.rs:352
+#: src/steps/confirm.rs:254
+msgid "confirm_step.locales"
+msgstr ""
+
+#: src/steps/confirm.rs:367
 msgid "confirm_step.no_nvidia"
 msgstr ""
 
-#: src/steps/confirm.rs:260
+#: src/steps/confirm.rs:268
 msgid "confirm_step.nvidia"
 msgstr ""
 
@@ -105,15 +109,15 @@ msgstr ""
 msgid "confirm_step.summary_title"
 msgstr ""
 
-#: src/steps/confirm.rs:307 src/steps/confirm.rs:313
+#: src/steps/confirm.rs:315 src/steps/confirm.rs:321
 msgid "confirm_step.target_partition"
 msgstr ""
 
-#: src/steps/confirm.rs:266
+#: src/steps/confirm.rs:274
 msgid "confirm_step.timezone"
 msgstr ""
 
-#: src/steps/confirm.rs:270
+#: src/steps/confirm.rs:278
 msgid "confirm_step.username"
 msgstr ""
 
@@ -121,11 +125,11 @@ msgstr ""
 msgid "disk_step.column_device"
 msgstr ""
 
-#: src/steps/disk.rs:445
+#: src/steps/disk.rs:447
 msgid "disk_step.column_filesystem"
 msgstr ""
 
-#: src/steps/disk.rs:446
+#: src/steps/disk.rs:445
 msgid "disk_step.column_label"
 msgstr ""
 
@@ -133,7 +137,7 @@ msgstr ""
 msgid "disk_step.column_model"
 msgstr ""
 
-#: src/steps/disk.rs:447
+#: src/steps/disk.rs:446 src/steps/disk.rs:615
 msgid "disk_step.column_role"
 msgstr ""
 
@@ -173,11 +177,11 @@ msgstr ""
 msgid "disk_step.error_title"
 msgstr ""
 
-#: src/steps/disk.rs:800
+#: src/steps/disk.rs:816
 msgid "disk_step.hint_disk"
 msgstr ""
 
-#: src/steps/disk.rs:801
+#: src/steps/disk.rs:817
 msgid "disk_step.hint_parts"
 msgstr ""
 
@@ -205,7 +209,7 @@ msgstr ""
 msgid "disk_step.raid_dialog.title"
 msgstr ""
 
-#: src/steps/disk.rs:809
+#: src/steps/disk.rs:825
 msgid "disk_step.raid_label"
 msgstr ""
 
@@ -217,19 +221,19 @@ msgstr ""
 msgid "disk_step.role_dialog.title"
 msgstr ""
 
-#: src/steps/disk.rs:420 src/steps/disk.rs:607
+#: src/steps/disk.rs:420 src/steps/disk.rs:607 src/steps/disk.rs:617
 msgid "disk_step.role_esp"
 msgstr ""
 
-#: src/steps/disk.rs:418
+#: src/steps/disk.rs:418 src/steps/disk.rs:616
 msgid "disk_step.role_protected"
 msgstr ""
 
-#: src/steps/disk.rs:422 src/steps/disk.rs:608
+#: src/steps/disk.rs:422 src/steps/disk.rs:608 src/steps/disk.rs:618
 msgid "disk_step.role_target"
 msgstr ""
 
-#: src/steps/disk.rs:424 src/steps/disk.rs:609
+#: src/steps/disk.rs:424 src/steps/disk.rs:609 src/steps/disk.rs:619
 msgid "disk_step.role_unassigned"
 msgstr ""
 
@@ -249,7 +253,7 @@ msgstr ""
 msgid "disk_step.status_removable"
 msgstr ""
 
-#: src/steps/disk.rs:662
+#: src/steps/disk.rs:678
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr ""
 
@@ -257,7 +261,7 @@ msgstr ""
 msgid "disk_step.wipe_dialog.hint"
 msgstr ""
 
-#: src/steps/disk.rs:656
+#: src/steps/disk.rs:672
 msgid "disk_step.wipe_dialog.target_prefix"
 msgstr ""
 
@@ -433,19 +437,19 @@ msgstr ""
 msgid "language.name.traditional_chinese"
 msgstr ""
 
-#: src/steps/language.rs:210
+#: src/steps/language.rs:285
 msgid "language_step.hint_target"
 msgstr ""
 
-#: src/steps/language.rs:209
+#: src/steps/language.rs:284
 msgid "language_step.hint_ui"
 msgstr ""
 
-#: src/steps/language.rs:202
+#: src/steps/language.rs:277
 msgid "language_step.target_title"
 msgstr ""
 
-#: src/steps/language.rs:179
+#: src/steps/language.rs:244
 msgid "language_step.ui_title"
 msgstr ""
 

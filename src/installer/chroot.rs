@@ -31,23 +31,41 @@ fn write_target_file(runner: &mut dyn CommandRunner, path: &str, contents: &[u8]
     Ok(())
 }
 
-/// Uncomment the selected locale in locale.gen without changing other lines.
-pub fn enable_locale(contents: &str, locale: &str) -> Result<String> {
-    let mut found = false;
+/// Enable exactly the selected UTF-8 locales without changing unrelated lines.
+pub fn enable_locales(contents: &str, locales: &[String]) -> Result<String> {
+    let mut found = vec![false; locales.len()];
     let mut output = String::with_capacity(contents.len());
     for line in contents.split_inclusive('\n') {
         let raw = line.strip_suffix('\n').unwrap_or(line);
         let leading_len = raw.len() - raw.trim_start().len();
         let leading = &raw[..leading_len];
         let trimmed = raw.trim_start();
+        let commented = trimmed.starts_with('#');
         let candidate = trimmed
             .strip_prefix('#')
             .map(str::trim_start)
             .unwrap_or(trimmed);
-        if candidate.split_whitespace().next() == Some(locale) {
+        let mut fields = candidate.split_whitespace();
+        let candidate_locale = fields.next();
+        let is_utf8_entry = candidate_locale.is_some_and(|locale| {
+            locale.to_ascii_uppercase().ends_with(".UTF-8")
+                && fields.next().is_some_and(|charmap| {
+                    charmap.eq_ignore_ascii_case("UTF-8") || charmap.eq_ignore_ascii_case("UTF8")
+                })
+        });
+        let selected_index = is_utf8_entry.then(|| {
+            locales
+                .iter()
+                .position(|locale| Some(locale.as_str()) == candidate_locale)
+        });
+        if let Some(Some(index)) = selected_index {
             output.push_str(leading);
             output.push_str(candidate);
-            found = true;
+            found[index] = true;
+        } else if is_utf8_entry && !commented {
+            output.push_str(leading);
+            output.push_str("# ");
+            output.push_str(candidate);
         } else {
             output.push_str(raw);
         }
@@ -55,8 +73,12 @@ pub fn enable_locale(contents: &str, locale: &str) -> Result<String> {
             output.push('\n');
         }
     }
-    if !found {
-        bail!("selected locale is absent from target locale.gen");
+    if let Some(locale) = locales
+        .iter()
+        .zip(found)
+        .find_map(|(locale, found)| (!found).then_some(locale))
+    {
+        bail!("selected locale {locale} is absent from target locale.gen");
     }
     Ok(output)
 }
@@ -134,7 +156,7 @@ pub fn configure_target(runner: &mut dyn CommandRunner, config: &mut InstallConf
     run_chroot(runner, "hwclock", &["--systohc"], None)?;
 
     let locale_gen = read_target_file(runner, "/etc/locale.gen")?;
-    let locale_gen = enable_locale(&locale_gen, &config.target_locale)?;
+    let locale_gen = enable_locales(&locale_gen, &config.target_locales)?;
     write_target_file(runner, "/etc/locale.gen", locale_gen.as_bytes())?;
     run_chroot(runner, "locale-gen", &[], None)?;
     write_target_file(
@@ -219,7 +241,7 @@ mod tests {
                 self.password_seen_on_stdin = stdin == Some(b"user:secret-value\n".as_slice());
             }
             let stdout = if args.last().map(String::as_str) == Some("/etc/locale.gen") {
-                b"#en_US.UTF-8 UTF-8\n".to_vec()
+                b"#en_US.UTF-8 UTF-8\n#zh_CN.UTF-8 UTF-8\n".to_vec()
             } else if args.last().map(String::as_str) == Some("/etc/sudoers") {
                 b"# %wheel ALL=(ALL:ALL) ALL\n".to_vec()
             } else {
@@ -232,6 +254,7 @@ mod tests {
     fn install_config() -> InstallConfig {
         InstallConfig {
             target_locale: "en_US.UTF-8".to_string(),
+            target_locales: vec!["en_US.UTF-8".to_string(), "zh_CN.UTF-8".to_string()],
             keymap: "us".to_string(),
             kernel_package: "linux-zen".to_string(),
             headers_package: "linux-zen-headers".to_string(),
@@ -248,11 +271,25 @@ mod tests {
     }
 
     #[test]
-    fn locale_edit_is_selective_and_idempotent() {
-        let input = "#en_US.UTF-8 UTF-8\n# zh_CN.UTF-8 UTF-8\n";
-        let once = enable_locale(input, "zh_CN.UTF-8").unwrap();
-        assert_eq!(once, "#en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8\n");
-        assert_eq!(enable_locale(&once, "zh_CN.UTF-8").unwrap(), once);
+    fn locale_edit_enables_the_selected_set_and_is_idempotent() {
+        let input = "#en_US.UTF-8 UTF-8\n# zh_CN.UTF-8 UTF-8\nja_JP.UTF-8 UTF-8\n";
+        let locales = vec!["en_US.UTF-8".to_string(), "zh_CN.UTF-8".to_string()];
+        let once = enable_locales(input, &locales).unwrap();
+        assert_eq!(
+            once,
+            "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8\n# ja_JP.UTF-8 UTF-8\n"
+        );
+        assert_eq!(enable_locales(&once, &locales).unwrap(), once);
+    }
+
+    #[test]
+    fn locale_edit_reports_each_missing_selection() {
+        let input = "#en_US.UTF-8 UTF-8\n";
+        let locales = vec!["en_US.UTF-8".to_string(), "zh_CN.UTF-8".to_string()];
+        assert!(enable_locales(input, &locales)
+            .unwrap_err()
+            .to_string()
+            .contains("zh_CN.UTF-8"));
     }
 
     #[test]

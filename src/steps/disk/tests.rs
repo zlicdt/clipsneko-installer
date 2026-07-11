@@ -265,3 +265,33 @@ fn disk_table_renders_device_model_and_size_at_minimum_width() {
     assert!(rendered.contains("Test Disk"));
     assert!(rendered.contains("64.0G"));
 }
+
+#[test]
+fn partition_table_places_the_full_role_between_label_and_filesystem() {
+    crate::i18n::set_language(crate::i18n::UiLang::En).unwrap();
+    let mut step = DiskStep::new();
+    step.phase = Phase::PartitionAssign;
+    let mut target = part("nvme0n1p2", 64 * 1024_u64.pow(3), Some("btrfs"));
+    target.partlabel = Some("ClipsNeko root partition".to_string());
+    step.parts = vec![target];
+    let state = state_with(None, &["nvme0n1p2"]);
+    let backend = ratatui::backend::TestBackend::new(80, 12);
+    let mut terminal = ratatui::Terminal::new(backend).unwrap();
+
+    terminal
+        .draw(|frame| step.render(frame, frame.area(), &state, true))
+        .unwrap();
+    let rendered: String = terminal
+        .backend()
+        .buffer()
+        .content()
+        .iter()
+        .map(|cell| cell.symbol())
+        .collect();
+
+    assert!(rendered.contains("Installation Target"));
+    let label = rendered.find("Label").unwrap();
+    let role = rendered.find("Role").unwrap();
+    let filesystem = rendered.find("Filesystem").unwrap();
+    assert!(label < role && role < filesystem);
+}

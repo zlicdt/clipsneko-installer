@@ -23,6 +23,7 @@ pub const PACKAGES_LIST: &str = "/etc/clipsneko-installer/packages.list";
 /// worker thread. The password remains non-Debug and is consumed separately.
 pub struct InstallConfig {
     pub target_locale: String,
+    pub target_locales: Vec<String>,
     pub keymap: String,
     pub kernel_package: String,
     pub headers_package: String,
@@ -63,11 +64,20 @@ impl InstallConfig {
             bail!("btrfs RAID mode is missing");
         }
 
+        let target_locale = state
+            .target_locale
+            .clone()
+            .context("default target locale is missing")?;
+        if state.target_locales.is_empty() {
+            bail!("target locale selection is empty");
+        }
+        if !state.target_locales.contains(&target_locale) {
+            bail!("default target locale is not enabled");
+        }
+
         Ok(Self {
-            target_locale: state
-                .target_locale
-                .clone()
-                .context("target locale is missing")?,
+            target_locale,
+            target_locales: state.target_locales.clone(),
             keymap: state.keymap.clone().context("keymap is missing")?,
             kernel_package: state
                 .kernel

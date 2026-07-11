@@ -223,7 +223,11 @@ impl Step for ConfirmStep {
 }
 
 fn summary_is_complete(state: &InstallerState) -> bool {
-    state.target_locale.is_some()
+    state
+        .target_locale
+        .as_ref()
+        .is_some_and(|locale| state.target_locales.contains(locale))
+        && !state.target_locales.is_empty()
         && state.keymap.is_some()
         && state.kernel.is_some()
         && state.timezone.is_some()
@@ -246,6 +250,7 @@ fn summary_lines(state: &InstallerState) -> Vec<Line<'static>> {
             t!("confirm_step.locale"),
             value_or_unavailable(state.target_locale.as_deref()),
         ),
+        summary_line(t!("confirm_step.locales"), enabled_locales_summary(state)),
         summary_line(
             t!("confirm_step.keyboard"),
             value_or_unavailable(state.keymap.as_deref()),
@@ -326,6 +331,13 @@ fn summary_lines(state: &InstallerState) -> Vec<Line<'static>> {
     }
 
     lines
+}
+
+fn enabled_locales_summary(state: &InstallerState) -> String {
+    if state.target_locales.is_empty() {
+        return t!("common.not_available");
+    }
+    state.target_locales.join(", ")
 }
 
 fn summary_line(label: String, value: String) -> Line<'static> {

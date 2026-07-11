@@ -106,6 +106,7 @@ mod tests {
     fn config() -> InstallConfig {
         InstallConfig {
             target_locale: "en_US.UTF-8".to_string(),
+            target_locales: vec!["en_US.UTF-8".to_string()],
             keymap: "us".to_string(),
             kernel_package: "linux-zen".to_string(),
             headers_package: "linux-zen-headers".to_string(),

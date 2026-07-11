@@ -1,4 +1,4 @@
-//! Independent installer-language and target-locale selection.
+//! Installer-language selection and target-locale multi-selection.
 
 use crate::i18n::{set_language, UiLang};
 use crate::state::InstallerState;
@@ -9,7 +9,7 @@ use crate::util::ui::focusable_block;
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use ratatui::style::{Modifier, Style};
+use ratatui::style::{Color, Modifier, Style};
 use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
@@ -47,7 +47,8 @@ pub struct LanguageStep {
     locale_state: ListState,
     locales: Vec<String>,
     selected_ui: UiLang,
-    selected_locale: String,
+    selected_locales: Vec<String>,
+    default_locale: String,
     focus: LanguageFocus,
 }
 
@@ -67,7 +68,8 @@ impl LanguageStep {
             locale_state,
             locales,
             selected_ui: UiLang::En,
-            selected_locale: DEFAULT_TARGET_LOCALE.to_string(),
+            selected_locales: vec![DEFAULT_TARGET_LOCALE.to_string()],
+            default_locale: DEFAULT_TARGET_LOCALE.to_string(),
             focus: LanguageFocus::UiLanguage,
         })
     }
@@ -79,13 +81,20 @@ impl LanguageStep {
             let index = ALL_LANGS.iter().position(|lang| *lang == ui).unwrap_or(0);
             self.ui_state.select(Some(index));
         }
-        if let Some(locale) = state.target_locale.as_ref() {
-            if locale != &self.selected_locale {
-                self.selected_locale = locale.clone();
-                if let Some(index) = self.locales.iter().position(|item| item == locale) {
-                    self.locale_state.select(Some(index));
-                }
-            }
+        if !state.target_locales.is_empty() {
+            self.selected_locales = self
+                .locales
+                .iter()
+                .filter(|locale| state.target_locales.contains(locale))
+                .cloned()
+                .collect();
+        }
+        if let Some(locale) = state
+            .target_locale
+            .as_ref()
+            .filter(|locale| self.selected_locales.contains(locale))
+        {
+            self.default_locale = locale.clone();
         }
     }
 
@@ -93,20 +102,77 @@ impl LanguageStep {
         set_language(lang).with_context(|| format!("applying UI language {lang:?}"))?;
         self.selected_ui = lang;
         state.ui_lang = Some(lang);
+        self.enable_target_locale(lang.code(), state)?;
         Ok(())
     }
 
-    fn apply_target_locale(&mut self, locale: String, state: &mut InstallerState) {
-        self.selected_locale = locale.clone();
-        state.target_locale = Some(locale);
+    fn enable_target_locale(&mut self, locale: &str, state: &mut InstallerState) -> Result<()> {
+        let locale = self
+            .locales
+            .iter()
+            .find(|candidate| candidate.as_str() == locale)
+            .cloned()
+            .with_context(|| format!("{locale} is absent from /etc/locale.gen"))?;
+        if !self.selected_locales.contains(&locale) {
+            self.selected_locales.push(locale);
+            self.sort_selected_locales();
+        }
+        self.store_locale_choices(state);
+        Ok(())
+    }
+
+    fn sort_selected_locales(&mut self) {
+        self.selected_locales.sort_by_key(|selected| {
+            self.locales
+                .iter()
+                .position(|locale| locale == selected)
+                .unwrap_or(usize::MAX)
+        });
+    }
+
+    fn store_locale_choices(&self, state: &mut InstallerState) {
+        state.target_locale = Some(self.default_locale.clone());
+        state.target_locales.clone_from(&self.selected_locales);
+    }
+
+    fn toggle_highlighted_locale(&mut self, state: &mut InstallerState) {
+        let index = self.locale_state.selected().unwrap_or(0);
+        let locale = self.locales[index].clone();
+        if self.selected_locales.contains(&locale) {
+            if self.selected_locales.len() == 1 {
+                return;
+            }
+            self.selected_locales.retain(|selected| selected != &locale);
+            if self.default_locale == locale {
+                self.default_locale = (1..=self.locales.len())
+                    .map(|offset| &self.locales[(index + offset) % self.locales.len()])
+                    .find(|candidate| self.selected_locales.contains(candidate))
+                    .cloned()
+                    .expect("at least one selected locale remains");
+            }
+        } else {
+            self.selected_locales.push(locale);
+            self.sort_selected_locales();
+        }
+        self.store_locale_choices(state);
+    }
+
+    fn set_highlighted_as_default(&mut self, state: &mut InstallerState) {
+        let locale = self.highlighted_locale().to_string();
+        if !self.selected_locales.contains(&locale) {
+            self.selected_locales.push(locale.clone());
+            self.sort_selected_locales();
+        }
+        self.default_locale = locale;
+        self.store_locale_choices(state);
     }
 
     fn highlighted_ui(&self) -> UiLang {
         ALL_LANGS[self.ui_state.selected().unwrap_or(0)]
     }
 
-    fn highlighted_locale(&self) -> String {
-        self.locales[self.locale_state.selected().unwrap_or(0)].clone()
+    fn highlighted_locale(&self) -> &str {
+        &self.locales[self.locale_state.selected().unwrap_or(0)]
     }
 
     fn move_highlight(&mut self, delta: i32) {
@@ -116,16 +182,6 @@ impl LanguageStep {
         };
         let current = state.selected().unwrap_or(0) as i32;
         state.select(Some((current + delta).rem_euclid(len as i32) as usize));
-    }
-
-    fn apply_focused(&mut self, state: &mut InstallerState) -> Result<()> {
-        match self.focus {
-            LanguageFocus::UiLanguage => self.apply_ui_language(self.highlighted_ui(), state),
-            LanguageFocus::TargetLocale => {
-                self.apply_target_locale(self.highlighted_locale(), state);
-                Ok(())
-            }
-        }
     }
 }
 
@@ -137,9 +193,16 @@ impl Step for LanguageStep {
     fn activate(&mut self, state: &mut InstallerState) -> Result<()> {
         self.sync_from_state(state);
         state.ui_lang.get_or_insert(self.selected_ui);
-        state
+        if state.target_locales.is_empty() {
+            state.target_locales.clone_from(&self.selected_locales);
+        }
+        if state
             .target_locale
-            .get_or_insert_with(|| self.selected_locale.clone());
+            .as_ref()
+            .is_none_or(|locale| !state.target_locales.contains(locale))
+        {
+            state.target_locale = Some(self.default_locale.clone());
+        }
         Ok(())
     }
 
@@ -161,7 +224,9 @@ impl Step for LanguageStep {
 
         let ui_items = ALL_LANGS.iter().map(|lang| {
             let style = if *lang == self.selected_ui {
-                Style::default().add_modifier(Modifier::BOLD)
+                Style::default()
+                    .fg(Color::White)
+                    .add_modifier(Modifier::BOLD)
             } else {
                 Style::default()
             };
@@ -183,12 +248,22 @@ impl Step for LanguageStep {
         frame.render_stateful_widget(ui_list, columns[0], &mut self.ui_state);
 
         let locale_items = self.locales.iter().map(|locale| {
-            let style = if locale == &self.selected_locale {
-                Style::default().add_modifier(Modifier::BOLD)
+            let selected = self.selected_locales.contains(locale);
+            let marker = if locale == &self.default_locale {
+                "[*]"
+            } else if selected {
+                "[x]"
+            } else {
+                "[ ]"
+            };
+            let style = if selected {
+                Style::default()
+                    .fg(Color::White)
+                    .add_modifier(Modifier::BOLD)
             } else {
                 Style::default()
             };
-            ListItem::new(locale.clone()).style(style)
+            ListItem::new(format!("{marker} {locale}")).style(style)
         });
         let locale_highlight = if body_focused && self.focus == LanguageFocus::TargetLocale {
             Style::default().add_modifier(Modifier::REVERSED)
@@ -232,17 +307,22 @@ impl Step for LanguageStep {
                 StepAction::None
             }
             KeyCode::Char(' ') => {
-                self.apply_focused(state)?;
+                match self.focus {
+                    LanguageFocus::UiLanguage => {
+                        self.apply_ui_language(self.highlighted_ui(), state)?;
+                    }
+                    LanguageFocus::TargetLocale => self.toggle_highlighted_locale(state),
+                }
                 StepAction::None
             }
             KeyCode::Enter => match self.focus {
                 LanguageFocus::UiLanguage => {
-                    self.apply_focused(state)?;
+                    self.apply_ui_language(self.highlighted_ui(), state)?;
                     self.focus = LanguageFocus::TargetLocale;
                     StepAction::None
                 }
                 LanguageFocus::TargetLocale => {
-                    self.apply_focused(state)?;
+                    self.set_highlighted_as_default(state);
                     StepAction::Next
                 }
             },
@@ -272,8 +352,12 @@ impl Step for LanguageStep {
     }
 
     fn on_next_button(&mut self, state: &mut InstallerState) -> Result<StepAction> {
-        self.apply_ui_language(self.highlighted_ui(), state)?;
-        self.apply_target_locale(self.highlighted_locale(), state);
+        let highlighted_ui = self.highlighted_ui();
+        if highlighted_ui != self.selected_ui {
+            self.apply_ui_language(highlighted_ui, state)?;
+        } else {
+            self.store_locale_choices(state);
+        }
         Ok(StepAction::Next)
     }
 }

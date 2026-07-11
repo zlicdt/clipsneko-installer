@@ -92,6 +92,85 @@ fn activation_populates_independent_defaults() {
 
     assert_eq!(state.ui_lang, Some(UiLang::En));
     assert_eq!(state.target_locale.as_deref(), Some("en_US.UTF-8"));
+    assert_eq!(state.target_locales, ["en_US.UTF-8"]);
+}
+
+#[test]
+fn applying_ui_language_adds_its_locale_without_replacing_default() {
+    let mut step = LanguageStep::new().unwrap();
+    let mut state = InstallerState {
+        target_locale: Some("zh_CN.UTF-8".to_string()),
+        target_locales: vec!["zh_CN.UTF-8".to_string()],
+        ..InstallerState::default()
+    };
+    step.sync_from_state(&state);
+
+    step.apply_ui_language(UiLang::En, &mut state).unwrap();
+
+    assert_eq!(state.ui_lang, Some(UiLang::En));
+    assert_eq!(state.target_locale.as_deref(), Some("zh_CN.UTF-8"));
+    assert_eq!(
+        state.target_locales,
+        ["en_US.UTF-8".to_string(), "zh_CN.UTF-8".to_string()]
+    );
+}
+
+#[test]
+fn locale_toggle_keeps_one_selected_and_moves_a_removed_default() {
+    let mut step = LanguageStep::new().unwrap();
+    let mut state = InstallerState::default();
+    step.activate(&mut state).unwrap();
+    step.focus = LanguageFocus::TargetLocale;
+
+    step.toggle_highlighted_locale(&mut state);
+    assert_eq!(state.target_locales, ["en_US.UTF-8"]);
+
+    let zh_index = step
+        .locales
+        .iter()
+        .position(|locale| locale == "zh_CN.UTF-8")
+        .unwrap();
+    step.locale_state.select(Some(zh_index));
+    step.toggle_highlighted_locale(&mut state);
+    assert_eq!(state.target_locales.len(), 2);
+
+    let en_index = step
+        .locales
+        .iter()
+        .position(|locale| locale == "en_US.UTF-8")
+        .unwrap();
+    step.locale_state.select(Some(en_index));
+    step.toggle_highlighted_locale(&mut state);
+    assert_eq!(state.target_locales, ["zh_CN.UTF-8"]);
+    assert_eq!(state.target_locale.as_deref(), Some("zh_CN.UTF-8"));
+}
+
+#[test]
+fn enter_sets_the_highlighted_locale_as_default_and_enables_it() {
+    let mut step = LanguageStep::new().unwrap();
+    let mut state = InstallerState::default();
+    step.activate(&mut state).unwrap();
+    step.focus = LanguageFocus::TargetLocale;
+    let zh_index = step
+        .locales
+        .iter()
+        .position(|locale| locale == "zh_CN.UTF-8")
+        .unwrap();
+    step.locale_state.select(Some(zh_index));
+
+    let action = step
+        .handle_key(
+            crossterm::event::KeyEvent::new(KeyCode::Enter, crossterm::event::KeyModifiers::NONE),
+            &mut state,
+        )
+        .unwrap();
+
+    assert!(matches!(action, StepAction::Next));
+    assert_eq!(state.target_locale.as_deref(), Some("zh_CN.UTF-8"));
+    assert!(state
+        .target_locales
+        .iter()
+        .any(|locale| locale == "zh_CN.UTF-8"));
 }
 
 #[test]

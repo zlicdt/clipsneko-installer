@@ -433,18 +433,18 @@ impl DiskStep {
             Row::new(vec![
                 Cell::from(part.name.clone()),
                 Cell::from(lsblk::human_size(part.size)),
-                Cell::from(optional_text(&part.fstype)),
                 Cell::from(optional_text(&part.partlabel)),
                 Cell::from(role),
+                Cell::from(optional_text(&part.fstype)),
             ])
             .style(style)
         });
         let header = Row::new(vec![
             t!("disk_step.column_device"),
             t!("disk_step.column_size"),
-            t!("disk_step.column_filesystem"),
             t!("disk_step.column_label"),
             t!("disk_step.column_role"),
+            t!("disk_step.column_filesystem"),
         ])
         .style(Style::default().add_modifier(Modifier::BOLD));
         let row_highlight = if body_focused {
@@ -457,9 +457,9 @@ impl DiskStep {
             [
                 Constraint::Length(13),
                 Constraint::Length(8),
-                Constraint::Length(9),
                 Constraint::Min(8),
-                Constraint::Length(10),
+                Constraint::Length(partition_role_width()),
+                Constraint::Min(1),
             ],
         )
         .header(header)
@@ -608,6 +608,22 @@ fn role_label(option: RoleOption) -> String {
         RoleOption::Target => t!("disk_step.role_target"),
         RoleOption::Unassigned => t!("disk_step.role_unassigned"),
     }
+}
+
+fn partition_role_width() -> u16 {
+    [
+        t!("disk_step.column_role"),
+        t!("disk_step.role_protected"),
+        t!("disk_step.role_esp"),
+        t!("disk_step.role_target"),
+        t!("disk_step.role_unassigned"),
+    ]
+    .into_iter()
+    .map(|label| Line::from(label).width())
+    .max()
+    .unwrap_or(1)
+    .try_into()
+    .unwrap_or(u16::MAX)
 }
 
 fn current_role(part: &str, state: &InstallerState) -> Option<RoleOption> {

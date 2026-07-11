@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 13:53+0800\n"
+"POT-Creation-Date: 2026-07-11 14:44+0800\n"
 "PO-Revision-Date: 2026-07-11 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: German\n"
@@ -27,7 +27,7 @@ msgstr "ClipsNeko Linux-Installationsprogramm"
 msgid "button.back"
 msgstr "Zurück"
 
-#: src/app.rs:294 src/steps/confirm.rs:79
+#: src/steps/confirm.rs:79 src/app.rs:294
 msgid "button.cancel"
 msgstr "Abbrechen"
 
@@ -39,17 +39,17 @@ msgstr "Weiter"
 msgid "button.quit"
 msgstr "Beenden"
 
-#: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
-#: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
-#: src/steps/confirm.rs:345 src/steps/network.rs:111
+#: src/steps/confirm.rs:266 src/steps/confirm.rs:284 src/steps/confirm.rs:292
+#: src/steps/confirm.rs:310 src/steps/confirm.rs:316 src/steps/confirm.rs:331
+#: src/steps/confirm.rs:341 src/steps/confirm.rs:360 src/steps/network.rs:111
 msgid "common.not_available"
 msgstr "Nicht verfügbar"
 
-#: src/steps/confirm.rs:283 src/steps/confirm.rs:289
+#: src/steps/confirm.rs:291 src/steps/confirm.rs:297
 msgid "confirm_step.affected_disk"
 msgstr "Betroffener Datenträger"
 
-#: src/steps/confirm.rs:325
+#: src/steps/confirm.rs:333
 msgid "confirm_step.data_profile"
 msgstr "Datenprofil"
 
@@ -71,7 +71,7 @@ msgstr "Installieren"
 msgid "confirm_step.dialog.title"
 msgstr "Installation bestätigen"
 
-#: src/steps/confirm.rs:296
+#: src/steps/confirm.rs:304
 msgid "confirm_step.esp"
 msgstr "EFI-Systempartition"
 
@@ -79,27 +79,31 @@ msgstr "EFI-Systempartition"
 msgid "confirm_step.hint"
 msgstr "Auf/Ab=Scrollen  Enter=Installation prüfen"
 
-#: src/steps/confirm.rs:262
+#: src/steps/confirm.rs:270
 msgid "confirm_step.hostname"
 msgstr "Hostname"
 
-#: src/steps/confirm.rs:254
+#: src/steps/confirm.rs:262
 msgid "confirm_step.kernel"
 msgstr "Kernel"
 
-#: src/steps/confirm.rs:250
+#: src/steps/confirm.rs:258
 msgid "confirm_step.keyboard"
 msgstr "Tastatur"
 
-#: src/steps/confirm.rs:246
+#: src/steps/confirm.rs:250
 msgid "confirm_step.locale"
-msgstr "Ziel-Locale"
+msgstr "Standard-Locale (LANG)"
 
-#: src/steps/confirm.rs:352
+#: src/steps/confirm.rs:254
+msgid "confirm_step.locales"
+msgstr "Aktivierte Locales (locale.gen)"
+
+#: src/steps/confirm.rs:367
 msgid "confirm_step.no_nvidia"
 msgstr "Kein NVIDIA-Treiber"
 
-#: src/steps/confirm.rs:260
+#: src/steps/confirm.rs:268
 msgid "confirm_step.nvidia"
 msgstr "NVIDIA-Treiber"
 
@@ -107,15 +111,15 @@ msgstr "NVIDIA-Treiber"
 msgid "confirm_step.summary_title"
 msgstr "Installationsübersicht"
 
-#: src/steps/confirm.rs:307 src/steps/confirm.rs:313
+#: src/steps/confirm.rs:315 src/steps/confirm.rs:321
 msgid "confirm_step.target_partition"
 msgstr "Installationsziel"
 
-#: src/steps/confirm.rs:266
+#: src/steps/confirm.rs:274
 msgid "confirm_step.timezone"
 msgstr "Zeitzone"
 
-#: src/steps/confirm.rs:270
+#: src/steps/confirm.rs:278
 msgid "confirm_step.username"
 msgstr "Benutzername"
 
@@ -123,11 +127,11 @@ msgstr "Benutzername"
 msgid "disk_step.column_device"
 msgstr "Gerät"
 
-#: src/steps/disk.rs:445
+#: src/steps/disk.rs:447
 msgid "disk_step.column_filesystem"
 msgstr "Dateisystem"
 
-#: src/steps/disk.rs:446
+#: src/steps/disk.rs:445
 msgid "disk_step.column_label"
 msgstr "Bezeichnung"
 
@@ -135,7 +139,7 @@ msgstr "Bezeichnung"
 msgid "disk_step.column_model"
 msgstr "Modell"
 
-#: src/steps/disk.rs:447
+#: src/steps/disk.rs:446 src/steps/disk.rs:615
 msgid "disk_step.column_role"
 msgstr "Rolle"
 
@@ -181,11 +185,11 @@ msgstr ""
 msgid "disk_step.error_title"
 msgstr "Fehler bei der Datenträgerkonfiguration"
 
-#: src/steps/disk.rs:800
+#: src/steps/disk.rs:816
 msgid "disk_step.hint_disk"
 msgstr "Enter=cfdisk  Auf/Ab=Auswählen  Tab=Fokus"
 
-#: src/steps/disk.rs:801
+#: src/steps/disk.rs:817
 msgid "disk_step.hint_parts"
 msgstr "Enter=Rolle  R=RAID  Auf/Ab=Auswählen  Tab=Fokus"
 
@@ -213,7 +217,7 @@ msgstr "RAID1 (Redundanz)"
 msgid "disk_step.raid_dialog.title"
 msgstr "btrfs-Datenprofil auswählen"
 
-#: src/steps/disk.rs:809
+#: src/steps/disk.rs:825
 msgid "disk_step.raid_label"
 msgstr "Datenprofil"
 
@@ -225,19 +229,19 @@ msgstr "Auf/Ab=Auswählen  Enter=Bestätigen  Esc=Abbrechen"
 msgid "disk_step.role_dialog.title"
 msgstr "Rolle zuweisen für"
 
-#: src/steps/disk.rs:420 src/steps/disk.rs:607
+#: src/steps/disk.rs:420 src/steps/disk.rs:607 src/steps/disk.rs:617
 msgid "disk_step.role_esp"
 msgstr "ESP"
 
-#: src/steps/disk.rs:418
+#: src/steps/disk.rs:418 src/steps/disk.rs:616
 msgid "disk_step.role_protected"
 msgstr "Geschützt"
 
-#: src/steps/disk.rs:422 src/steps/disk.rs:608
+#: src/steps/disk.rs:422 src/steps/disk.rs:608 src/steps/disk.rs:618
 msgid "disk_step.role_target"
 msgstr "Installationsziel"
 
-#: src/steps/disk.rs:424 src/steps/disk.rs:609
+#: src/steps/disk.rs:424 src/steps/disk.rs:609 src/steps/disk.rs:619
 msgid "disk_step.role_unassigned"
 msgstr "Nicht zugewiesen"
 
@@ -257,7 +261,7 @@ msgstr "Schreibgeschützt"
 msgid "disk_step.status_removable"
 msgstr "Wechselmedium"
 
-#: src/steps/disk.rs:662
+#: src/steps/disk.rs:678
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr "ESP (FAT32):"
 
@@ -265,7 +269,7 @@ msgstr "ESP (FAT32):"
 msgid "disk_step.wipe_dialog.hint"
 msgstr "Enter=Fortfahren  Esc=Abbrechen"
 
-#: src/steps/disk.rs:656
+#: src/steps/disk.rs:672
 msgid "disk_step.wipe_dialog.target_prefix"
 msgstr "Installationsziel (btrfs):"
 
@@ -450,19 +454,20 @@ msgstr "简体中文"
 msgid "language.name.traditional_chinese"
 msgstr "繁體中文"
 
-#: src/steps/language.rs:210
+#: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr "Auf/Ab=Auswählen  Leertaste=Anwenden  Enter=Weiter  Umschalt+Tab=UI"
+msgstr ""
+"Auf/Ab=Auswahl  Leertaste=Umschalten  Enter=Standard/Weiter  [*]=Standard"
 
-#: src/steps/language.rs:209
+#: src/steps/language.rs:284
 msgid "language_step.hint_ui"
-msgstr "Auf/Ab=Auswählen  Leertaste=Anwenden  Enter/Tab=Ziel-Locale"
+msgstr "Auf/Ab=Auswahl  Leertaste=Anwenden  Enter/Tab=Ziel-Locales"
 
-#: src/steps/language.rs:202
+#: src/steps/language.rs:277
 msgid "language_step.target_title"
-msgstr "Locale des Zielsystems"
+msgstr "Locales des Zielsystems (Mehrfachauswahl)"
 
-#: src/steps/language.rs:179
+#: src/steps/language.rs:244
 msgid "language_step.ui_title"
 msgstr "Sprache des Installationsprogramms"
 

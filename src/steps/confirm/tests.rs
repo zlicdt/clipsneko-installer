@@ -12,6 +12,7 @@ fn key(code: KeyCode) -> KeyEvent {
 fn complete_state() -> InstallerState {
     InstallerState {
         target_locale: Some("zh_CN.UTF-8".to_string()),
+        target_locales: vec!["en_US.UTF-8".to_string(), "zh_CN.UTF-8".to_string()],
         keymap: Some("us".to_string()),
         disk: DiskState {
             esp_partition: Some("nvme0n1p1".to_string()),
@@ -59,6 +60,7 @@ fn summary_contains_every_requested_choice_and_no_password() {
         .join("\n");
 
     for expected in [
+        "en_US.UTF-8",
         "zh_CN.UTF-8",
         "us",
         "linux-zen",

@@ -33,8 +33,10 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
   **English**.
 - TUI strings are **never hardcoded** — every user-facing string goes through
   the `t!()` macro (backed by gettext).
-- The installer UI language is independent of the target system's
-  locale.
+- The installer UI language and the target system's default `LANG` remain
+  separate choices. Applying a UI language also adds its matching locale to
+  the target locale-generation set; the user may remove it while another
+  selected target locale remains.
 
 ## 4. Don't reinvent wheels
 

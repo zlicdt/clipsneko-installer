@@ -57,11 +57,13 @@ online, and configure mirrors — everything required before any disk work.
 
 ### Deliverables
 
-- `src/steps/language.rs` — two independent lists: the seven supported UI
+- `src/steps/language.rs` — two coordinated lists: the seven supported UI
   languages (`en`, `zh_CN`, `zh_TW`, `ja`, `de`, `ko`, and `ru`) for the
-  installer, and every UTF-8 target locale parsed from locale.gen.
-  Apply UI language live through `set_language()`; persist `state.ui_lang` and
-  `state.target_locale` independently.
+  installer, and a multi-select list of every UTF-8 target locale parsed from
+  locale.gen. Apply UI language live through `set_language()` and add its
+  matching locale to the target set. Space toggles target locales but cannot
+  remove the last selection; Enter chooses the default `LANG`. Persist
+  `state.ui_lang`, `state.target_locales`, and `state.target_locale`.
 - `src/steps/keyboard.rs` — list keymaps from `localectl list-keymaps`;
   `loadkeys` immediately on selection; persist `state.keymap`.
 - `src/steps/network.rs` — suspend ratatui, run `nmtui` full-screen, resume;
@@ -90,8 +92,10 @@ online, and configure mirrors — everything required before any disk work.
 ### Acceptance
 
 - Language picker switches the whole UI live among all seven supported
-  languages; the independent target-locale picker defaults to `en_US.UTF-8`;
-  every release `.mo` is visually verified.
+  languages and automatically adds the matching target locale. The target
+  picker initially contains `en_US.UTF-8`, supports multiple selections,
+  prevents removing the final selection, and records one selected locale as
+  the default `LANG`; every release `.mo` is visually verified.
 - Keyboard list loads from `localectl`; selecting one runs `loadkeys` and
   the effect is visible in the next text input.
 - `nmtui` opens full-screen, returns to the wizard, and the connectivity
@@ -319,8 +323,10 @@ M3 (full state).
   carry zstd compression while preserving a kernel-normalized default such as
   `compress=zstd:3` rather than rewriting or selecting a level.
 - `src/installer/chroot.rs` — under `arch-chroot /mnt`: timezone symlink +
-  `hwclock --systohc`; `/etc/locale.gen` per state → `locale-gen`; write
-  `/etc/locale.conf` and `/etc/vconsole.conf`; `/etc/hostname` + `/etc/hosts`;
+  `hwclock --systohc`; make the selected locales the exact enabled UTF-8 set
+  in `/etc/locale.gen` → `locale-gen`; write the selected default `LANG` to
+  `/etc/locale.conf` and write `/etc/vconsole.conf`; `/etc/hostname` +
+  `/etc/hosts`;
   `useradd -m -G wheel -s /bin/zsh`; pipe credentials to
   `chpasswd` through stdin, then immediately zeroize the in-memory secret;
   uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`; rely on the pacman

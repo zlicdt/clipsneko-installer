@@ -20,12 +20,14 @@ it moves from "Not done" to "Done" and stays there.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. English,
   Simplified Chinese, Traditional Chinese, Japanese, German, Korean, and
   Russian are available in the language picker. The POT and all seven catalogs
-  contain the same 167 message IDs with no untranslated, fuzzy, or obsolete
+  contain the same 168 message IDs with no untranslated, fuzzy, or obsolete
   entries. CI and build-time MO generation cover every supported catalog.
-- UI language changes only `LC_MESSAGES` and remains independent of the target
-  system locale. Debug builds load generated catalogs from OUT_DIR; release
-  builds use the GNU-standard `/usr/share/locale` path without a runtime
-  override. Missing locales or catalogs are fatal Live ISO invariant failures.
+- UI language changes only the process's `LC_MESSAGES`; applying it also adds
+  the matching target locale to the generation set without replacing the
+  target's default `LANG`. Debug builds load generated catalogs from OUT_DIR;
+  release builds use the GNU-standard `/usr/share/locale` path without a
+  runtime override. Missing locales or catalogs are fatal Live ISO invariant
+  failures.
 - `config/packages.list` contains the authoritative static package set. Startup
   requires only `/etc/clipsneko-installer/packages.list`; there is no separate
   repository config. The Live ISO's existing `pacman.conf` supplies the
@@ -67,11 +69,15 @@ it moves from "Not done" to "Done" and stays there.
   style clears when a footer button owns focus; footer focus, list highlights,
   non-interactive containers, and semantic colors such as password strength
   retain their existing independent styles.
-- **Language/locale step:** independent UI-language and target-locale lists are
-  implemented. UI switching is live; target locales come from commented or
-  enabled UTF-8 entries in `/etc/locale.gen`; `en_US.UTF-8` is the required
-  default; both choices persist independently. Tab/Shift+Tab and Enter/footer
-  commit paths are covered.
+- **Language/locale step:** coordinated UI-language and target-locale lists are
+  implemented. UI switching is live and automatically selects the matching
+  target locale. The target list contains every commented or enabled UTF-8
+  entry in `/etc/locale.gen`, supports multiple bold-white selections, starts
+  with `en_US.UTF-8`, and prevents removing the final selection. Space toggles
+  selection; Enter selects and records the default `LANG`. Removing the default
+  while another locale remains transfers the default to the next selected row.
+  Automatically added locales may be removed under the same rule. Re-entry,
+  Tab/Shift+Tab, Enter, and footer commit paths are covered.
 - **Keyboard step:** keymaps and the active VC keymap come from `localectl`;
   Space/Enter/footer Next apply with `loadkeys`; missing or malformed invariant
   data is fatal; shared state and re-entry synchronization are implemented.
@@ -91,8 +97,10 @@ it moves from "Not done" to "Done" and stays there.
   other removable disks are usable. Returning from cfdisk clears all roles,
   runs partprobe, and refreshes lsblk. A non-zero partprobe result is retryable
   and discards the stale pre-cfdisk partition snapshot.
-- **Partition roles:** a responsive device/size/filesystem/label/role table and
-  explicit ESP/Target/Unassigned dialog are implemented. Protected Live/read-
+- **Partition roles:** a responsive device/size/label/role/filesystem table and
+  explicit ESP/Target/Unassigned dialog are implemented. Role follows Label,
+  uses the width of the longest current translation, and leaves the trailing
+  filesystem column to absorb narrow-screen truncation. Protected Live/read-
   only partitions cannot be assigned, roles are mutually exclusive, ESP
   requires the GPT ESP type, and refreshes reconcile stale assignments.
 - **Multi-target btrfs:** RAID0/RAID1 selection and conservative usable-capacity
@@ -129,11 +137,12 @@ it moves from "Not done" to "Done" and stays there.
   and footer Next share the same commit path, and re-entry restores the saved
   value. The install design writes it to `/etc/hostname` and adds a
   `127.0.1.1` mapping in `/etc/hosts`.
-- **Confirmation step:** a scrollable installation-summary paragraph lists
-  locale, keymap, kernel, NVIDIA, hostname, timezone, username, every affected
-  disk, the ESP, every Target partition, and the btrfs RAID profile when more
-  than one Target exists. The account password is deliberately excluded from
-  the summary; missing fields render as the shared "not available" value. Enter
+- **Confirmation step:** a scrollable installation-summary paragraph lists the
+  default `LANG`, every locale enabled in `locale.gen`, keymap, kernel, NVIDIA,
+  hostname, timezone, username, every affected disk, the ESP, every Target
+  partition, and the btrfs RAID profile when more than one Target exists. The
+  account password is deliberately excluded from the summary; missing fields
+  render as the shared "not available" value. Enter
   and footer Next open a centered, Cancel-first destructive-action dialog only
   when the summary is complete (all required state present and RAID mode set
   for multi-target); an incomplete summary cannot open it. Tab/Left/Right
@@ -160,9 +169,11 @@ it moves from "Not done" to "Done" and stays there.
   packages list, appends deduplicated kernel/headers/linux-firmware/NVIDIA
   choices, runs `pacstrap -P`, validates both generated btrfs fstab entries
   while preserving a kernel-normalized zstd level, and appends fstab without a
-  shell. Chroot configuration applies timezone, hardware clock, locale,
-  vconsole, hostname/hosts, wheel user and stdin-only password, sudoers, and
-  NVIDIA-specific `kms` HOOK removal before `mkinitcpio -P`.
+  shell. Chroot configuration makes the selected locales the exact enabled
+  UTF-8 set in `/etc/locale.gen`, generates them, writes the separately selected
+  default `LANG`, and applies timezone, hardware clock, vconsole,
+  hostname/hosts, wheel user and stdin-only password, sudoers, and NVIDIA-
+  specific `kms` HOOK removal before `mkinitcpio -P`.
 - **M4c boot and finalization:** GRUB UEFI installation and configuration plus
   NetworkManager enablement are implemented. The install pipeline runs in a
   background worker with a responsive spinner; Back, Esc, Ctrl+C, and the
@@ -175,17 +186,17 @@ it moves from "Not done" to "Done" and stays there.
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (143 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (148 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
 
-- **M1 runtime acceptance:** all seven UI languages and the target-locale list,
-  keyboard changes, nmtui return path, mirror rewrite, and release catalogs
-  still need an interactive check on the actual ClipsNeko Live ISO or a
-  matching VM. The ISO must generate all seven documented UI locales, and
-  packaging must install `config/packages.list` plus every MO catalog at its
-  documented system path.
+- **M1 runtime acceptance:** all seven UI languages, automatic matching-locale
+  selection, target-locale multi-selection/default handling, keyboard changes,
+  nmtui return path, mirror rewrite, and release catalogs still need an
+  interactive check on the actual ClipsNeko Live ISO or a matching VM. The ISO
+  must generate all seven documented UI locales, and packaging must install
+  `config/packages.list` plus every MO catalog at its documented system path.
 - **Full-screen restoration test seam:** the helper's actual terminal-state
   bookkeeping on subprocess spawn failure has not been automated; current
   coverage tests privilege command construction only.

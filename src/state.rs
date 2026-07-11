@@ -14,7 +14,10 @@ use crate::util::password::SecretString;
 #[derive(Default)]
 pub struct InstallerState {
     pub ui_lang: Option<UiLang>,
+    /// Locale written to `LANG` in the target system's locale.conf.
     pub target_locale: Option<String>,
+    /// Locales enabled in the target system's locale.gen, in locale.gen order.
+    pub target_locales: Vec<String>,
     pub keymap: Option<String>,
     pub network_ok: bool,
     pub mirror_lines: Vec<String>,

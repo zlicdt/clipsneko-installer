@@ -53,16 +53,24 @@ return to the terminal's default style and the footer keeps its existing
 reversed focus style. Non-interactive container and informational borders do
 not receive the focus style.
 
-1. **Language and locale** — two independent lists on one step:
+1. **Language and locale** — two coordinated lists on one step:
    - Installer UI language: en / zh_CN / zh_TW / ja / de / ko / ru. Space
      applies the highlighted language live through gettext; it changes
-     `LC_MESSAGES` only.
-   - Target-system locale: every UTF-8 locale parsed from `/etc/locale.gen`,
-     defaulting to `en_US.UTF-8`; stored separately in state for M4b.
+     the process's `LC_MESSAGES` only and automatically selects the matching
+     target locale without replacing the target system's default `LANG`.
+   - Target-system locales: a multi-select list of every UTF-8 locale parsed
+     from `/etc/locale.gen`, initially containing `en_US.UTF-8`. Selected rows
+     are bold white; `[*]` marks the default `LANG`, `[x]` marks another locale
+     enabled for generation, and `[ ]` marks a disabled locale. Space toggles
+     the highlighted locale, but the last selected locale cannot be removed.
+     If the default is removed while another selection remains, the next
+     selected list item (wrapping at the end) becomes the default.
    - Tab/Shift+Tab moves between the two lists and footer buttons. Enter on the
      UI list applies it and moves to the target list; Enter on the target list
-     records it and advances. Locale/catalog failures are fatal Live ISO
-     invariant failures, with no language fallback.
+     selects it if necessary, makes it the default `LANG`, and advances. The
+     enabled locale set and its default persist separately from `state.ui_lang`.
+     Locale/catalog failures are fatal Live ISO invariant failures, with no
+     language fallback.
 2. **Keyboard** — list from `localectl list-keymaps`; `loadkeys` immediately;
    persisted to target `/etc/vconsole.conf`.
 3. **Network** — suspend ratatui, run `nmtui`; on return verify with
@@ -96,9 +104,11 @@ not receive the focus style.
    - The on-screen Next button advances to sub-page B.
 
    Sub-page B (partition role picker):
-   - List every partition in a responsive device/size/filesystem/label/role
-     table. Partitions belonging to disabled disks are protected and cannot be
-     assigned.
+   - List every partition in a responsive device/size/label/role/filesystem
+     table. Role follows Label instead of occupying the right edge, and its
+     width accommodates the longest translated role; the trailing filesystem
+     column absorbs narrow-screen truncation. Partitions belonging to disabled
+     disks are protected and cannot be assigned.
    - Selecting a partition (Enter) pops a small dialog asking the user to
      assign it the **ESP**, **Target**, or explicit **Unassigned** role.
      ESP is single-select (assigning a new ESP clears the old one); Target is
@@ -169,7 +179,8 @@ not receive the focus style.
     the value is committed. FQDNs are intentionally not accepted. Validation
     is live; Enter or footer Next commits a valid value and continues, while
     returning to the step restores the saved value.
-11. **Confirm** — a scrollable, read-only summary of the target locale,
+11. **Confirm** — a scrollable, read-only summary of the default `LANG`, every
+    target locale enabled for generation,
     keyboard, kernel, NVIDIA driver, hostname, timezone, username, affected
     physical disks, ESP, every Target partition, and the btrfs data profile
     when RAID is used. Device relationships are derived from the latest lsblk
@@ -216,8 +227,10 @@ the generated level; do not rewrite it or specify a level in mount commands.
 12.5 `arch-chroot /mnt`:
 
 - timezone symlink + `hwclock --systohc`
-- enable the selected target locale in `/etc/locale.gen`, run `locale-gen`,
-  write `/etc/locale.conf` (`LANG=...`) and `/etc/vconsole.conf` (`KEYMAP=...`)
+- make the selected target locales the exact enabled UTF-8 set in
+  `/etc/locale.gen`, run `locale-gen`,
+  write the separately selected default to `/etc/locale.conf` (`LANG=...`) and
+  write `/etc/vconsole.conf` (`KEYMAP=...`)
 - write `<hostname>\n` to `/etc/hostname`; add the conventional
   `127.0.1.1 <hostname>` mapping to `/etc/hosts` alongside the localhost
   IPv4/IPv6 entries
@@ -306,8 +319,11 @@ The `zeroize` crate provides the memory clearing implementation.
 - Add a UI string → wrap in `t!(...)`; update `.pot` and every `.po` file in
   the same change.
 - No supported translation may lag `en` by more than one session.
-- Changing the installer language sets `LC_MESSAGES` only; it does not alter
-  other process locale categories or the target-system locale.
+- Changing the installer language sets the process's `LC_MESSAGES` only and
+  adds its matching target locale to the generation set. It does not alter
+  other process locale categories or replace the target system's default
+  `LANG`; the automatically added target locale remains user-removable while
+  another selected locale remains.
 - Debug builds load build-generated catalogs from OUT_DIR. Release builds use
   the GNU-standard `/usr/share/locale` path with no runtime path override.
 

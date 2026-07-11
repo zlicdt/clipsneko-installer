@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 13:53+0800\n"
+"POT-Creation-Date: 2026-07-11 14:44+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Simplified Chinese\n"
@@ -27,7 +27,7 @@ msgstr "ClipsNeko Linux 安装程序"
 msgid "button.back"
 msgstr "上一步"
 
-#: src/app.rs:294 src/steps/confirm.rs:79
+#: src/steps/confirm.rs:79 src/app.rs:294
 msgid "button.cancel"
 msgstr "取消"
 
@@ -39,17 +39,17 @@ msgstr "下一步"
 msgid "button.quit"
 msgstr "退出"
 
-#: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
-#: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
-#: src/steps/confirm.rs:345 src/steps/network.rs:111
+#: src/steps/confirm.rs:266 src/steps/confirm.rs:284 src/steps/confirm.rs:292
+#: src/steps/confirm.rs:310 src/steps/confirm.rs:316 src/steps/confirm.rs:331
+#: src/steps/confirm.rs:341 src/steps/confirm.rs:360 src/steps/network.rs:111
 msgid "common.not_available"
 msgstr "不可用"
 
-#: src/steps/confirm.rs:283 src/steps/confirm.rs:289
+#: src/steps/confirm.rs:291 src/steps/confirm.rs:297
 msgid "confirm_step.affected_disk"
 msgstr "受影响的磁盘"
 
-#: src/steps/confirm.rs:325
+#: src/steps/confirm.rs:333
 msgid "confirm_step.data_profile"
 msgstr "数据配置"
 
@@ -69,7 +69,7 @@ msgstr "安装"
 msgid "confirm_step.dialog.title"
 msgstr "确认安装"
 
-#: src/steps/confirm.rs:296
+#: src/steps/confirm.rs:304
 msgid "confirm_step.esp"
 msgstr "EFI 系统分区"
 
@@ -77,27 +77,31 @@ msgstr "EFI 系统分区"
 msgid "confirm_step.hint"
 msgstr "上/下=滚动  Enter=确认安装"
 
-#: src/steps/confirm.rs:262
+#: src/steps/confirm.rs:270
 msgid "confirm_step.hostname"
 msgstr "主机名"
 
-#: src/steps/confirm.rs:254
+#: src/steps/confirm.rs:262
 msgid "confirm_step.kernel"
 msgstr "内核"
 
-#: src/steps/confirm.rs:250
+#: src/steps/confirm.rs:258
 msgid "confirm_step.keyboard"
 msgstr "键盘布局"
 
-#: src/steps/confirm.rs:246
+#: src/steps/confirm.rs:250
 msgid "confirm_step.locale"
-msgstr "目标系统区域设置"
+msgstr "默认区域设置（LANG）"
 
-#: src/steps/confirm.rs:352
+#: src/steps/confirm.rs:254
+msgid "confirm_step.locales"
+msgstr "已启用区域设置（locale.gen）"
+
+#: src/steps/confirm.rs:367
 msgid "confirm_step.no_nvidia"
 msgstr "不安装 NVIDIA 驱动"
 
-#: src/steps/confirm.rs:260
+#: src/steps/confirm.rs:268
 msgid "confirm_step.nvidia"
 msgstr "NVIDIA 驱动"
 
@@ -105,15 +109,15 @@ msgstr "NVIDIA 驱动"
 msgid "confirm_step.summary_title"
 msgstr "安装摘要"
 
-#: src/steps/confirm.rs:307 src/steps/confirm.rs:313
+#: src/steps/confirm.rs:315 src/steps/confirm.rs:321
 msgid "confirm_step.target_partition"
 msgstr "安装目标"
 
-#: src/steps/confirm.rs:266
+#: src/steps/confirm.rs:274
 msgid "confirm_step.timezone"
 msgstr "时区"
 
-#: src/steps/confirm.rs:270
+#: src/steps/confirm.rs:278
 msgid "confirm_step.username"
 msgstr "用户名"
 
@@ -121,11 +125,11 @@ msgstr "用户名"
 msgid "disk_step.column_device"
 msgstr "设备"
 
-#: src/steps/disk.rs:445
+#: src/steps/disk.rs:447
 msgid "disk_step.column_filesystem"
 msgstr "文件系统"
 
-#: src/steps/disk.rs:446
+#: src/steps/disk.rs:445
 msgid "disk_step.column_label"
 msgstr "标签"
 
@@ -133,7 +137,7 @@ msgstr "标签"
 msgid "disk_step.column_model"
 msgstr "型号"
 
-#: src/steps/disk.rs:447
+#: src/steps/disk.rs:446 src/steps/disk.rs:615
 msgid "disk_step.column_role"
 msgstr "角色"
 
@@ -173,11 +177,11 @@ msgstr "此分区属于受保护的 Live 启动盘或只读磁盘。"
 msgid "disk_step.error_title"
 msgstr "磁盘配置错误"
 
-#: src/steps/disk.rs:800
+#: src/steps/disk.rs:816
 msgid "disk_step.hint_disk"
 msgstr "Enter=cfdisk  上/下=选择  Tab=切换焦点"
 
-#: src/steps/disk.rs:801
+#: src/steps/disk.rs:817
 msgid "disk_step.hint_parts"
 msgstr "Enter=角色  R=RAID  上/下=选择  Tab=焦点"
 
@@ -205,7 +209,7 @@ msgstr "RAID1（冗余优先）"
 msgid "disk_step.raid_dialog.title"
 msgstr "选择 btrfs 数据配置"
 
-#: src/steps/disk.rs:809
+#: src/steps/disk.rs:825
 msgid "disk_step.raid_label"
 msgstr "数据配置"
 
@@ -217,19 +221,19 @@ msgstr "上/下=选择  Enter=确认  Esc=取消"
 msgid "disk_step.role_dialog.title"
 msgstr "为分区分配角色"
 
-#: src/steps/disk.rs:420 src/steps/disk.rs:607
+#: src/steps/disk.rs:420 src/steps/disk.rs:607 src/steps/disk.rs:617
 msgid "disk_step.role_esp"
 msgstr "ESP"
 
-#: src/steps/disk.rs:418
+#: src/steps/disk.rs:418 src/steps/disk.rs:616
 msgid "disk_step.role_protected"
 msgstr "受保护"
 
-#: src/steps/disk.rs:422 src/steps/disk.rs:608
+#: src/steps/disk.rs:422 src/steps/disk.rs:608 src/steps/disk.rs:618
 msgid "disk_step.role_target"
 msgstr "安装目标"
 
-#: src/steps/disk.rs:424 src/steps/disk.rs:609
+#: src/steps/disk.rs:424 src/steps/disk.rs:609 src/steps/disk.rs:619
 msgid "disk_step.role_unassigned"
 msgstr "未分配"
 
@@ -249,7 +253,7 @@ msgstr "只读"
 msgid "disk_step.status_removable"
 msgstr "可移动"
 
-#: src/steps/disk.rs:662
+#: src/steps/disk.rs:678
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr "ESP 分区（FAT32）："
 
@@ -257,7 +261,7 @@ msgstr "ESP 分区（FAT32）："
 msgid "disk_step.wipe_dialog.hint"
 msgstr "Enter=继续  Esc=取消"
 
-#: src/steps/disk.rs:656
+#: src/steps/disk.rs:672
 msgid "disk_step.wipe_dialog.target_prefix"
 msgstr "安装目标（btrfs）："
 
@@ -433,19 +437,19 @@ msgstr "简体中文"
 msgid "language.name.traditional_chinese"
 msgstr "繁體中文"
 
-#: src/steps/language.rs:210
+#: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr "上/下=选择  Space=应用  Enter=下一步  Shift+Tab=界面语言"
+msgstr "上/下=选择  空格=勾选/取消  回车=默认/下一步  [*]=默认"
 
-#: src/steps/language.rs:209
+#: src/steps/language.rs:284
 msgid "language_step.hint_ui"
-msgstr "上/下=选择  Space=应用  Enter/Tab=目标系统"
+msgstr "上/下=选择  空格=应用  回车/Tab=目标区域设置"
 
-#: src/steps/language.rs:202
+#: src/steps/language.rs:277
 msgid "language_step.target_title"
-msgstr "目标系统区域设置"
+msgstr "目标系统区域设置（多选）"
 
-#: src/steps/language.rs:179
+#: src/steps/language.rs:244
 msgid "language_step.ui_title"
 msgstr "安装程序语言"
 

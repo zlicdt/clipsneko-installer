@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 13:53+0800\n"
+"POT-Creation-Date: 2026-07-11 14:44+0800\n"
 "PO-Revision-Date: 2026-07-11 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Korean\n"
@@ -27,7 +27,7 @@ msgstr "ClipsNeko Linux 설치 프로그램"
 msgid "button.back"
 msgstr "뒤로"
 
-#: src/app.rs:294 src/steps/confirm.rs:79
+#: src/steps/confirm.rs:79 src/app.rs:294
 msgid "button.cancel"
 msgstr "취소"
 
@@ -39,17 +39,17 @@ msgstr "다음"
 msgid "button.quit"
 msgstr "종료"
 
-#: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
-#: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
-#: src/steps/confirm.rs:345 src/steps/network.rs:111
+#: src/steps/confirm.rs:266 src/steps/confirm.rs:284 src/steps/confirm.rs:292
+#: src/steps/confirm.rs:310 src/steps/confirm.rs:316 src/steps/confirm.rs:331
+#: src/steps/confirm.rs:341 src/steps/confirm.rs:360 src/steps/network.rs:111
 msgid "common.not_available"
 msgstr "사용할 수 없음"
 
-#: src/steps/confirm.rs:283 src/steps/confirm.rs:289
+#: src/steps/confirm.rs:291 src/steps/confirm.rs:297
 msgid "confirm_step.affected_disk"
 msgstr "영향을 받는 디스크"
 
-#: src/steps/confirm.rs:325
+#: src/steps/confirm.rs:333
 msgid "confirm_step.data_profile"
 msgstr "데이터 프로파일"
 
@@ -71,7 +71,7 @@ msgstr "설치"
 msgid "confirm_step.dialog.title"
 msgstr "설치 확인"
 
-#: src/steps/confirm.rs:296
+#: src/steps/confirm.rs:304
 msgid "confirm_step.esp"
 msgstr "EFI 시스템 파티션"
 
@@ -79,27 +79,31 @@ msgstr "EFI 시스템 파티션"
 msgid "confirm_step.hint"
 msgstr "위/아래=스크롤  Enter=설치 내용 검토"
 
-#: src/steps/confirm.rs:262
+#: src/steps/confirm.rs:270
 msgid "confirm_step.hostname"
 msgstr "호스트 이름"
 
-#: src/steps/confirm.rs:254
+#: src/steps/confirm.rs:262
 msgid "confirm_step.kernel"
 msgstr "커널"
 
-#: src/steps/confirm.rs:250
+#: src/steps/confirm.rs:258
 msgid "confirm_step.keyboard"
 msgstr "키보드"
 
-#: src/steps/confirm.rs:246
+#: src/steps/confirm.rs:250
 msgid "confirm_step.locale"
-msgstr "대상 로케일"
+msgstr "기본 로케일(LANG)"
 
-#: src/steps/confirm.rs:352
+#: src/steps/confirm.rs:254
+msgid "confirm_step.locales"
+msgstr "활성화된 로케일(locale.gen)"
+
+#: src/steps/confirm.rs:367
 msgid "confirm_step.no_nvidia"
 msgstr "NVIDIA 드라이버 없음"
 
-#: src/steps/confirm.rs:260
+#: src/steps/confirm.rs:268
 msgid "confirm_step.nvidia"
 msgstr "NVIDIA 드라이버"
 
@@ -107,15 +111,15 @@ msgstr "NVIDIA 드라이버"
 msgid "confirm_step.summary_title"
 msgstr "설치 요약"
 
-#: src/steps/confirm.rs:307 src/steps/confirm.rs:313
+#: src/steps/confirm.rs:315 src/steps/confirm.rs:321
 msgid "confirm_step.target_partition"
 msgstr "설치 대상"
 
-#: src/steps/confirm.rs:266
+#: src/steps/confirm.rs:274
 msgid "confirm_step.timezone"
 msgstr "시간대"
 
-#: src/steps/confirm.rs:270
+#: src/steps/confirm.rs:278
 msgid "confirm_step.username"
 msgstr "사용자 이름"
 
@@ -123,11 +127,11 @@ msgstr "사용자 이름"
 msgid "disk_step.column_device"
 msgstr "장치"
 
-#: src/steps/disk.rs:445
+#: src/steps/disk.rs:447
 msgid "disk_step.column_filesystem"
 msgstr "파일 시스템"
 
-#: src/steps/disk.rs:446
+#: src/steps/disk.rs:445
 msgid "disk_step.column_label"
 msgstr "레이블"
 
@@ -135,7 +139,7 @@ msgstr "레이블"
 msgid "disk_step.column_model"
 msgstr "모델"
 
-#: src/steps/disk.rs:447
+#: src/steps/disk.rs:446 src/steps/disk.rs:615
 msgid "disk_step.column_role"
 msgstr "역할"
 
@@ -177,11 +181,11 @@ msgstr "이 파티션은 보호된 Live 또는 읽기 전용 미디어에 속합
 msgid "disk_step.error_title"
 msgstr "디스크 구성 오류"
 
-#: src/steps/disk.rs:800
+#: src/steps/disk.rs:816
 msgid "disk_step.hint_disk"
 msgstr "Enter=cfdisk  위/아래=선택  Tab=포커스"
 
-#: src/steps/disk.rs:801
+#: src/steps/disk.rs:817
 msgid "disk_step.hint_parts"
 msgstr "Enter=역할  R=RAID  위/아래=선택  Tab=포커스"
 
@@ -209,7 +213,7 @@ msgstr "RAID1(중복성)"
 msgid "disk_step.raid_dialog.title"
 msgstr "btrfs 데이터 프로파일 선택"
 
-#: src/steps/disk.rs:809
+#: src/steps/disk.rs:825
 msgid "disk_step.raid_label"
 msgstr "데이터 프로파일"
 
@@ -221,19 +225,19 @@ msgstr "위/아래=선택  Enter=확인  Esc=취소"
 msgid "disk_step.role_dialog.title"
 msgstr "역할 할당 대상"
 
-#: src/steps/disk.rs:420 src/steps/disk.rs:607
+#: src/steps/disk.rs:420 src/steps/disk.rs:607 src/steps/disk.rs:617
 msgid "disk_step.role_esp"
 msgstr "ESP"
 
-#: src/steps/disk.rs:418
+#: src/steps/disk.rs:418 src/steps/disk.rs:616
 msgid "disk_step.role_protected"
 msgstr "보호됨"
 
-#: src/steps/disk.rs:422 src/steps/disk.rs:608
+#: src/steps/disk.rs:422 src/steps/disk.rs:608 src/steps/disk.rs:618
 msgid "disk_step.role_target"
 msgstr "설치 대상"
 
-#: src/steps/disk.rs:424 src/steps/disk.rs:609
+#: src/steps/disk.rs:424 src/steps/disk.rs:609 src/steps/disk.rs:619
 msgid "disk_step.role_unassigned"
 msgstr "할당되지 않음"
 
@@ -253,7 +257,7 @@ msgstr "읽기 전용"
 msgid "disk_step.status_removable"
 msgstr "이동식"
 
-#: src/steps/disk.rs:662
+#: src/steps/disk.rs:678
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr "ESP (FAT32):"
 
@@ -261,7 +265,7 @@ msgstr "ESP (FAT32):"
 msgid "disk_step.wipe_dialog.hint"
 msgstr "Enter=계속  Esc=취소"
 
-#: src/steps/disk.rs:656
+#: src/steps/disk.rs:672
 msgid "disk_step.wipe_dialog.target_prefix"
 msgstr "설치 대상 (btrfs):"
 
@@ -439,19 +443,19 @@ msgstr "简体中文"
 msgid "language.name.traditional_chinese"
 msgstr "繁體中文"
 
-#: src/steps/language.rs:210
+#: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr "위/아래=선택  Space=적용  Enter=다음  Shift+Tab=UI"
+msgstr "위/아래=선택  Space=전환  Enter=기본값/다음  [*]=기본값"
 
-#: src/steps/language.rs:209
+#: src/steps/language.rs:284
 msgid "language_step.hint_ui"
-msgstr "위/아래=선택  Space=적용  Enter/Tab=대상 로케일"
+msgstr "위/아래=선택  Space=적용  Enter/Tab=대상 로케일 목록"
 
-#: src/steps/language.rs:202
+#: src/steps/language.rs:277
 msgid "language_step.target_title"
-msgstr "대상 시스템 로케일"
+msgstr "대상 시스템 로케일(다중 선택)"
 
-#: src/steps/language.rs:179
+#: src/steps/language.rs:244
 msgid "language_step.ui_title"
 msgstr "설치 프로그램 언어"
 
