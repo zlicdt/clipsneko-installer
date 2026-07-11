@@ -103,7 +103,9 @@ Linear: Back/Next only, no per-item jump from the confirm page.
      user must explicitly confirm data loss.
    - There is no extra-partition / extra-mount mapping in v0.1.
 6. **Kernel** — `linux` / `linux-lts` / `linux-zen` / `linux-hardened` (single
-   select).
+   select). Default: `linux-zen`. The matching headers package is always
+   installed with the selected kernel: `linux-headers`, `linux-lts-headers`,
+   `linux-zen-headers`, or `linux-hardened-headers`.
 7. **NVIDIA** — "no NVIDIA" OR one variant from the compatible matrix below
    (incompatible options disabled in the UI). Default: `nvidia-open-dkms`.
 
@@ -114,9 +116,8 @@ Linear: Back/Next only, no per-item jump from the confirm page.
    | linux-zen       | nvidia-open-dkms                        |
    | linux-hardened  | nvidia-open-dkms                        |
 
-   `nvidia-open-dkms` also adds the matching selected-kernel headers package
-   (`linux-headers`, `linux-lts-headers`, `linux-zen-headers`, or
-   `linux-hardened-headers`) to the pacstrap package set.
+   Kernel headers are already included unconditionally by the kernel choice;
+   NVIDIA selection only contributes the selected driver package.
 
 8. **Timezone** — `curl -s http://ip-api.com/json` → `timezone` field; fallback
    UTC; user may override by typing `Region/City` or picking from
@@ -151,7 +152,7 @@ already contains the ClipsNeko repository. Packages with names beginning in
 The installer does not parse or generate repository configuration.
 
 12.3 `pacstrap -P /mnt <packages.list contents> <chosen kernel>
-linux-firmware <chosen NVIDIA package and required kernel headers>`.
+<matching kernel headers> linux-firmware <chosen NVIDIA package>`.
 `packages.list` is the authoritative static package set; the installer only
 adds packages derived from wizard state. `-P` copies the Live ISO's
 `pacman.conf` and `pacman.d` configuration to the target.

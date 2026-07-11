@@ -44,12 +44,43 @@ pub enum BtrfsRaidMode {
 }
 
 /// Kernel package chosen in step 6.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum KernelChoice {
     Linux,
     LinuxLts,
+    #[default]
     LinuxZen,
     LinuxHardened,
+}
+
+impl KernelChoice {
+    /// All kernel choices in their UI display order.
+    pub const ALL: [Self; 4] = [
+        Self::Linux,
+        Self::LinuxLts,
+        Self::LinuxZen,
+        Self::LinuxHardened,
+    ];
+
+    /// Kernel package passed to pacstrap for this choice.
+    pub const fn package_name(self) -> &'static str {
+        match self {
+            Self::Linux => "linux",
+            Self::LinuxLts => "linux-lts",
+            Self::LinuxZen => "linux-zen",
+            Self::LinuxHardened => "linux-hardened",
+        }
+    }
+
+    /// Matching headers package installed with this kernel.
+    pub const fn headers_package_name(self) -> &'static str {
+        match self {
+            Self::Linux => "linux-headers",
+            Self::LinuxLts => "linux-lts-headers",
+            Self::LinuxZen => "linux-zen-headers",
+            Self::LinuxHardened => "linux-hardened-headers",
+        }
+    }
 }
 
 /// Nvidia package chosen in step 7.

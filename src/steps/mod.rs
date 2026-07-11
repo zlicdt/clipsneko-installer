@@ -4,6 +4,7 @@
 //! `StubStep` services all 12 slots so navigation works end-to-end.
 
 mod disk;
+mod kernel;
 mod keyboard;
 mod language;
 mod mirror;
@@ -19,6 +20,7 @@ use ratatui::Frame;
 use std::process::ExitStatus;
 
 pub use disk::DiskStep;
+pub use kernel::KernelStep;
 pub use keyboard::KeyboardStep;
 pub use language::LanguageStep;
 pub use mirror::MirrorStep;
@@ -203,7 +205,7 @@ pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
         Box::new(NetworkStep::new()),
         Box::new(MirrorStep::new()?),
         Box::new(DiskStep::new()),
-        Box::new(StubStep::new(StepId::Kernel)),
+        Box::new(KernelStep::new()),
         Box::new(StubStep::new(StepId::Nvidia)),
         Box::new(StubStep::new(StepId::Timezone)),
         Box::new(StubStep::new(StepId::User)),

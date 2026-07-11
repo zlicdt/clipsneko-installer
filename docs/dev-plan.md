@@ -178,11 +178,12 @@ confirm screen can show a full summary.
 ### Deliverables
 
 - `src/steps/kernel.rs` — single-select from `linux` / `linux-lts` /
-  `linux-zen` / `linux-hardened`.
+  `linux-zen` / `linux-hardened`, defaulting to `linux-zen`; always derive the
+  matching headers package for installation.
 - `src/steps/nvidia.rs` — "no NVIDIA" or one package from the current
   `nvidia-open` / `nvidia-open-lts` / `nvidia-open-dkms` matrix, filtered by
-  the chosen kernel (see `design.md` §4 step 7). DKMS selection also adds the
-  matching kernel-headers package to the install package set.
+  the chosen kernel (see `design.md` §4 step 7). Kernel headers are already an
+  unconditional part of the selected kernel's install package set.
 - `src/steps/timezone.rs` — `curl -s http://ip-api.com/json` → `timezone`
   field default; fallback UTC; manual override by typing `Region/City` or
   picking from `/usr/share/zoneinfo/`.
@@ -202,7 +203,8 @@ confirm screen can show a full summary.
 
 ### Acceptance
 
-- Kernel single-select records the choice in `state.kernel`.
+- Kernel single-select defaults to `linux-zen`, records the choice in
+  `state.kernel`, and maps every choice to its matching headers package.
 - NVIDIA variant list is correctly filtered by the chosen kernel;
   incompatible options are visible but not selectable.
 - Timezone defaults to the GeoIP result when online, UTC when not; manual
@@ -216,8 +218,9 @@ confirm screen can show a full summary.
 
 ### Unit tests
 
-- NVIDIA-kernel compatibility matrix (all kernels × current open variants),
-  including selected-kernel header derivation for DKMS.
+- Kernel and unconditional matching-headers package derivation for all four
+  choices.
+- NVIDIA-kernel compatibility matrix (all kernels × current open variants).
 - Username regex (valid/invalid boundary cases).
 - Hostname regex (length, leading/trailing hyphen, uppercase rejection).
 - Password strength heuristic (empty, short, all-lower, mixed, common
@@ -277,8 +280,8 @@ M3 (full state).
 
 - `src/installer/pacstrap.rs` — construct and run `pacstrap -P` from state:
   the authoritative static `packages.list` contents plus the chosen kernel,
-  linux-firmware, and the chosen NVIDIA package/kernel headers. The Live ISO's
-  existing `pacman.conf` already contains the ClipsNeko repository, and `-P`
+  its matching headers, linux-firmware, and the chosen NVIDIA package. The Live
+  ISO's existing `pacman.conf` already contains the ClipsNeko repository, and `-P`
   copies `pacman.conf` plus `pacman.d` to the target;
   run `genfstab -U /mnt >> /mnt/etc/fstab` and ensure btrfs entries carry
   `compress=zstd:1`.

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 01:29+0800\n"
+"POT-Creation-Date: 2026-07-11 08:07+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Simplified Chinese\n"
@@ -15,27 +15,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app.rs:218
+#: src/app.rs:213
 msgid "app.step_indicator"
 msgstr "步骤"
 
-#: src/app.rs:215
+#: src/app.rs:210
 msgid "app.title"
 msgstr "ClipsNeko Linux 安装程序"
 
-#: src/app.rs:256
+#: src/app.rs:251
 msgid "button.back"
 msgstr "上一步"
 
-#: src/app.rs:291
+#: src/app.rs:285
 msgid "button.cancel"
 msgstr "取消"
 
-#: src/app.rs:270
+#: src/app.rs:265
 msgid "button.next"
 msgstr "下一步"
 
-#: src/app.rs:295
+#: src/app.rs:286
 msgid "button.quit"
 msgstr "退出"
 
@@ -43,161 +43,189 @@ msgstr "退出"
 msgid "common.not_available"
 msgstr "不可用"
 
-#: src/steps/disk.rs:331 src/steps/disk.rs:403
+#: src/steps/disk.rs:344 src/steps/disk.rs:420
 msgid "disk_step.column_device"
 msgstr "设备"
 
-#: src/steps/disk.rs:405
+#: src/steps/disk.rs:422
 msgid "disk_step.column_filesystem"
 msgstr "文件系统"
 
-#: src/steps/disk.rs:406
+#: src/steps/disk.rs:423
 msgid "disk_step.column_label"
 msgstr "标签"
 
-#: src/steps/disk.rs:332
+#: src/steps/disk.rs:345
 msgid "disk_step.column_model"
 msgstr "型号"
 
-#: src/steps/disk.rs:407
+#: src/steps/disk.rs:424
 msgid "disk_step.column_role"
 msgstr "角色"
 
-#: src/steps/disk.rs:334 src/steps/disk.rs:404
+#: src/steps/disk.rs:347 src/steps/disk.rs:421
 msgid "disk_step.column_size"
 msgstr "容量"
 
-#: src/steps/disk.rs:335
+#: src/steps/disk.rs:348
 msgid "disk_step.column_status"
 msgstr "状态"
 
-#: src/steps/disk.rs:333
+#: src/steps/disk.rs:346
 msgid "disk_step.column_transport"
 msgstr "接口"
 
-#: src/steps/disk.rs:299
+#: src/steps/disk.rs:312
 msgid "disk_step.error_capacity"
 msgstr "所选数据配置的可用目标容量必须大于 20 GiB。"
 
-#: src/steps/disk.rs:501
+#: src/steps/disk.rs:518
 msgid "disk_step.error_hint"
 msgstr "按 Esc 或 Enter 关闭。"
 
-#: src/steps/disk.rs:247
+#: src/steps/disk.rs:255
 msgid "disk_step.error_invalid_esp"
 msgstr "此分区不是 GPT EFI 系统分区。"
 
-#: src/steps/disk.rs:127
+#: src/steps/disk.rs:125
 msgid "disk_step.error_partprobe"
 msgstr "partprobe 无法刷新分区表。请重新打开 cfdisk 后再试。"
 
-#: src/steps/disk.rs:220
+#: src/steps/disk.rs:223
 msgid "disk_step.error_protected_part"
 msgstr "此分区属于受保护的 Live 启动盘或只读磁盘。"
 
-#: src/steps/disk.rs:506
+#: src/steps/disk.rs:523
 msgid "disk_step.error_title"
 msgstr "磁盘配置错误"
 
-#: src/steps/disk.rs:758
+#: src/steps/disk.rs:774
 msgid "disk_step.hint_disk"
 msgstr "Enter=cfdisk  上/下=选择  Tab=切换焦点"
 
-#: src/steps/disk.rs:759
+#: src/steps/disk.rs:775
 msgid "disk_step.hint_parts"
 msgstr "Enter=角色  R=RAID  上/下=选择  Tab=焦点"
 
-#: src/steps/disk.rs:358
+#: src/steps/disk.rs:371
 msgid "disk_step.list_title_disk"
 msgstr "选择要分区的磁盘"
 
-#: src/steps/disk.rs:430
+#: src/steps/disk.rs:447
 msgid "disk_step.list_title_parts"
 msgstr "分配分区角色"
 
-#: src/steps/disk.rs:483
+#: src/steps/disk.rs:500
 msgid "disk_step.raid_dialog.hint"
 msgstr "上/下=选择  Enter=确认  Esc=取消"
 
-#: src/steps/disk.rs:470
+#: src/steps/disk.rs:487
 msgid "disk_step.raid_dialog.raid0"
 msgstr "RAID0（容量优先）"
 
-#: src/steps/disk.rs:471
+#: src/steps/disk.rs:488
 msgid "disk_step.raid_dialog.raid1"
 msgstr "RAID1（冗余优先）"
 
-#: src/steps/disk.rs:488
+#: src/steps/disk.rs:505
 msgid "disk_step.raid_dialog.title"
 msgstr "选择 btrfs 数据配置"
 
-#: src/steps/disk.rs:767
+#: src/steps/disk.rs:783
 msgid "disk_step.raid_label"
 msgstr "数据配置"
 
-#: src/steps/disk.rs:459
+#: src/steps/disk.rs:476
 msgid "disk_step.role_dialog.hint"
 msgstr "上/下=选择  Enter=确认  Esc=取消"
 
-#: src/steps/disk.rs:440
+#: src/steps/disk.rs:457
 msgid "disk_step.role_dialog.title"
 msgstr "为分区分配角色"
 
-#: src/steps/disk.rs:380 src/steps/disk.rs:567
+#: src/steps/disk.rs:397 src/steps/disk.rs:583
 msgid "disk_step.role_esp"
 msgstr "ESP"
 
-#: src/steps/disk.rs:378
+#: src/steps/disk.rs:395
 msgid "disk_step.role_protected"
 msgstr "受保护"
 
-#: src/steps/disk.rs:382 src/steps/disk.rs:568
+#: src/steps/disk.rs:399 src/steps/disk.rs:584
 msgid "disk_step.role_target"
 msgstr "安装目标"
 
-#: src/steps/disk.rs:384 src/steps/disk.rs:569
+#: src/steps/disk.rs:401 src/steps/disk.rs:585
 msgid "disk_step.role_unassigned"
 msgstr "未分配"
 
-#: src/steps/disk.rs:561
+#: src/steps/disk.rs:577
 msgid "disk_step.status_available"
 msgstr "可用"
 
-#: src/steps/disk.rs:555
+#: src/steps/disk.rs:571
 msgid "disk_step.status_live_media"
 msgstr "Live 启动盘"
 
-#: src/steps/disk.rs:557
+#: src/steps/disk.rs:573
 msgid "disk_step.status_read_only"
 msgstr "只读"
 
-#: src/steps/disk.rs:559
+#: src/steps/disk.rs:575
 msgid "disk_step.status_removable"
 msgstr "可移动"
 
-#: src/steps/disk.rs:620
+#: src/steps/disk.rs:638
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr "ESP 分区（FAT32）："
 
-#: src/steps/disk.rs:526
+#: src/steps/disk.rs:542
 msgid "disk_step.wipe_dialog.hint"
 msgstr "Enter=继续  Esc=取消"
 
-#: src/steps/disk.rs:614
+#: src/steps/disk.rs:632
 msgid "disk_step.wipe_dialog.target_prefix"
 msgstr "安装目标（btrfs）："
 
-#: src/steps/disk.rs:519
+#: src/steps/disk.rs:535
 msgid "disk_step.wipe_dialog.title"
 msgstr "以下分区将被格式化，其中的全部数据都会丢失："
 
-#: src/steps/disk.rs:531
+#: src/steps/disk.rs:547
 msgid "disk_step.wipe_dialog.window_title"
 msgstr "警告：数据将丢失"
 
-#: src/app.rs:262
+#: src/app.rs:257
 msgid "footer.hint"
 msgstr "Tab=切换焦点  Ctrl+C=退出"
+
+#: src/steps/kernel.rs:104
+msgid "kernel_step.headers_hint"
+msgstr "将自动安装匹配的内核头文件包。"
+
+#: src/steps/kernel.rs:105
+msgid "kernel_step.key_hint"
+msgstr "Space=选择  Enter=下一步"
+
+#: src/steps/kernel.rs:157
+msgid "kernel_step.option.linux"
+msgstr "linux — 标准内核"
+
+#: src/steps/kernel.rs:160
+msgid "kernel_step.option.linux_hardened"
+msgstr "linux-hardened — 安全加固内核"
+
+#: src/steps/kernel.rs:158
+msgid "kernel_step.option.linux_lts"
+msgstr "linux-lts — 长期支持内核"
+
+#: src/steps/kernel.rs:159
+msgid "kernel_step.option.linux_zen"
+msgstr "linux-zen — 桌面优化内核（默认）"
+
+#: src/steps/kernel.rs:98
+msgid "kernel_step.title"
+msgstr "选择内核"
 
 #: src/steps/keyboard.rs:172
 msgid "keyboard_step.hint"
@@ -299,66 +327,66 @@ msgstr "✗ 未连接"
 msgid "network_step.title"
 msgstr "配置网络"
 
-#: src/app.rs:304
+#: src/app.rs:293
 msgid "quit_dialog.hint"
 msgstr "左/右=选择  Enter=确认  Esc=取消"
 
-#: src/app.rs:300
+#: src/app.rs:289
 msgid "quit_dialog.title"
 msgstr "确定要退出吗？"
 
-#: src/steps/mod.rs:75
+#: src/steps/mod.rs:77
 msgid "step.title.confirm_installation"
 msgstr "确认安装"
 
-#: src/steps/mod.rs:69
+#: src/steps/mod.rs:71
 msgid "step.title.disk_partitioning"
 msgstr "磁盘分区"
 
-#: src/steps/mod.rs:74
+#: src/steps/mod.rs:76
 msgid "step.title.hostname"
 msgstr "主机名"
 
-#: src/steps/mod.rs:76
+#: src/steps/mod.rs:78
 msgid "step.title.installing"
 msgstr "安装中"
 
-#: src/steps/mod.rs:70
+#: src/steps/mod.rs:72
 msgid "step.title.kernel"
 msgstr "内核"
 
-#: src/steps/mod.rs:66
+#: src/steps/mod.rs:68
 msgid "step.title.keyboard_layout"
 msgstr "键盘布局"
 
-#: src/steps/mod.rs:65
+#: src/steps/mod.rs:67
 msgid "step.title.language"
 msgstr "语言"
 
-#: src/steps/mod.rs:68
+#: src/steps/mod.rs:70
 msgid "step.title.mirror_list"
 msgstr "镜像列表"
 
-#: src/steps/mod.rs:67
+#: src/steps/mod.rs:69
 msgid "step.title.network"
 msgstr "网络"
 
-#: src/steps/mod.rs:71
+#: src/steps/mod.rs:73
 msgid "step.title.nvidia_driver"
 msgstr "NVIDIA 驱动"
 
-#: src/steps/mod.rs:72
+#: src/steps/mod.rs:74
 msgid "step.title.timezone"
 msgstr "时区"
 
-#: src/steps/mod.rs:73
+#: src/steps/mod.rs:75
 msgid "step.title.user_account"
 msgstr "用户账户"
 
-#: src/steps/mod.rs:188
+#: src/steps/mod.rs:184
 msgid "stub.body"
 msgstr "此步骤尚未实现。"
 
-#: src/steps/mod.rs:188
+#: src/steps/mod.rs:184
 msgid "stub.hint"
 msgstr "按 Enter 继续。"
