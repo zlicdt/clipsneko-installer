@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 12:25+0800\n"
+"POT-Creation-Date: 2026-07-11 13:34+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -15,41 +15,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/app.rs:213
+#: src/app.rs:219
 msgid "app.step_indicator"
 msgstr ""
 
-#: src/app.rs:210
+#: src/app.rs:216
 msgid "app.title"
 msgstr ""
 
-#: src/app.rs:251
+#: src/app.rs:260
 msgid "button.back"
 msgstr ""
 
-#: src/app.rs:285 src/steps/confirm.rs:79
+#: src/app.rs:294 src/steps/confirm.rs:79
 msgid "button.cancel"
 msgstr ""
 
-#: src/app.rs:265
+#: src/app.rs:274
 msgid "button.next"
 msgstr ""
 
-#: src/app.rs:286
+#: src/app.rs:295
 msgid "button.quit"
 msgstr ""
 
-#: src/steps/confirm.rs:257 src/steps/confirm.rs:275 src/steps/confirm.rs:283
-#: src/steps/confirm.rs:301 src/steps/confirm.rs:307 src/steps/confirm.rs:322
-#: src/steps/confirm.rs:344 src/steps/network.rs:111
+#: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
+#: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
+#: src/steps/confirm.rs:345 src/steps/network.rs:111
 msgid "common.not_available"
 msgstr ""
 
-#: src/steps/confirm.rs:282 src/steps/confirm.rs:288
+#: src/steps/confirm.rs:283 src/steps/confirm.rs:289
 msgid "confirm_step.affected_disk"
 msgstr ""
 
-#: src/steps/confirm.rs:324
+#: src/steps/confirm.rs:325
 msgid "confirm_step.data_profile"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "confirm_step.dialog.title"
 msgstr ""
 
-#: src/steps/confirm.rs:295
+#: src/steps/confirm.rs:296
 msgid "confirm_step.esp"
 msgstr ""
 
@@ -77,27 +77,27 @@ msgstr ""
 msgid "confirm_step.hint"
 msgstr ""
 
-#: src/steps/confirm.rs:261
+#: src/steps/confirm.rs:262
 msgid "confirm_step.hostname"
 msgstr ""
 
-#: src/steps/confirm.rs:253
+#: src/steps/confirm.rs:254
 msgid "confirm_step.kernel"
 msgstr ""
 
-#: src/steps/confirm.rs:249
+#: src/steps/confirm.rs:250
 msgid "confirm_step.keyboard"
 msgstr ""
 
-#: src/steps/confirm.rs:245
+#: src/steps/confirm.rs:246
 msgid "confirm_step.locale"
 msgstr ""
 
-#: src/steps/confirm.rs:351
+#: src/steps/confirm.rs:352
 msgid "confirm_step.no_nvidia"
 msgstr ""
 
-#: src/steps/confirm.rs:259
+#: src/steps/confirm.rs:260
 msgid "confirm_step.nvidia"
 msgstr ""
 
@@ -105,55 +105,55 @@ msgstr ""
 msgid "confirm_step.summary_title"
 msgstr ""
 
-#: src/steps/confirm.rs:306 src/steps/confirm.rs:312
+#: src/steps/confirm.rs:307 src/steps/confirm.rs:313
 msgid "confirm_step.target_partition"
 msgstr ""
 
-#: src/steps/confirm.rs:265
+#: src/steps/confirm.rs:266
 msgid "confirm_step.timezone"
 msgstr ""
 
-#: src/steps/confirm.rs:269
+#: src/steps/confirm.rs:270
 msgid "confirm_step.username"
 msgstr ""
 
-#: src/steps/disk.rs:355 src/steps/disk.rs:432
+#: src/steps/disk.rs:366 src/steps/disk.rs:443
 msgid "disk_step.column_device"
 msgstr ""
 
-#: src/steps/disk.rs:434
+#: src/steps/disk.rs:445
 msgid "disk_step.column_filesystem"
 msgstr ""
 
-#: src/steps/disk.rs:435
+#: src/steps/disk.rs:446
 msgid "disk_step.column_label"
 msgstr ""
 
-#: src/steps/disk.rs:356
+#: src/steps/disk.rs:367
 msgid "disk_step.column_model"
 msgstr ""
 
-#: src/steps/disk.rs:436
+#: src/steps/disk.rs:447
 msgid "disk_step.column_role"
 msgstr ""
 
-#: src/steps/disk.rs:358 src/steps/disk.rs:433
+#: src/steps/disk.rs:369 src/steps/disk.rs:444
 msgid "disk_step.column_size"
 msgstr ""
 
-#: src/steps/disk.rs:359
+#: src/steps/disk.rs:370
 msgid "disk_step.column_status"
 msgstr ""
 
-#: src/steps/disk.rs:357
+#: src/steps/disk.rs:368
 msgid "disk_step.column_transport"
 msgstr ""
 
-#: src/steps/disk.rs:313
+#: src/steps/disk.rs:314
 msgid "disk_step.error_capacity"
 msgstr ""
 
-#: src/steps/disk.rs:531
+#: src/steps/disk.rs:542
 msgid "disk_step.error_hint"
 msgstr ""
 
@@ -169,107 +169,107 @@ msgstr ""
 msgid "disk_step.error_protected_part"
 msgstr ""
 
-#: src/steps/disk.rs:536
+#: src/steps/disk.rs:547
 msgid "disk_step.error_title"
 msgstr ""
 
-#: src/steps/disk.rs:788
+#: src/steps/disk.rs:800
 msgid "disk_step.hint_disk"
 msgstr ""
 
-#: src/steps/disk.rs:789
+#: src/steps/disk.rs:801
 msgid "disk_step.hint_parts"
 msgstr ""
 
-#: src/steps/disk.rs:382
+#: src/steps/disk.rs:393
 msgid "disk_step.list_title_disk"
 msgstr ""
 
-#: src/steps/disk.rs:459
+#: src/steps/disk.rs:470
 msgid "disk_step.list_title_parts"
 msgstr ""
 
-#: src/steps/disk.rs:513
+#: src/steps/disk.rs:524
 msgid "disk_step.raid_dialog.hint"
 msgstr ""
 
-#: src/steps/disk.rs:500
+#: src/steps/disk.rs:511
 msgid "disk_step.raid_dialog.raid0"
 msgstr ""
 
-#: src/steps/disk.rs:501
+#: src/steps/disk.rs:512
 msgid "disk_step.raid_dialog.raid1"
 msgstr ""
 
-#: src/steps/disk.rs:518
+#: src/steps/disk.rs:529
 msgid "disk_step.raid_dialog.title"
 msgstr ""
 
-#: src/steps/disk.rs:797
+#: src/steps/disk.rs:809
 msgid "disk_step.raid_label"
 msgstr ""
 
-#: src/steps/disk.rs:489
+#: src/steps/disk.rs:500
 msgid "disk_step.role_dialog.hint"
 msgstr ""
 
-#: src/steps/disk.rs:470
+#: src/steps/disk.rs:481
 msgid "disk_step.role_dialog.title"
 msgstr ""
 
-#: src/steps/disk.rs:409 src/steps/disk.rs:596
+#: src/steps/disk.rs:420 src/steps/disk.rs:607
 msgid "disk_step.role_esp"
 msgstr ""
 
-#: src/steps/disk.rs:407
+#: src/steps/disk.rs:418
 msgid "disk_step.role_protected"
 msgstr ""
 
-#: src/steps/disk.rs:411 src/steps/disk.rs:597
+#: src/steps/disk.rs:422 src/steps/disk.rs:608
 msgid "disk_step.role_target"
 msgstr ""
 
-#: src/steps/disk.rs:413 src/steps/disk.rs:598
+#: src/steps/disk.rs:424 src/steps/disk.rs:609
 msgid "disk_step.role_unassigned"
 msgstr ""
 
-#: src/steps/disk.rs:590
+#: src/steps/disk.rs:601
 msgid "disk_step.status_available"
 msgstr ""
 
-#: src/steps/disk.rs:584
+#: src/steps/disk.rs:595
 msgid "disk_step.status_live_media"
 msgstr ""
 
-#: src/steps/disk.rs:586
+#: src/steps/disk.rs:597
 msgid "disk_step.status_read_only"
 msgstr ""
 
-#: src/steps/disk.rs:588
+#: src/steps/disk.rs:599
 msgid "disk_step.status_removable"
 msgstr ""
 
-#: src/steps/disk.rs:651
+#: src/steps/disk.rs:662
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr ""
 
-#: src/steps/disk.rs:555
+#: src/steps/disk.rs:566
 msgid "disk_step.wipe_dialog.hint"
 msgstr ""
 
-#: src/steps/disk.rs:645
+#: src/steps/disk.rs:656
 msgid "disk_step.wipe_dialog.target_prefix"
 msgstr ""
 
-#: src/steps/disk.rs:548
+#: src/steps/disk.rs:559
 msgid "disk_step.wipe_dialog.title"
 msgstr ""
 
-#: src/steps/disk.rs:560
+#: src/steps/disk.rs:571
 msgid "disk_step.wipe_dialog.window_title"
 msgstr ""
 
-#: src/app.rs:257
+#: src/app.rs:266
 msgid "footer.hint"
 msgstr ""
 
@@ -295,6 +295,78 @@ msgstr ""
 
 #: src/steps/hostname.rs:39
 msgid "hostname_step.ready"
+msgstr ""
+
+#: src/steps/install.rs:180
+msgid "install_step.failure.body"
+msgstr ""
+
+#: src/steps/install.rs:184
+msgid "install_step.failure.return"
+msgstr ""
+
+#: src/steps/install.rs:176
+msgid "install_step.failure.title"
+msgstr ""
+
+#: src/steps/install.rs:189
+msgid "install_step.failure.view_log"
+msgstr ""
+
+#: src/steps/install.rs:323
+msgid "install_step.log.title"
+msgstr ""
+
+#: src/steps/install.rs:138
+msgid "install_step.progress.bootloader"
+msgstr ""
+
+#: src/steps/install.rs:132
+msgid "install_step.progress.formatting"
+msgstr ""
+
+#: src/steps/install.rs:135
+msgid "install_step.progress.fstab"
+msgstr ""
+
+#: src/steps/install.rs:137
+msgid "install_step.progress.initramfs"
+msgstr ""
+
+#: src/steps/install.rs:133
+msgid "install_step.progress.mounting"
+msgstr ""
+
+#: src/steps/install.rs:134
+msgid "install_step.progress.packages"
+msgstr ""
+
+#: src/steps/install.rs:144
+msgid "install_step.progress.rebooting"
+msgstr ""
+
+#: src/steps/install.rs:136
+msgid "install_step.progress.target_config"
+msgstr ""
+
+#: src/steps/install.rs:155
+msgid "install_step.progress.wait"
+msgstr ""
+
+#: src/steps/install.rs:220
+msgid "install_step.success.body"
+msgstr ""
+
+#: src/steps/install.rs:229
+msgid "install_step.success.not_now"
+msgstr ""
+
+#: src/steps/install.rs:224
+msgid "install_step.success.reboot"
+msgstr ""
+
+#: src/steps/install.rs:216
+msgid "install_step.success.title"
 msgstr ""
 
 #: src/steps/kernel.rs:106
@@ -457,68 +529,60 @@ msgstr ""
 msgid "nvidia_step.title"
 msgstr ""
 
-#: src/app.rs:293
+#: src/app.rs:302
 msgid "quit_dialog.hint"
 msgstr ""
 
-#: src/app.rs:289
+#: src/app.rs:298
 msgid "quit_dialog.title"
 msgstr ""
 
-#: src/steps/mod.rs:87
+#: src/steps/mod.rs:85
 msgid "step.title.confirm_installation"
 msgstr ""
 
-#: src/steps/mod.rs:81
+#: src/steps/mod.rs:79
 msgid "step.title.disk_partitioning"
 msgstr ""
 
-#: src/steps/mod.rs:86
+#: src/steps/mod.rs:84
 msgid "step.title.hostname"
 msgstr ""
 
-#: src/steps/mod.rs:88
+#: src/steps/mod.rs:86
 msgid "step.title.installing"
 msgstr ""
 
-#: src/steps/mod.rs:82
+#: src/steps/mod.rs:80
 msgid "step.title.kernel"
 msgstr ""
 
-#: src/steps/mod.rs:78
+#: src/steps/mod.rs:76
 msgid "step.title.keyboard_layout"
 msgstr ""
 
-#: src/steps/mod.rs:77
+#: src/steps/mod.rs:75
 msgid "step.title.language"
 msgstr ""
 
-#: src/steps/mod.rs:80
+#: src/steps/mod.rs:78
 msgid "step.title.mirror_list"
 msgstr ""
 
-#: src/steps/mod.rs:79
+#: src/steps/mod.rs:77
 msgid "step.title.network"
 msgstr ""
 
-#: src/steps/mod.rs:83
+#: src/steps/mod.rs:81
 msgid "step.title.nvidia_driver"
 msgstr ""
 
-#: src/steps/mod.rs:84
+#: src/steps/mod.rs:82
 msgid "step.title.timezone"
 msgstr ""
 
-#: src/steps/mod.rs:85
+#: src/steps/mod.rs:83
 msgid "step.title.user_account"
-msgstr ""
-
-#: src/steps/mod.rs:194
-msgid "stub.body"
-msgstr ""
-
-#: src/steps/mod.rs:194
-msgid "stub.hint"
 msgstr ""
 
 #: src/steps/timezone.rs:280

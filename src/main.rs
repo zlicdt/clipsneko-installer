@@ -2,6 +2,7 @@
 
 mod app;
 mod i18n;
+mod installer;
 mod state;
 mod steps;
 mod util;
@@ -35,7 +36,7 @@ fn validate_runtime_config() -> Result<()> {
 /// `$XDG_CACHE_HOME/clipsneko-installer/log`, falling back to
 /// `$HOME/.cache/clipsneko-installer/log`. The path is fixed (no env-var
 /// override) so the installer runs without root on any user account.
-fn log_path() -> Result<PathBuf> {
+pub(crate) fn log_path() -> Result<PathBuf> {
     let cache = match std::env::var("XDG_CACHE_HOME") {
         Ok(v) if !v.is_empty() => PathBuf::from(v),
         _ => {

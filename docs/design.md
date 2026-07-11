@@ -192,6 +192,8 @@ not receive the focus style.
 already contains the ClipsNeko repository. Packages with names beginning in
 `clipsneko-` may therefore be listed in `packages.list` like ordinary packages.
 The installer does not parse or generate repository configuration.
+The static `base-devel` entry supplies `sudo`, so the later sudoers edit does
+not require the installer to add a separate dynamic package.
 
 12.3 `pacstrap -P /mnt <packages.list contents> <chosen kernel>
 <matching kernel headers> linux-firmware <chosen NVIDIA package>`.
@@ -202,6 +204,8 @@ adds packages derived from wizard state. `-P` copies the Live ISO's
 12.4 `genfstab -U /mnt >> /mnt/etc/fstab` — verify btrfs entries carry like
 `rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@` and
 `rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@home`
+when the kernel normalizes the implicit default compression level. Preserve
+the generated level; do not rewrite it or specify a level in mount commands.
 
 12.5 `arch-chroot /mnt`:
 
@@ -211,7 +215,9 @@ adds packages derived from wizard state. `-P` copies the Live ISO's
 - write `<hostname>\n` to `/etc/hostname`; add the conventional
   `127.0.1.1 <hostname>` mapping to `/etc/hosts` alongside the localhost
   IPv4/IPv6 entries
-- `useradd -m -G wheel -s /bin/zsh <user>`; `passwd <user>`
+- `useradd -m -G wheel -s /bin/zsh <user>`; pipe
+  `<user>:<password>` to `chpasswd` through stdin and immediately zeroize the
+  in-memory credential buffer and confirmed secret after success
 - uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`
 - mkinitcpio: **if NVIDIA was installed, remove `kms` from HOOKS in
   `/etc/mkinitcpio.conf`**; then `mkinitcpio -P`. (No MODULES additions needed:
@@ -223,8 +229,17 @@ adds packages derived from wizard state. `-P` copies the Live ISO's
 - `systemctl enable NetworkManager`
 - **postinstall hook (deferred)** — see §7
 
-12.6 Prompt "Reboot now?" — `y` → `umount -R /mnt && reboot`; `n` → drop info to
-root shell on live env.
+12.6 Prompt "Reboot now?" with Reboot focused by default. Reboot runs
+`umount -R /mnt` and `reboot` through the normal privileged-command path.
+Choosing not to reboot exits to the shell that launched the installer and
+intentionally leaves the target mounted for inspection.
+
+The install work runs in a background thread so the TUI spinner and progress
+text continue to refresh. Back, Esc, and the global Ctrl+C quit path are locked
+for the install step. A failed command stops the pipeline without rollback and
+leaves current mounts intact. The blocking failure dialog offers Return (exit
+to the launching shell) and View Log; the latter opens the installer log and
+returns to the failure dialog without retrying commands.
 
 ## 6. Keybindings
 
@@ -242,8 +257,8 @@ root shell on live env.
 - **Back button**: go to the previous step (disabled on the first step).
 - **Next button**: go to the next step (disabled on the last step).
 - **F1**: help (not implemented or advertised in the footer yet).
-- Install phase: **Spinner + progress text** on screen, log only to file;
-  **L**: view log after completion.
+- Install phase: **Spinner + progress text** on screen, command output only in
+  the log file. A failure dialog provides explicit Return and View Log buttons.
 
 The quit-confirmation dialog shows `[ Cancel ]` and `[ Quit ]`, initially
 focused on Cancel. Left/Right or Tab changes focus, Enter activates the focused

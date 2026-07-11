@@ -17,6 +17,7 @@ use ratatui::widgets::{Block, Borders, Clear, Paragraph};
 use ratatui::Frame;
 use ratatui::Terminal;
 use std::io::Stdout;
+use std::time::Duration;
 
 /// Which widget currently has keyboard focus.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -118,7 +119,7 @@ impl App {
     }
 
     fn back_enabled(&self) -> bool {
-        self.current > 0
+        self.current > 0 && self.steps[self.current].allows_back()
     }
 
     fn next_enabled(&self) -> bool {
@@ -158,6 +159,11 @@ impl App {
         let state = &mut self.state;
         let steps = &mut self.steps;
         steps[self.current].on_subprocess_done(status, state)
+    }
+
+    fn tick(&mut self) -> anyhow::Result<Action> {
+        let action = self.steps[self.current].tick(&mut self.state)?;
+        self.apply_step_action(action)
     }
 
     /// Apply an action emitted by the current step, regardless of whether it
@@ -237,6 +243,9 @@ impl App {
     }
 
     fn render_footer(&self, frame: &mut Frame, area: Rect) {
+        if !self.steps[self.current].shows_navigation_footer() {
+            return;
+        }
         let chunks = Layout::default()
             .direction(Direction::Horizontal)
             .constraints([
@@ -333,6 +342,9 @@ impl App {
         // Ctrl+C is the one global quit shortcut even while a step dialog is
         // open. Quit confirmation itself still defaults to Cancel.
         if key.modifiers.contains(KeyModifiers::CONTROL) && key.code == KeyCode::Char('c') {
+            if self.steps[self.current].blocks_global_quit() {
+                return Ok(Action::Continue);
+            }
             self.quit_confirm = Some(QuitFocus::Cancel);
             return Ok(Action::Continue);
         }
@@ -426,7 +438,13 @@ pub fn run(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> anyhow::Result<
     let mut app = App::new()?;
     app.activate_current()?;
     loop {
+        if matches!(app.tick()?, Action::Quit) {
+            break;
+        }
         terminal.draw(|frame| app.render(frame))?;
+        if !crossterm::event::poll(Duration::from_millis(100))? {
+            continue;
+        }
         let event = crossterm::event::read()?;
         match app.handle_event(event)? {
             Action::Continue => {}

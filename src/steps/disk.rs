@@ -279,6 +279,7 @@ impl DiskStep {
             }
         }
         state.disk.affected_disks.clear();
+        state.disk.esp_needs_format = None;
         state.disk.raid_mode = None;
     }
 
@@ -314,6 +315,7 @@ impl DiskStep {
             return StepAction::None;
         }
         self.record_affected_disks(state);
+        self.record_esp_format_decision(state);
         let wipes = compute_wipe_list(&self.parts, state);
         if wipes.is_empty() {
             StepAction::Next
@@ -333,6 +335,15 @@ impl DiskStep {
         }
         partitions.extend(state.disk.target_partitions.iter().cloned());
         state.disk.affected_disks = lsblk::parent_disks_for_partitions(&self.disks, &partitions);
+    }
+
+    fn record_esp_format_decision(&self, state: &mut InstallerState) {
+        state.disk.esp_needs_format = state.disk.esp_partition.as_deref().and_then(|esp| {
+            self.parts
+                .iter()
+                .find(|part| part.name == esp)
+                .map(|part| part.fstype.as_deref() != Some("vfat"))
+        });
     }
 
     fn render_disk_picker(&mut self, frame: &mut Frame, area: Rect, body_focused: bool) {
@@ -699,6 +710,7 @@ fn reconcile_assignments(parts: &[BlockDevice], protected: &[String], state: &mu
     if state.disk.target_partitions != previous_targets || state.disk.esp_partition != previous_esp
     {
         state.disk.affected_disks.clear();
+        state.disk.esp_needs_format = None;
         state.disk.raid_mode = None;
     }
 }

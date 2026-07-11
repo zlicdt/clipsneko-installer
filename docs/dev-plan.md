@@ -277,7 +277,8 @@ usable standalone for a full install until M4c lands.
     or `raid1`; metadata fixed at `raid1`), then
     `mkfs.btrfs -f -d <mode> -m raid1 <part1> <part2> ...`.
   - Create subvolumes `@`, `@home`; remount root with
-    `-o compress=zstd:1,subvol=@`; mount `@home` at `/mnt/home`.
+    `-o compress=zstd,subvol=@`; mount `@home` with implicit-level zstd
+    compression at `/mnt/home`.
   - ESP: `mkfs.vfat -F32` only if not already vfat; mount at `/mnt/boot/efi`.
   - (No extra-partition mapping in v0.1.)
 
@@ -286,7 +287,8 @@ usable standalone for a full install until M4c lands.
 - A single Target partition is formatted with `mkfs.btrfs -f`; two or more
   Targets are formatted with `mkfs.btrfs -f -d <mode> -m raid1 ...` using the
   profile validated in M2.
-- Root is mounted with `compress=zstd:1,subvol=@`; `@home` at `/mnt/home`.
+- Root is mounted with `compress=zstd,subvol=@`; `@home` uses
+  `compress=zstd,subvol=@home` at `/mnt/home`.
 - Existing-vfat ESP is mounted without reformat; non-vfat ESP is formatted
   then mounted, at `/mnt/boot/efi`.
 
@@ -294,8 +296,8 @@ usable standalone for a full install until M4c lands.
 
 - Single Target vs multi-Target btrfs command argument construction.
 - RAID argument list construction for `raid0` and `raid1` data modes.
-- Btrfs mount-option string construction
-  (`compress=zstd:1,subvol=@` for root, `subvol=@home` for home).
+- Btrfs mount-option string construction (`compress=zstd,subvol=@` for root,
+  `compress=zstd,subvol=@home` for home).
 - Subvolume path computation (`/mnt` vs `/mnt/home` given subvol names).
 - ESP reformat decision (reused from M2's test, applied at format time).
 
@@ -312,8 +314,9 @@ M3 (full state).
   its matching headers, linux-firmware, and the chosen NVIDIA package. The Live
   ISO's existing `pacman.conf` already contains the ClipsNeko repository, and `-P`
   copies `pacman.conf` plus `pacman.d` to the target;
-  run `genfstab -U /mnt >> /mnt/etc/fstab` and ensure btrfs entries carry
-  `compress=zstd:1`.
+  run `genfstab -U /mnt >> /mnt/etc/fstab`; ensure both btrfs subvolume entries
+  carry zstd compression while preserving a kernel-normalized default such as
+  `compress=zstd:3` rather than rewriting or selecting a level.
 - `src/installer/chroot.rs` — under `arch-chroot /mnt`: timezone symlink +
   `hwclock --systohc`; `/etc/locale.gen` per state → `locale-gen`; write
   `/etc/locale.conf` and `/etc/vconsole.conf`; `/etc/hostname` + `/etc/hosts`;
@@ -322,13 +325,15 @@ M3 (full state).
   uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`; rely on the pacman
   configuration copied by `pacstrap -P`;
   remove `kms` from `HOOKS` in `/etc/mkinitcpio.conf` if NVIDIA was
-  installed; `mkinitcpio -P`.
+  installed; `mkinitcpio -P`. The static `base-devel` package supplies `sudo`
+  for the sudoers configuration; it is not added dynamically.
 
 #### Acceptance
 
 - `pacstrap -P` installs exactly the static packages plus packages derived
   from state, and copies the Live ISO's pacman configuration to the target.
-- `/mnt/etc/fstab` is generated and btrfs entries carry `compress=zstd:1`.
+- `/mnt/etc/fstab` is generated and both btrfs subvolume entries carry zstd
+  compression, with any kernel-normalized default level preserved.
 - Inside the chroot: timezone, locale, vconsole, hostname, hosts, user
   creation, sudoers, copied pacman configuration, and mkinitcpio
   (with `kms` removed when NVIDIA is chosen) are all applied.
@@ -342,8 +347,8 @@ M3 (full state).
 - `chpasswd` stdin construction never exposes the secret through command
   arguments, Debug, tracing, or logs; success and Drop both zeroize it.
 - `/etc/sudoers` `%wheel` uncomment logic (string edit).
-- `genfstab` output post-processing to guarantee `compress=zstd:1` on
-  btrfs lines.
+- `genfstab` validation accepts implicit `compress=zstd` and a normalized
+  default such as `compress=zstd:3` on both btrfs subvolume lines.
 
 #### Dependencies
 
@@ -357,22 +362,28 @@ M4a.
   `grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=clipsneko`;
   `grub-mkconfig -o /boot/grub/grub.cfg`;
   `systemctl enable NetworkManager` (inside the chroot);
-  prompt "Reboot now?"; on yes `umount -R /mnt && reboot`, on no drop an
-  info message to the live root shell.
+  run the pipeline in a background worker with a responsive spinner and locked
+  Back/Esc/Ctrl+C paths; on failure stop without rollback and show Return/View
+  Log actions; prompt "Reboot now?" with Reboot focused by default. Reboot runs
+  privileged `umount -R /mnt` then `reboot`; not-now exits to the launching
+  shell and deliberately leaves the target mounted.
 
 #### Acceptance
 
 - GRUB is installed to the ESP with the `clipsneko` bootloader ID.
 - `grub.cfg` is generated and references the btrfs root subvolume.
 - `NetworkManager.service` is enabled on the target.
-- The reboot prompt offers yes/no; yes unmounts and reboots, no returns
-  to a usable live shell.
+- The reboot prompt defaults to Reboot; reboot unmounts and restarts, while
+  not-now returns to a usable live shell with `/mnt` preserved for inspection.
+- Destructive work cannot be interrupted through wizard Back/Esc/Ctrl+C. A
+  failure stops without rollback and its dialog exposes Return and View Log.
 
 #### Unit tests
 
 - `grub-install` argument list construction.
 - `grub-mkconfig` output path.
-- Reboot-decision state machine (yes → umount+reboot, no → shell).
+- Reboot-decision state machine (default reboot → umount+reboot, not-now →
+  shell with mounts preserved), install navigation lock, and failure/log dialog.
 
 #### Dependencies
 

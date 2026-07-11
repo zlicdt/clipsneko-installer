@@ -234,6 +234,7 @@ fn summary_is_complete(state: &InstallerState) -> bool {
             .is_some_and(|user| user.password_set && !user.username.is_empty())
         && state.user_password.is_some()
         && state.disk.esp_partition.is_some()
+        && state.disk.esp_needs_format.is_some()
         && !state.disk.target_partitions.is_empty()
         && !state.disk.affected_disks.is_empty()
         && (state.disk.target_partitions.len() == 1 || state.disk.raid_mode.is_some())

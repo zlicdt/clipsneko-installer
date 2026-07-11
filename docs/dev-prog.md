@@ -18,7 +18,7 @@ it moves from "Not done" to "Done" and stays there.
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. The POT
-  and en/zh_CN catalogs contain the same 147 message IDs with no untranslated,
+  and en/zh_CN catalogs contain the same 162 message IDs with no untranslated,
   fuzzy, or obsolete entries. zh_TW support was removed because it had no
   catalog and is outside the locked language set.
 - UI language changes only `LC_MESSAGES` and remains independent of the target
@@ -29,7 +29,8 @@ it moves from "Not done" to "Done" and stays there.
   requires only `/etc/clipsneko-installer/packages.list`; there is no separate
   repository config. The Live ISO's existing `pacman.conf` supplies the
   ClipsNeko repository, and the install design requires `pacstrap -P` to copy
-  `pacman.conf` and `pacman.d` to the target.
+  `pacman.conf` and `pacman.d` to the target. The static `base-devel` entry
+  supplies `sudo`; the installer does not add it dynamically.
 - Logging writes to `$XDG_CACHE_HOME/clipsneko-installer/log`, falling back to
   `$HOME/.cache/clipsneko-installer/log`, with no path override. Missing HOME,
   log setup failures, and required runtime-file failures exit clearly before
@@ -99,8 +100,8 @@ it moves from "Not done" to "Done" and stays there.
 - **Kernel step:** the four supported kernels are available in a translated
   single-select list, with `linux-zen` selected by default. Space, Enter, and
   footer Next commit consistently; returning to the step restores the saved
-  choice. Every kernel maps to its matching headers package, which M4b will
-  always include in the dynamic pacstrap package set.
+  choice. Every kernel maps to its matching headers package, which installation
+  always includes in the dynamic pacstrap package set.
 - **NVIDIA step:** no-driver, `nvidia-open`, `nvidia-open-lts`, and
   `nvidia-open-dkms` choices are implemented with the documented per-kernel
   compatibility matrix. The default is `nvidia-open-dkms`; incompatible
@@ -141,14 +142,39 @@ it moves from "Not done" to "Done" and stays there.
   long summaries.
 - Password storage is implemented as a non-Debug `SecretString` backed by
   `zeroize`. Both editable password buffers and the confirmed state secret are
-  zeroized on clear or Drop; M4b will feed `<username>:<password>` only through
-  `chpasswd` stdin and clear the confirmed secret immediately after success.
+  zeroized on clear or Drop; installation feeds `<username>:<password>` only
+  through `chpasswd` stdin and clears both the temporary credential buffer and
+  confirmed secret immediately after success.
   Passwords never enter command arguments, summaries, tracing fields, or logs.
 - The account/install design no longer includes a GECOS value or
   `passwd -l root`; the installer creates the wheel user and leaves root-account
   policy unchanged.
+- **M4a format and mount:** the final disk snapshot now records whether the ESP
+  requires formatting. Installation formats a single Target as btrfs or all
+  multi-Target devices with the selected RAID0/RAID1 data profile and RAID1
+  metadata, creates `@` and `@home`, and mounts both with implicit-level
+  `compress=zstd`. Existing-vfat ESPs are reused; other ESPs are formatted
+  FAT32 and mounted at `/mnt/boot/efi`.
+- **M4b packages and target configuration:** the installer reads the runtime
+  packages list, appends deduplicated kernel/headers/linux-firmware/NVIDIA
+  choices, runs `pacstrap -P`, validates both generated btrfs fstab entries
+  while preserving a kernel-normalized zstd level, and appends fstab without a
+  shell. Chroot configuration applies timezone, hardware clock, locale,
+  vconsole, hostname/hosts, wheel user and stdin-only password, sudoers, and
+  NVIDIA-specific `kms` HOOK removal before `mkinitcpio -P`.
+- **M4c boot and finalization:** GRUB UEFI installation and configuration plus
+  NetworkManager enablement are implemented. The install pipeline runs in a
+  background worker with a responsive spinner; Back, Esc, Ctrl+C, and the
+  normal footer are locked. Failure stops without rollback and offers Return
+  or a scrollable log view. Success defaults to Reboot; reboot runs privileged
+  recursive unmount then reboot, while Not now exits with `/mnt` preserved.
+- Destructive system work is isolated behind a command-runner seam. Automated
+  tests cover command and package construction, ESP decisions, btrfs RAID and
+  mount options, fstab validation, target-file transforms, stdin-only password
+  handoff/clearing, navigation locking, failure/log behavior, and reboot focus
+  without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (127 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (142 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -170,13 +196,11 @@ it moves from "Not done" to "Done" and stays there.
   ISO/VM check, including real GeoIP, `timedatectl` data, centered-form
   layouts, input focus, masking, strength colors, hostname validation, and the
   final summary/destructive-dialog review before install.
-- **M4a install stage:** btrfs format/RAID/subvolume and ESP format/mount logic
-  is not implemented.
-- **M4b install stage:** packages.list loading, dynamic package derivation,
-  `pacstrap -P`, fstab, target locale/vconsole/hostname/user configuration,
-  stdin-only chpasswd, sudoers, and mkinitcpio are not implemented.
-- **M4c install stage:** GRUB installation/configuration, NetworkManager
-  enablement, unmount, reboot, and final shell behavior are not implemented.
+- **M4 runtime acceptance:** the full destructive pipeline, spinner/navigation
+  lock, failure/log dialog, generated fstab, target configuration, GRUB output,
+  preserved-mount Not now path, and unmount/reboot path still need an
+  interactive multi-disk test on the actual ClipsNeko Live ISO or a disposable
+  matching VM.
 - **F1 help:** content and rendering still need the user's decision; F1 is not
   advertised in the UI meanwhile.
 - **Postinstall hook:** blocked on the user's decisions about its path/package,

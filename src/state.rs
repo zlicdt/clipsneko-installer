@@ -34,6 +34,10 @@ pub struct InstallerState {
 #[derive(Debug, Default)]
 pub struct DiskState {
     pub esp_partition: Option<String>,
+    /// Whether the selected ESP must be formatted before mounting. This is
+    /// captured from the final lsblk snapshot so the install stage does not
+    /// need to rediscover or guess filesystem state after confirmation.
+    pub esp_needs_format: Option<bool>,
     pub target_partitions: Vec<String>,
     pub affected_disks: Vec<String>,
     pub raid_mode: Option<BtrfsRaidMode>,

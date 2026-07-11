@@ -7,6 +7,43 @@ struct TestStep {
     commit_on_next: bool,
 }
 
+struct LockedStep;
+
+impl Step for LockedStep {
+    fn id(&self) -> StepId {
+        StepId::Install
+    }
+
+    fn render(
+        &mut self,
+        _frame: &mut Frame,
+        _area: Rect,
+        _state: &InstallerState,
+        _body_focused: bool,
+    ) {
+    }
+
+    fn handle_key(
+        &mut self,
+        _key: crossterm::event::KeyEvent,
+        _state: &mut InstallerState,
+    ) -> anyhow::Result<StepAction> {
+        Ok(StepAction::None)
+    }
+
+    fn allows_back(&self) -> bool {
+        false
+    }
+
+    fn blocks_global_quit(&self) -> bool {
+        true
+    }
+
+    fn on_back_button(&mut self, _state: &mut InstallerState) -> anyhow::Result<StepAction> {
+        Ok(StepAction::None)
+    }
+}
+
 impl Step for TestStep {
     fn id(&self) -> StepId {
         StepId::Language
@@ -150,4 +187,30 @@ fn quit_requires_selecting_quit_button() {
     let action = app.handle_event(key(KeyCode::Enter)).unwrap();
 
     assert!(matches!(action, Action::Quit));
+}
+
+#[test]
+fn destructive_step_disables_back_and_global_ctrl_c() {
+    let mut app = App {
+        steps: vec![
+            Box::new(TestStep {
+                modal: false,
+                commit_on_next: false,
+            }),
+            Box::new(LockedStep),
+        ],
+        current: 1,
+        state: InstallerState::default(),
+        quit_confirm: None,
+        focus: Focus::StepBody,
+    };
+
+    assert!(!app.back_enabled());
+    let action = app
+        .handle_event(modified_key(KeyCode::Char('c'), KeyModifiers::CONTROL))
+        .unwrap();
+    assert!(matches!(action, Action::Continue));
+    assert!(app.quit_confirm.is_none());
+    let _ = app.handle_event(key(KeyCode::Esc)).unwrap();
+    assert_eq!(app.current, 1);
 }

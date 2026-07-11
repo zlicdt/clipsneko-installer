@@ -15,6 +15,7 @@ fn complete_state() -> InstallerState {
         keymap: Some("us".to_string()),
         disk: DiskState {
             esp_partition: Some("nvme0n1p1".to_string()),
+            esp_needs_format: Some(false),
             target_partitions: vec!["nvme0n1p2".to_string(), "sda1".to_string()],
             affected_disks: vec!["nvme0n1".to_string(), "sda".to_string()],
             raid_mode: Some(BtrfsRaidMode::Raid1),

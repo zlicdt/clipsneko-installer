@@ -1,11 +1,9 @@
-//! Step trait, identifiers, and the placeholder step used until each step's
-//! real UI lands. Per-step modules (`steps/language.rs`, etc.) will be
-//! created as individual steps get real implementations; until then a single
-//! `StubStep` services all 12 slots so navigation works end-to-end.
+//! Step trait, identifiers, and construction of the complete wizard flow.
 
 mod confirm;
 mod disk;
 mod hostname;
+mod install;
 mod kernel;
 mod keyboard;
 mod language;
@@ -18,15 +16,15 @@ mod user;
 use crate::state::InstallerState;
 use crate::t;
 use anyhow::Result;
-use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
+use crossterm::event::KeyEvent;
 use ratatui::layout::Rect;
-use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 use std::process::ExitStatus;
 
 pub use confirm::ConfirmStep;
 pub use disk::DiskStep;
 pub use hostname::HostnameStep;
+pub use install::InstallStep;
 pub use kernel::KernelStep;
 pub use keyboard::KeyboardStep;
 pub use language::LanguageStep;
@@ -150,6 +148,29 @@ pub trait Step {
         false
     }
 
+    /// Allow the shared Back path. The destructive install step disables it.
+    fn allows_back(&self) -> bool {
+        true
+    }
+
+    /// Suppress the app-level Ctrl+C quit dialog. The install step owns all
+    /// exits so a running destructive command cannot be abandoned.
+    fn blocks_global_quit(&self) -> bool {
+        false
+    }
+
+    /// Whether the shared Back/Next footer and its global shortcut hint are
+    /// meaningful for this step. The install step owns its actions in-body.
+    fn shows_navigation_footer(&self) -> bool {
+        true
+    }
+
+    /// Periodic update called by the app event loop even when no key arrives.
+    /// Background steps use it to animate and receive worker messages.
+    fn tick(&mut self, _state: &mut InstallerState) -> Result<StepAction> {
+        Ok(StepAction::None)
+    }
+
     /// Called when the user activates the on-screen **Next** button. The
     /// default matches Enter-based forward navigation. A step can commit its
     /// current selection before returning `Next`, return `None` to stay put
@@ -167,47 +188,7 @@ pub trait Step {
     }
 }
 
-/// Placeholder step: renders a "not implemented" notice and advances on
-/// Enter. App-level Esc follows the same Back path as the footer button.
-pub struct StubStep {
-    id: StepId,
-}
-
-impl StubStep {
-    pub fn new(id: StepId) -> Self {
-        StubStep { id }
-    }
-}
-
-impl Step for StubStep {
-    fn id(&self) -> StepId {
-        self.id
-    }
-
-    fn render(
-        &mut self,
-        frame: &mut Frame,
-        area: Rect,
-        _state: &InstallerState,
-        _body_focused: bool,
-    ) {
-        let body = format!("{}\n\n{}", t!("stub.body"), t!("stub.hint"),);
-        frame.render_widget(Paragraph::new(body), area);
-    }
-
-    fn handle_key(&mut self, key: KeyEvent, _state: &mut InstallerState) -> Result<StepAction> {
-        if key.kind != KeyEventKind::Press {
-            return Ok(StepAction::None);
-        }
-        Ok(match key.code {
-            KeyCode::Enter => StepAction::Next,
-            _ => StepAction::None,
-        })
-    }
-}
-
-/// Build the full 12-step wizard. Steps with a real implementation are wired
-/// in here; the rest are stubs swapped out as their UI is written.
+/// Build the full 12-step wizard.
 pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
     Ok(vec![
         Box::new(LanguageStep::new()?),
@@ -221,6 +202,6 @@ pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
         Box::new(UserStep::new()),
         Box::new(HostnameStep::new()),
         Box::new(ConfirmStep::new()),
-        Box::new(StubStep::new(StepId::Install)),
+        Box::new(InstallStep::new()),
     ])
 }
