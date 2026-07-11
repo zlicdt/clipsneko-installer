@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 10:25+0800\n"
+"POT-Creation-Date: 2026-07-11 11:01+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: English\n"
@@ -370,59 +370,59 @@ msgstr "Left/Right=Select  Enter=Confirm  Esc=Cancel"
 msgid "quit_dialog.title"
 msgstr "Are you sure you want to quit?"
 
-#: src/steps/mod.rs:81
+#: src/steps/mod.rs:83
 msgid "step.title.confirm_installation"
 msgstr "Confirm Installation"
 
-#: src/steps/mod.rs:75
+#: src/steps/mod.rs:77
 msgid "step.title.disk_partitioning"
 msgstr "Disk Partitioning"
 
-#: src/steps/mod.rs:80
+#: src/steps/mod.rs:82
 msgid "step.title.hostname"
 msgstr "Hostname"
 
-#: src/steps/mod.rs:82
+#: src/steps/mod.rs:84
 msgid "step.title.installing"
 msgstr "Installing"
 
-#: src/steps/mod.rs:76
+#: src/steps/mod.rs:78
 msgid "step.title.kernel"
 msgstr "Kernel"
 
-#: src/steps/mod.rs:72
+#: src/steps/mod.rs:74
 msgid "step.title.keyboard_layout"
 msgstr "Keyboard Layout"
 
-#: src/steps/mod.rs:71
+#: src/steps/mod.rs:73
 msgid "step.title.language"
 msgstr "Language"
 
-#: src/steps/mod.rs:74
+#: src/steps/mod.rs:76
 msgid "step.title.mirror_list"
 msgstr "Mirror List"
 
-#: src/steps/mod.rs:73
+#: src/steps/mod.rs:75
 msgid "step.title.network"
 msgstr "Network"
 
-#: src/steps/mod.rs:77
+#: src/steps/mod.rs:79
 msgid "step.title.nvidia_driver"
 msgstr "NVIDIA Driver"
 
-#: src/steps/mod.rs:78
+#: src/steps/mod.rs:80
 msgid "step.title.timezone"
 msgstr "Timezone"
 
-#: src/steps/mod.rs:79
+#: src/steps/mod.rs:81
 msgid "step.title.user_account"
 msgstr "User Account"
 
-#: src/steps/mod.rs:188
+#: src/steps/mod.rs:190
 msgid "stub.body"
 msgstr "This step is not implemented yet."
 
-#: src/steps/mod.rs:188
+#: src/steps/mod.rs:190
 msgid "stub.hint"
 msgstr "Press Enter to continue."
 
@@ -449,3 +449,59 @@ msgstr "(not used for UTC)"
 #: src/steps/timezone.rs:269
 msgid "timezone_step.zone_title"
 msgstr "Timezone"
+
+#: src/steps/user.rs:223
+msgid "user_step.confirm_password"
+msgstr "Confirm password"
+
+#: src/steps/user.rs:71
+msgid "user_step.error_password_mismatch"
+msgstr "The passwords do not match."
+
+#: src/steps/user.rs:68
+msgid "user_step.error_password_required"
+msgstr "The password cannot be empty."
+
+#: src/steps/user.rs:65
+msgid "user_step.error_username_invalid"
+msgstr "Use lowercase letters, digits, underscores, and hyphens; start with a letter or underscore."
+
+#: src/steps/user.rs:62
+msgid "user_step.error_username_required"
+msgstr "Enter a username."
+
+#: src/steps/user.rs:189
+msgid "user_step.form_title"
+msgstr "Account details"
+
+#: src/steps/user.rs:215
+msgid "user_step.password"
+msgstr "Password"
+
+#: src/steps/user.rs:73
+msgid "user_step.ready"
+msgstr "Account details are valid."
+
+#: src/steps/user.rs:233
+msgid "user_step.strength"
+msgstr "Password strength"
+
+#: src/steps/user.rs:132
+msgid "user_step.strength_fair"
+msgstr "Fair"
+
+#: src/steps/user.rs:133
+msgid "user_step.strength_good"
+msgstr "Good"
+
+#: src/steps/user.rs:134
+msgid "user_step.strength_strong"
+msgstr "Strong"
+
+#: src/steps/user.rs:131
+msgid "user_step.strength_weak"
+msgstr "Weak"
+
+#: src/steps/user.rs:207
+msgid "user_step.username"
+msgstr "Username"

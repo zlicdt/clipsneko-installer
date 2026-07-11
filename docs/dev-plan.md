@@ -192,10 +192,12 @@ confirm screen can show a full summary.
   the ten supported geographic regions plus direct UTC; the second contains
   full timezone names and is disabled for UTC. Legacy top-level aliases and
   `Etc/*` are excluded, and there is no manual text input.
-- `src/steps/user.rs` — username (`^[a-z_][a-z0-9_-]*$`), optional GECOS,
-  password + confirm with a strength bar; writes account metadata to
-  `state.user` and keeps the confirmed password only in a non-Debug
-  `SecretString` that zeroizes on Drop.
+- `src/steps/user.rs` — centered, bordered username
+  (`^[a-z_][a-z0-9_-]*$`), password, and confirmation form with no GECOS
+  field. A live strength bar is advisory: every non-empty password is accepted
+  when confirmation matches. The step writes account metadata to `state.user`
+  and keeps the confirmed password only in a non-Debug `SecretString` that
+  zeroizes on Drop.
 - `src/steps/hostname.rs` — input validated
   `^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$`.
 - `src/steps/confirm.rs` — full summary of all state; linear Back/Next;
@@ -217,8 +219,9 @@ confirm screen can show a full summary.
   Left returns to the region list, and Enter applies a concrete timezone or
   direct UTC. The UTC choice visibly disables the second list, and Tab reaches
   both lists and the footer in order.
-- Username validation rejects invalid names live; password strength bar
-  updates as the user types; confirm mismatch blocks Next.
+- Username validation rejects invalid names live; the password strength bar
+  updates as the user types; empty passwords and confirmation mismatches block
+  Next, while a matching non-empty weak password remains valid.
 - Hostname validation rejects invalid input live.
 - Confirm screen shows every choice; the blocking dialog appears before
   the install step.
@@ -298,7 +301,7 @@ M3 (full state).
 - `src/installer/chroot.rs` — under `arch-chroot /mnt`: timezone symlink +
   `hwclock --systohc`; `/etc/locale.gen` per state → `locale-gen`; write
   `/etc/locale.conf` and `/etc/vconsole.conf`; `/etc/hostname` + `/etc/hosts`;
-  `passwd -l root`; `useradd -m -G wheel -s /bin/zsh`; pipe credentials to
+  `useradd -m -G wheel -s /bin/zsh`; pipe credentials to
   `chpasswd` through stdin, then immediately zeroize the in-memory secret;
   uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`; rely on the pacman
   configuration copied by `pacstrap -P`;
@@ -310,8 +313,8 @@ M3 (full state).
 - `pacstrap -P` installs exactly the static packages plus packages derived
   from state, and copies the Live ISO's pacman configuration to the target.
 - `/mnt/etc/fstab` is generated and btrfs entries carry `compress=zstd:1`.
-- Inside the chroot: timezone, locale, vconsole, hostname, hosts, root
-  lock, user creation, sudoers, copied pacman configuration, and mkinitcpio
+- Inside the chroot: timezone, locale, vconsole, hostname, hosts, user
+  creation, sudoers, copied pacman configuration, and mkinitcpio
   (with `kms` removed when NVIDIA is chosen) are all applied.
 
 #### Unit tests
@@ -383,7 +386,8 @@ with the user before this milestone can start.
   the chroot, with the agreed env, and its output is captured to the log.
 - F1 shows a help screen listing all keybindings.
 - A full end-to-end install on a VM boots into a working system with the
-  created user, locked root, zsh shell, NetworkManager, and GRUB.
+  created user, zsh shell, NetworkManager, and GRUB; the installer leaves the
+  target root-account policy unchanged.
 
 ### Unit tests
 

@@ -141,10 +141,15 @@ Linear: Back/Next only, no per-item jump from the confirm page.
    timezone text input.
 9. **User** — single user:
    - username validated `^[a-z_][a-z0-9_-]*$`
-   - GECOS optional
-   - password + confirm (strength bar)
+   - no GECOS field
+   - a centered, bordered form containing username, password, password
+     confirmation, and a live strength bar
+   - an empty password or confirmation mismatch blocks Next; every non-empty
+     password is accepted regardless of the displayed strength
+   - Tab/Shift+Tab traverses the three fields and footer; Enter advances to the
+     next field, and Enter on confirmation validates and continues
    - Created as `useradd -m -G wheel -s /bin/zsh <user>`; `%wheel` line
-     uncommented in `/etc/sudoers`; root locked (`passwd -l root`).
+     uncommented in `/etc/sudoers`; the installer does not lock root.
 10. **Hostname** — input validated `^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$`.
 11. **Confirm** — full summary; linear Back/Next; final blocking dialog "This
     will format disks. Continue?".
@@ -183,7 +188,6 @@ adds packages derived from wizard state. `-P` copies the Live ISO's
 - enable the selected target locale in `/etc/locale.gen`, run `locale-gen`,
   write `/etc/locale.conf` (`LANG=...`) and `/etc/vconsole.conf` (`KEYMAP=...`)
 - `/etc/hostname` + `/etc/hosts`
-- `passwd -l root`
 - `useradd -m -G wheel -s /bin/zsh <user>`; `chpasswd`
 - uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`
 - use the pacman configuration copied by `pacstrap -P`
@@ -241,7 +245,7 @@ in-memory `SecretString` that does not implement `Debug`; pipe
 `<username>:<password>` to `chpasswd` through stdin; never place it in command
 arguments, summaries, tracing fields, or logs. On success, zeroize it
 immediately; its `Drop` implementation zeroizes again on failure or early exit.
-The `zeroize` crate is justified when the user step is implemented.
+The `zeroize` crate provides the memory clearing implementation.
 
 ## 8. i18n workflow
 

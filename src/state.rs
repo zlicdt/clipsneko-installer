@@ -1,16 +1,17 @@
 //! Installer state — the single source of truth for every choice the user
 //! makes across the wizard. Each step reads from and writes to this struct.
 //!
-//! For now the fields are unused (the stages are stubs); they are declared
-//! up front so the data model is documented and ready for the real step
-//! logic. `#[allow(dead_code)]` silences the linter until each step lands.
+//! Fields for later install stages remain declared before their consumers are
+//! implemented. `#[allow(dead_code)]` silences the linter until those stages
+//! land.
 
 #![allow(dead_code)]
 
 use crate::i18n::UiLang;
+use crate::util::password::SecretString;
 
 /// All wizard choices. `Option` fields mean "not yet answered".
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct InstallerState {
     pub ui_lang: Option<UiLang>,
     pub target_locale: Option<String>,
@@ -22,6 +23,7 @@ pub struct InstallerState {
     pub nvidia: NvidiaChoice,
     pub timezone: Option<String>,
     pub user: Option<UserInfo>,
+    pub user_password: Option<SecretString>,
     pub hostname: Option<String>,
 }
 
@@ -128,6 +130,5 @@ impl NvidiaChoice {
 #[derive(Debug, Default)]
 pub struct UserInfo {
     pub username: String,
-    pub gecos: String,
     pub password_set: bool,
 }

@@ -11,6 +11,7 @@ mod mirror;
 mod network;
 mod nvidia;
 mod timezone;
+mod user;
 
 use crate::state::InstallerState;
 use crate::t;
@@ -29,6 +30,7 @@ pub use mirror::MirrorStep;
 pub use network::NetworkStep;
 pub use nvidia::NvidiaStep;
 pub use timezone::TimezoneStep;
+pub use user::UserStep;
 
 /// Result of a step handling a key.
 pub enum StepAction {
@@ -212,7 +214,7 @@ pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
         Box::new(KernelStep::new()),
         Box::new(NvidiaStep::new()),
         Box::new(TimezoneStep::new()?),
-        Box::new(StubStep::new(StepId::User)),
+        Box::new(UserStep::new()),
         Box::new(StubStep::new(StepId::Hostname)),
         Box::new(StubStep::new(StepId::Confirm)),
         Box::new(StubStep::new(StepId::Install)),

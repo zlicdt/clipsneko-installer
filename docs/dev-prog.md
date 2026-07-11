@@ -18,7 +18,7 @@ it moves from "Not done" to "Done" and stays there.
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. The POT
-  and en/zh_CN catalogs contain the same 108 message IDs with no untranslated,
+  and en/zh_CN catalogs contain the same 122 message IDs with no untranslated,
   fuzzy, or obsolete entries. zh_TW support was removed because it had no
   catalog and is outside the locked language set.
 - UI language changes only `LC_MESSAGES` and remains independent of the target
@@ -110,12 +110,22 @@ it moves from "Not done" to "Done" and stays there.
   their concrete zones, filters legacy top-level and `Etc` aliases, and offers
   UTC directly with the second panel visibly disabled. Arrow, Enter,
   Tab/Shift+Tab, and footer commit paths are implemented and tested.
-- Password handoff is locked for M3/M4b: a non-Debug zeroizing `SecretString`
-  will feed `<username>:<password>` only through `chpasswd` stdin, never command
-  arguments, summaries, tracing, or logs, and is cleared immediately after use
-  as well as on Drop.
+- **User-account step:** a centered, bordered form collects only the username,
+  password, and confirmation; there is no GECOS field. Username validation is
+  live, empty passwords and mismatches block Next, and the four-level strength
+  bar remains advisory so every matching non-empty weak password is accepted.
+  Enter and Tab/Shift+Tab follow the field/footer focus chain, saved values are
+  restored on re-entry, and password rendering is always masked.
+- Password storage is implemented as a non-Debug `SecretString` backed by
+  `zeroize`. Both editable password buffers and the confirmed state secret are
+  zeroized on clear or Drop; M4b will feed `<username>:<password>` only through
+  `chpasswd` stdin and clear the confirmed secret immediately after success.
+  Passwords never enter command arguments, summaries, tracing fields, or logs.
+- The account/install design no longer includes a GECOS value or
+  `passwd -l root`; the installer creates the wheel user and leaves root-account
+  policy unchanged.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (105 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (113 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -132,11 +142,11 @@ it moves from "Not done" to "Done" and stays there.
   output, protected Live media, responsive tables in both languages, role
   assignment, RAID profiles, and wipe dialogs still need an interactive
   multi-disk Live ISO/VM check.
-- **M3 selection and identity:** the kernel, NVIDIA, and timezone steps still
-  need an interactive bilingual Live ISO/VM check, including real GeoIP and
-  `timedatectl` data. User, hostname, and confirmation remain stubs; the
-  password secret, identity validation rules, and final confirmation UI are
-  not yet code.
+- **M3 selection and identity:** the kernel, NVIDIA, timezone, and user-account
+  steps still need an interactive bilingual Live ISO/VM check, including real
+  GeoIP, `timedatectl` data, centered-form layout, input focus, masking, and
+  strength colors. Hostname and confirmation remain stubs; their validation
+  and final confirmation UI are not yet code.
 - **M4a install stage:** btrfs format/RAID/subvolume and ESP format/mount logic
   is not implemented.
 - **M4b install stage:** packages.list loading, dynamic package derivation,

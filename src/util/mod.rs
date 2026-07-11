@@ -5,5 +5,6 @@
 pub mod geoip;
 pub mod locale_list;
 pub mod lsblk;
+pub mod password;
 pub mod process;
 pub mod ui;
