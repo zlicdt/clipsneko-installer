@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 11:01+0800\n"
+"POT-Creation-Date: 2026-07-11 11:22+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: English\n"
@@ -201,6 +201,30 @@ msgstr "Warning: data loss"
 msgid "footer.hint"
 msgstr "Tab=Focus  Ctrl+C=Quit"
 
+#: src/steps/hostname.rs:36
+msgid "hostname_step.error_invalid"
+msgstr "Use 1–63 ASCII letters, digits, or internal hyphens."
+
+#: src/steps/hostname.rs:33
+msgid "hostname_step.error_required"
+msgstr "Enter a hostname."
+
+#: src/steps/hostname.rs:86
+msgid "hostname_step.form_title"
+msgstr "System hostname"
+
+#: src/steps/hostname.rs:132
+msgid "hostname_step.hint"
+msgstr "1–63 ASCII letters, digits, or internal hyphens"
+
+#: src/steps/hostname.rs:118
+msgid "hostname_step.hostname"
+msgstr "Hostname"
+
+#: src/steps/hostname.rs:38
+msgid "hostname_step.ready"
+msgstr "Hostname is valid."
+
 #: src/steps/kernel.rs:104
 msgid "kernel_step.headers_hint"
 msgstr "Matching kernel headers are installed automatically."
@@ -370,59 +394,59 @@ msgstr "Left/Right=Select  Enter=Confirm  Esc=Cancel"
 msgid "quit_dialog.title"
 msgstr "Are you sure you want to quit?"
 
-#: src/steps/mod.rs:83
+#: src/steps/mod.rs:85
 msgid "step.title.confirm_installation"
 msgstr "Confirm Installation"
 
-#: src/steps/mod.rs:77
+#: src/steps/mod.rs:79
 msgid "step.title.disk_partitioning"
 msgstr "Disk Partitioning"
 
-#: src/steps/mod.rs:82
+#: src/steps/mod.rs:84
 msgid "step.title.hostname"
 msgstr "Hostname"
 
-#: src/steps/mod.rs:84
+#: src/steps/mod.rs:86
 msgid "step.title.installing"
 msgstr "Installing"
 
-#: src/steps/mod.rs:78
+#: src/steps/mod.rs:80
 msgid "step.title.kernel"
 msgstr "Kernel"
 
-#: src/steps/mod.rs:74
+#: src/steps/mod.rs:76
 msgid "step.title.keyboard_layout"
 msgstr "Keyboard Layout"
 
-#: src/steps/mod.rs:73
+#: src/steps/mod.rs:75
 msgid "step.title.language"
 msgstr "Language"
 
-#: src/steps/mod.rs:76
+#: src/steps/mod.rs:78
 msgid "step.title.mirror_list"
 msgstr "Mirror List"
 
-#: src/steps/mod.rs:75
+#: src/steps/mod.rs:77
 msgid "step.title.network"
 msgstr "Network"
 
-#: src/steps/mod.rs:79
+#: src/steps/mod.rs:81
 msgid "step.title.nvidia_driver"
 msgstr "NVIDIA Driver"
 
-#: src/steps/mod.rs:80
+#: src/steps/mod.rs:82
 msgid "step.title.timezone"
 msgstr "Timezone"
 
-#: src/steps/mod.rs:81
+#: src/steps/mod.rs:83
 msgid "step.title.user_account"
 msgstr "User Account"
 
-#: src/steps/mod.rs:190
+#: src/steps/mod.rs:192
 msgid "stub.body"
 msgstr "This step is not implemented yet."
 
-#: src/steps/mod.rs:190
+#: src/steps/mod.rs:192
 msgid "stub.hint"
 msgstr "Press Enter to continue."
 
@@ -464,7 +488,9 @@ msgstr "The password cannot be empty."
 
 #: src/steps/user.rs:65
 msgid "user_step.error_username_invalid"
-msgstr "Use lowercase letters, digits, underscores, and hyphens; start with a letter or underscore."
+msgstr ""
+"Use lowercase letters, digits, underscores, and hyphens; start with a letter "
+"or underscore."
 
 #: src/steps/user.rs:62
 msgid "user_step.error_username_required"

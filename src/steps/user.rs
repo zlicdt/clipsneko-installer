@@ -9,10 +9,11 @@ use crate::state::{InstallerState, UserInfo};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::password::{password_strength, PasswordStrength, SecretString};
+use crate::util::ui::input_border_style;
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::style::{Color, Style};
 use ratatui::text::Line;
 use ratatui::widgets::{Block, Borders, Gauge, Paragraph};
 use ratatui::Frame;
@@ -102,19 +103,12 @@ impl UserStep {
         let visible_width = area.width.saturating_sub(2) as usize;
         let display_width = Line::from(display.as_str()).width();
         let scroll = display_width.saturating_sub(visible_width) as u16;
-        let border_style = if focused {
-            Style::default()
-                .fg(Color::Cyan)
-                .add_modifier(Modifier::BOLD)
-        } else {
-            Style::default()
-        };
         frame.render_widget(
             Paragraph::new(display)
                 .block(
                     Block::default()
                         .borders(Borders::ALL)
-                        .border_style(border_style)
+                        .border_style(input_border_style(focused))
                         .title(title),
                 )
                 .scroll((0, scroll)),

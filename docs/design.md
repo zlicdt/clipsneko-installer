@@ -41,6 +41,8 @@ AGENTS.md
 ## 4. Wizard flow
 
 Linear: Back/Next only, no per-item jump from the confirm page.
+Every editable text input uses a bold white border while focused; its
+unfocused border uses the terminal's default style.
 
 1. **Language and locale** — two independent lists on one step:
    - Installer UI language: en / zh_CN. Space applies the highlighted language
@@ -150,7 +152,13 @@ Linear: Back/Next only, no per-item jump from the confirm page.
      next field, and Enter on confirmation validates and continues
    - Created as `useradd -m -G wheel -s /bin/zsh <user>`; `%wheel` line
      uncommented in `/etc/sudoers`; the installer does not lock root.
-10. **Hostname** — input validated `^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$`.
+10. **Hostname** — a centered, bordered single-input form. The value is a
+    single ASCII DNS label validated
+    `^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$`: 1–63 ASCII letters,
+    digits, or non-leading/non-trailing hyphens. Letter case is preserved when
+    the value is committed. FQDNs are intentionally not accepted. Validation
+    is live; Enter or footer Next commits a valid value and continues, while
+    returning to the step restores the saved value.
 11. **Confirm** — full summary; linear Back/Next; final blocking dialog "This
     will format disks. Continue?".
 12. **Install** — see §5.
@@ -187,7 +195,9 @@ adds packages derived from wizard state. `-P` copies the Live ISO's
 - timezone symlink + `hwclock --systohc`
 - enable the selected target locale in `/etc/locale.gen`, run `locale-gen`,
   write `/etc/locale.conf` (`LANG=...`) and `/etc/vconsole.conf` (`KEYMAP=...`)
-- `/etc/hostname` + `/etc/hosts`
+- write `<hostname>\n` to `/etc/hostname`; add the conventional
+  `127.0.1.1 <hostname>` mapping to `/etc/hosts` alongside the localhost
+  IPv4/IPv6 entries
 - `useradd -m -G wheel -s /bin/zsh <user>`; `chpasswd`
 - uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`
 - use the pacman configuration copied by `pacstrap -P`

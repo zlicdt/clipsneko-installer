@@ -198,8 +198,11 @@ confirm screen can show a full summary.
   when confirmation matches. The step writes account metadata to `state.user`
   and keeps the confirmed password only in a non-Debug `SecretString` that
   zeroizes on Drop.
-- `src/steps/hostname.rs` — input validated
-  `^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$`.
+- `src/steps/hostname.rs` — centered, bordered single-input form validated as
+  one ASCII DNS label by
+  `^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$`. Uppercase letters are
+  accepted and preserved, while FQDNs are rejected; Enter and
+  footer Next commit a valid value, and re-entry restores it.
 - `src/steps/confirm.rs` — full summary of all state; linear Back/Next;
   final blocking "this will format disks" dialog before handing off to the
   install step.
@@ -222,7 +225,9 @@ confirm screen can show a full summary.
 - Username validation rejects invalid names live; the password strength bar
   updates as the user types; empty passwords and confirmation mismatches block
   Next, while a matching non-empty weak password remains valid.
-- Hostname validation rejects invalid input live.
+- Hostname validation rejects invalid input live, and the install stage writes
+  the committed value to `/etc/hostname` plus its `127.0.1.1` mapping in
+  `/etc/hosts`.
 - Confirm screen shows every choice; the blocking dialog appears before
   the install step.
 

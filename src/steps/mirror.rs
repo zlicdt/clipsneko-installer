@@ -25,7 +25,7 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
-use crate::util::ui::centered_rect;
+use crate::util::ui::{centered_rect, input_border_style};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -243,10 +243,12 @@ impl Step for MirrorStep {
         let input_width = ratatui::text::Line::from(input_display.as_str()).width();
         let visible_width = chunks[1].width.saturating_sub(2) as usize;
         let horizontal_scroll = input_width.saturating_sub(visible_width) as u16;
+        let input_focused = body_focused && self.focus == MirrorFocus::Input;
         let input_box = Paragraph::new(input_display)
             .block(
                 Block::default()
                     .borders(Borders::ALL)
+                    .border_style(input_border_style(input_focused))
                     .title(t!("mirror_step.input_title")),
             )
             .scroll((0, horizontal_scroll));

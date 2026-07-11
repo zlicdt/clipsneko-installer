@@ -18,7 +18,7 @@ it moves from "Not done" to "Done" and stays there.
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. The POT
-  and en/zh_CN catalogs contain the same 122 message IDs with no untranslated,
+  and en/zh_CN catalogs contain the same 128 message IDs with no untranslated,
   fuzzy, or obsolete entries. zh_TW support was removed because it had no
   catalog and is outside the locked language set.
 - UI language changes only `LC_MESSAGES` and remains independent of the target
@@ -60,6 +60,8 @@ it moves from "Not done" to "Done" and stays there.
 - Body widgets know whether the footer owns focus, preventing a list cursor and
   footer button from both appearing focused. Shared dialog centering, wrapping,
   minimum-width layout, and horizontal mirror-input scrolling are implemented.
+  Every editable text input now shares a bold white focused border; list
+  highlights and semantic colors such as password strength remain independent.
 - **Language/locale step:** independent UI-language and target-locale lists are
   implemented. UI switching is live; target locales come from commented or
   enabled UTF-8 entries in `/etc/locale.gen`; `en_US.UTF-8` is the required
@@ -116,6 +118,12 @@ it moves from "Not done" to "Done" and stays there.
   bar remains advisory so every matching non-empty weak password is accepted.
   Enter and Tab/Shift+Tab follow the field/footer focus chain, saved values are
   restored on re-entry, and password rendering is always masked.
+- **Hostname step:** a centered, bordered input accepts one ASCII DNS label of
+  1–63 characters. Live validation accepts and preserves uppercase letters but
+  rejects FQDNs, unsupported characters, and leading/trailing hyphens; Enter
+  and footer Next share the same commit path, and re-entry restores the saved
+  value. The install design writes it to `/etc/hostname` and adds a
+  `127.0.1.1` mapping in `/etc/hosts`.
 - Password storage is implemented as a non-Debug `SecretString` backed by
   `zeroize`. Both editable password buffers and the confirmed state secret are
   zeroized on clear or Drop; M4b will feed `<username>:<password>` only through
@@ -125,7 +133,7 @@ it moves from "Not done" to "Done" and stays there.
   `passwd -l root`; the installer creates the wheel user and leaves root-account
   policy unchanged.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (113 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (119 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -142,11 +150,11 @@ it moves from "Not done" to "Done" and stays there.
   output, protected Live media, responsive tables in both languages, role
   assignment, RAID profiles, and wipe dialogs still need an interactive
   multi-disk Live ISO/VM check.
-- **M3 selection and identity:** the kernel, NVIDIA, timezone, and user-account
-  steps still need an interactive bilingual Live ISO/VM check, including real
-  GeoIP, `timedatectl` data, centered-form layout, input focus, masking, and
-  strength colors. Hostname and confirmation remain stubs; their validation
-  and final confirmation UI are not yet code.
+- **M3 selection and identity:** the kernel, NVIDIA, timezone, user-account, and
+  hostname steps still need an interactive bilingual Live ISO/VM check,
+  including real GeoIP, `timedatectl` data, centered-form layouts, input focus,
+  masking, strength colors, and hostname validation. Confirmation remains a
+  stub; its summary and final confirmation UI are not yet code.
 - **M4a install stage:** btrfs format/RAID/subvolume and ESP format/mount logic
   is not implemented.
 - **M4b install stage:** packages.list loading, dynamic package derivation,
