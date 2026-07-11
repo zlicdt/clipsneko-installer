@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 11:22+0800\n"
+"POT-Creation-Date: 2026-07-11 12:25+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: English\n"
@@ -27,7 +27,7 @@ msgstr "ClipsNeko Linux Installer"
 msgid "button.back"
 msgstr "Back"
 
-#: src/app.rs:285
+#: src/app.rs:285 src/steps/confirm.rs:79
 msgid "button.cancel"
 msgstr "Cancel"
 
@@ -39,48 +39,124 @@ msgstr "Next"
 msgid "button.quit"
 msgstr "Quit"
 
-#: src/steps/network.rs:110
+#: src/steps/confirm.rs:257 src/steps/confirm.rs:275 src/steps/confirm.rs:283
+#: src/steps/confirm.rs:301 src/steps/confirm.rs:307 src/steps/confirm.rs:322
+#: src/steps/confirm.rs:344 src/steps/network.rs:111
 msgid "common.not_available"
 msgstr "Not available"
 
-#: src/steps/disk.rs:344 src/steps/disk.rs:420
+#: src/steps/confirm.rs:282 src/steps/confirm.rs:288
+msgid "confirm_step.affected_disk"
+msgstr "Affected disk"
+
+#: src/steps/confirm.rs:324
+msgid "confirm_step.data_profile"
+msgstr "Data profile"
+
+#: src/steps/confirm.rs:76
+msgid "confirm_step.dialog.body"
+msgstr ""
+"The listed Target partitions will be formatted, and the ESP may be "
+"formatted. Continue with installation?"
+
+#: src/steps/confirm.rs:87
+msgid "confirm_step.dialog.hint"
+msgstr "Left/Right=Select  Enter=Confirm  Esc=Cancel"
+
+#: src/steps/confirm.rs:82
+msgid "confirm_step.dialog.install"
+msgstr "Install"
+
+#: src/steps/confirm.rs:93
+msgid "confirm_step.dialog.title"
+msgstr "Confirm installation"
+
+#: src/steps/confirm.rs:295
+msgid "confirm_step.esp"
+msgstr "EFI System Partition"
+
+#: src/steps/confirm.rs:148
+msgid "confirm_step.hint"
+msgstr "Up/Down=Scroll  Enter=Review installation"
+
+#: src/steps/confirm.rs:261
+msgid "confirm_step.hostname"
+msgstr "Hostname"
+
+#: src/steps/confirm.rs:253
+msgid "confirm_step.kernel"
+msgstr "Kernel"
+
+#: src/steps/confirm.rs:249
+msgid "confirm_step.keyboard"
+msgstr "Keyboard"
+
+#: src/steps/confirm.rs:245
+msgid "confirm_step.locale"
+msgstr "Target locale"
+
+#: src/steps/confirm.rs:351
+msgid "confirm_step.no_nvidia"
+msgstr "No NVIDIA driver"
+
+#: src/steps/confirm.rs:259
+msgid "confirm_step.nvidia"
+msgstr "NVIDIA driver"
+
+#: src/steps/confirm.rs:142
+msgid "confirm_step.summary_title"
+msgstr "Installation summary"
+
+#: src/steps/confirm.rs:306 src/steps/confirm.rs:312
+msgid "confirm_step.target_partition"
+msgstr "Installation Target"
+
+#: src/steps/confirm.rs:265
+msgid "confirm_step.timezone"
+msgstr "Timezone"
+
+#: src/steps/confirm.rs:269
+msgid "confirm_step.username"
+msgstr "Username"
+
+#: src/steps/disk.rs:355 src/steps/disk.rs:432
 msgid "disk_step.column_device"
 msgstr "Device"
 
-#: src/steps/disk.rs:422
+#: src/steps/disk.rs:434
 msgid "disk_step.column_filesystem"
 msgstr "Filesystem"
 
-#: src/steps/disk.rs:423
+#: src/steps/disk.rs:435
 msgid "disk_step.column_label"
 msgstr "Label"
 
-#: src/steps/disk.rs:345
+#: src/steps/disk.rs:356
 msgid "disk_step.column_model"
 msgstr "Model"
 
-#: src/steps/disk.rs:424
+#: src/steps/disk.rs:436
 msgid "disk_step.column_role"
 msgstr "Role"
 
-#: src/steps/disk.rs:347 src/steps/disk.rs:421
+#: src/steps/disk.rs:358 src/steps/disk.rs:433
 msgid "disk_step.column_size"
 msgstr "Size"
 
-#: src/steps/disk.rs:348
+#: src/steps/disk.rs:359
 msgid "disk_step.column_status"
 msgstr "Status"
 
-#: src/steps/disk.rs:346
+#: src/steps/disk.rs:357
 msgid "disk_step.column_transport"
 msgstr "Transport"
 
-#: src/steps/disk.rs:312
+#: src/steps/disk.rs:313
 msgid "disk_step.error_capacity"
 msgstr ""
 "Usable Target capacity must be greater than 20 GiB for the selected profile."
 
-#: src/steps/disk.rs:518
+#: src/steps/disk.rs:531
 msgid "disk_step.error_hint"
 msgstr "Esc/Enter to dismiss."
 
@@ -97,103 +173,103 @@ msgstr ""
 msgid "disk_step.error_protected_part"
 msgstr "This partition belongs to protected Live or read-only media."
 
-#: src/steps/disk.rs:523
+#: src/steps/disk.rs:536
 msgid "disk_step.error_title"
 msgstr "Disk configuration error"
 
-#: src/steps/disk.rs:774
+#: src/steps/disk.rs:788
 msgid "disk_step.hint_disk"
 msgstr "Enter=cfdisk  Up/Down=Select  Tab=Focus"
 
-#: src/steps/disk.rs:775
+#: src/steps/disk.rs:789
 msgid "disk_step.hint_parts"
 msgstr "Enter=Role  R=RAID  Up/Down=Select  Tab=Focus"
 
-#: src/steps/disk.rs:371
+#: src/steps/disk.rs:382
 msgid "disk_step.list_title_disk"
 msgstr "Select a disk to partition"
 
-#: src/steps/disk.rs:447
+#: src/steps/disk.rs:459
 msgid "disk_step.list_title_parts"
 msgstr "Assign partition roles"
 
-#: src/steps/disk.rs:500
+#: src/steps/disk.rs:513
 msgid "disk_step.raid_dialog.hint"
 msgstr "Up/Down=Select  Enter=Confirm  Esc=Cancel"
 
-#: src/steps/disk.rs:487
+#: src/steps/disk.rs:500
 msgid "disk_step.raid_dialog.raid0"
 msgstr "RAID0 (capacity)"
 
-#: src/steps/disk.rs:488
+#: src/steps/disk.rs:501
 msgid "disk_step.raid_dialog.raid1"
 msgstr "RAID1 (redundancy)"
 
-#: src/steps/disk.rs:505
+#: src/steps/disk.rs:518
 msgid "disk_step.raid_dialog.title"
 msgstr "Select btrfs data profile"
 
-#: src/steps/disk.rs:783
+#: src/steps/disk.rs:797
 msgid "disk_step.raid_label"
 msgstr "Data profile"
 
-#: src/steps/disk.rs:476
+#: src/steps/disk.rs:489
 msgid "disk_step.role_dialog.hint"
 msgstr "Up/Down=Select  Enter=Confirm  Esc=Cancel"
 
-#: src/steps/disk.rs:457
+#: src/steps/disk.rs:470
 msgid "disk_step.role_dialog.title"
 msgstr "Assign role for"
 
-#: src/steps/disk.rs:397 src/steps/disk.rs:583
+#: src/steps/disk.rs:409 src/steps/disk.rs:596
 msgid "disk_step.role_esp"
 msgstr "ESP"
 
-#: src/steps/disk.rs:395
+#: src/steps/disk.rs:407
 msgid "disk_step.role_protected"
 msgstr "Protected"
 
-#: src/steps/disk.rs:399 src/steps/disk.rs:584
+#: src/steps/disk.rs:411 src/steps/disk.rs:597
 msgid "disk_step.role_target"
 msgstr "Installation Target"
 
-#: src/steps/disk.rs:401 src/steps/disk.rs:585
+#: src/steps/disk.rs:413 src/steps/disk.rs:598
 msgid "disk_step.role_unassigned"
 msgstr "Unassigned"
 
-#: src/steps/disk.rs:577
+#: src/steps/disk.rs:590
 msgid "disk_step.status_available"
 msgstr "Available"
 
-#: src/steps/disk.rs:571
+#: src/steps/disk.rs:584
 msgid "disk_step.status_live_media"
 msgstr "Live media"
 
-#: src/steps/disk.rs:573
+#: src/steps/disk.rs:586
 msgid "disk_step.status_read_only"
 msgstr "Read-only"
 
-#: src/steps/disk.rs:575
+#: src/steps/disk.rs:588
 msgid "disk_step.status_removable"
 msgstr "Removable"
 
-#: src/steps/disk.rs:638
+#: src/steps/disk.rs:651
 msgid "disk_step.wipe_dialog.esp_prefix"
 msgstr "ESP (FAT32):"
 
-#: src/steps/disk.rs:542
+#: src/steps/disk.rs:555
 msgid "disk_step.wipe_dialog.hint"
 msgstr "Enter=Continue  Esc=Cancel"
 
-#: src/steps/disk.rs:632
+#: src/steps/disk.rs:645
 msgid "disk_step.wipe_dialog.target_prefix"
 msgstr "Installation Target (btrfs):"
 
-#: src/steps/disk.rs:535
+#: src/steps/disk.rs:548
 msgid "disk_step.wipe_dialog.title"
 msgstr "These partitions will be formatted; all data on them will be lost:"
 
-#: src/steps/disk.rs:547
+#: src/steps/disk.rs:560
 msgid "disk_step.wipe_dialog.window_title"
 msgstr "Warning: data loss"
 
@@ -201,91 +277,91 @@ msgstr "Warning: data loss"
 msgid "footer.hint"
 msgstr "Tab=Focus  Ctrl+C=Quit"
 
-#: src/steps/hostname.rs:36
+#: src/steps/hostname.rs:37
 msgid "hostname_step.error_invalid"
 msgstr "Use 1–63 ASCII letters, digits, or internal hyphens."
 
-#: src/steps/hostname.rs:33
+#: src/steps/hostname.rs:34
 msgid "hostname_step.error_required"
 msgstr "Enter a hostname."
 
-#: src/steps/hostname.rs:86
+#: src/steps/hostname.rs:87
 msgid "hostname_step.form_title"
 msgstr "System hostname"
 
-#: src/steps/hostname.rs:132
+#: src/steps/hostname.rs:126
 msgid "hostname_step.hint"
 msgstr "1–63 ASCII letters, digits, or internal hyphens"
 
-#: src/steps/hostname.rs:118
+#: src/steps/hostname.rs:111
 msgid "hostname_step.hostname"
 msgstr "Hostname"
 
-#: src/steps/hostname.rs:38
+#: src/steps/hostname.rs:39
 msgid "hostname_step.ready"
 msgstr "Hostname is valid."
 
-#: src/steps/kernel.rs:104
+#: src/steps/kernel.rs:106
 msgid "kernel_step.headers_hint"
 msgstr "Matching kernel headers are installed automatically."
 
-#: src/steps/kernel.rs:105
+#: src/steps/kernel.rs:107
 msgid "kernel_step.key_hint"
 msgstr "Space=Select  Enter=Next"
 
-#: src/steps/kernel.rs:157
+#: src/steps/kernel.rs:159
 msgid "kernel_step.option.linux"
 msgstr "linux — Standard kernel"
 
-#: src/steps/kernel.rs:160
+#: src/steps/kernel.rs:162
 msgid "kernel_step.option.linux_hardened"
 msgstr "linux-hardened — Security-hardened kernel"
 
-#: src/steps/kernel.rs:158
+#: src/steps/kernel.rs:160
 msgid "kernel_step.option.linux_lts"
 msgstr "linux-lts — Long-term support kernel"
 
-#: src/steps/kernel.rs:159
+#: src/steps/kernel.rs:161
 msgid "kernel_step.option.linux_zen"
 msgstr "linux-zen — Desktop-tuned kernel (default)"
 
-#: src/steps/kernel.rs:98
+#: src/steps/kernel.rs:99
 msgid "kernel_step.title"
 msgstr "Select kernel"
 
-#: src/steps/keyboard.rs:172
+#: src/steps/keyboard.rs:174
 msgid "keyboard_step.hint"
 msgstr "Space=Select  Enter=Next"
 
-#: src/steps/keyboard.rs:166
+#: src/steps/keyboard.rs:167
 msgid "keyboard_step.title"
 msgstr "Select keyboard layout"
 
-#: src/steps/language.rs:26
+#: src/steps/language.rs:27
 msgid "language.name.english"
 msgstr "English"
 
-#: src/steps/language.rs:27
+#: src/steps/language.rs:28
 msgid "language.name.simplified_chinese"
 msgstr "简体中文"
 
-#: src/steps/language.rs:194
+#: src/steps/language.rs:197
 msgid "language_step.hint_target"
 msgstr "Up/Down=Select  Space=Apply  Enter=Next  Shift+Tab=UI"
 
-#: src/steps/language.rs:193
+#: src/steps/language.rs:196
 msgid "language_step.hint_ui"
 msgstr "Up/Down=Select  Space=Apply  Enter/Tab=Target locale"
 
-#: src/steps/language.rs:187
+#: src/steps/language.rs:189
 msgid "language_step.target_title"
 msgstr "Target system locale"
 
-#: src/steps/language.rs:165
+#: src/steps/language.rs:166
 msgid "language_step.ui_title"
 msgstr "Installer language"
 
-#: src/steps/mirror.rs:362
+#: src/steps/mirror.rs:365
 msgid "mirror_step.error_hint"
 msgstr "Esc/Enter to dismiss and retry."
 
@@ -298,23 +374,23 @@ msgstr ""
 msgid "mirror_step.error_pacman"
 msgstr "pacman -Sy failed. Check your network or try another mirror."
 
-#: src/steps/mirror.rs:368
+#: src/steps/mirror.rs:371
 msgid "mirror_step.error_title"
 msgstr "Validation failed"
 
-#: src/steps/mirror.rs:259
+#: src/steps/mirror.rs:262
 msgid "mirror_step.hint_input"
 msgstr "Type URL  Shift+Tab=Regions  Tab=Buttons  Enter=Apply"
 
-#: src/steps/mirror.rs:257
+#: src/steps/mirror.rs:260
 msgid "mirror_step.hint_list"
 msgstr "Up/Down=Select  Tab=Input  Enter=Apply"
 
-#: src/steps/mirror.rs:236
+#: src/steps/mirror.rs:237
 msgid "mirror_step.input_label"
 msgstr "Server"
 
-#: src/steps/mirror.rs:250
+#: src/steps/mirror.rs:252
 msgid "mirror_step.input_title"
 msgstr "Manual mirror source"
 
@@ -322,67 +398,67 @@ msgstr "Manual mirror source"
 msgid "mirror_step.list_title"
 msgstr "Select a region"
 
-#: src/steps/network.rs:103
+#: src/steps/network.rs:104
 msgid "network_step.hint_connected"
 msgstr "Enter=Next  N=nmtui  R=Recheck"
 
-#: src/steps/network.rs:105
+#: src/steps/network.rs:106
 msgid "network_step.hint_disconnected"
 msgstr "Enter=nmtui  R=Recheck"
 
-#: src/steps/network.rs:125
+#: src/steps/network.rs:126
 msgid "network_step.label_address"
 msgstr "Address"
 
-#: src/steps/network.rs:130
+#: src/steps/network.rs:131
 msgid "network_step.label_gateway"
 msgstr "Gateway"
 
-#: src/steps/network.rs:115
+#: src/steps/network.rs:116
 msgid "network_step.label_interface"
 msgstr "Interface"
 
-#: src/steps/network.rs:111
+#: src/steps/network.rs:112
 msgid "network_step.status_connected"
 msgstr "✓ Connected"
 
-#: src/steps/network.rs:134
+#: src/steps/network.rs:135
 msgid "network_step.status_disconnected"
 msgstr "✗ Not connected"
 
-#: src/steps/network.rs:139
+#: src/steps/network.rs:141
 msgid "network_step.title"
 msgstr "Configure network"
 
-#: src/steps/nvidia.rs:136
+#: src/steps/nvidia.rs:138
 msgid "nvidia_step.headers_hint"
 msgstr "Matching kernel headers are already included."
 
-#: src/steps/nvidia.rs:110
+#: src/steps/nvidia.rs:111
 msgid "nvidia_step.incompatible_suffix"
 msgstr "(incompatible with selected kernel)"
 
-#: src/steps/nvidia.rs:137
+#: src/steps/nvidia.rs:139
 msgid "nvidia_step.key_hint"
 msgstr "Up/Down=Select  Space=Apply  Enter=Apply and continue"
 
-#: src/steps/nvidia.rs:185
+#: src/steps/nvidia.rs:187
 msgid "nvidia_step.option.none"
 msgstr "No NVIDIA driver"
 
-#: src/steps/nvidia.rs:186
+#: src/steps/nvidia.rs:188
 msgid "nvidia_step.option.nvidia_open"
 msgstr "nvidia-open — open kernel modules for linux"
 
-#: src/steps/nvidia.rs:187
+#: src/steps/nvidia.rs:189
 msgid "nvidia_step.option.nvidia_open_dkms"
 msgstr "nvidia-open-dkms — DKMS open kernel modules (all supported kernels)"
 
-#: src/steps/nvidia.rs:188
+#: src/steps/nvidia.rs:190
 msgid "nvidia_step.option.nvidia_open_lts"
 msgstr "nvidia-open-lts — open kernel modules for linux-lts"
 
-#: src/steps/nvidia.rs:130
+#: src/steps/nvidia.rs:131
 msgid "nvidia_step.title"
 msgstr "Select an NVIDIA driver"
 
@@ -394,140 +470,140 @@ msgstr "Left/Right=Select  Enter=Confirm  Esc=Cancel"
 msgid "quit_dialog.title"
 msgstr "Are you sure you want to quit?"
 
-#: src/steps/mod.rs:85
+#: src/steps/mod.rs:87
 msgid "step.title.confirm_installation"
 msgstr "Confirm Installation"
 
-#: src/steps/mod.rs:79
+#: src/steps/mod.rs:81
 msgid "step.title.disk_partitioning"
 msgstr "Disk Partitioning"
 
-#: src/steps/mod.rs:84
+#: src/steps/mod.rs:86
 msgid "step.title.hostname"
 msgstr "Hostname"
 
-#: src/steps/mod.rs:86
+#: src/steps/mod.rs:88
 msgid "step.title.installing"
 msgstr "Installing"
 
-#: src/steps/mod.rs:80
+#: src/steps/mod.rs:82
 msgid "step.title.kernel"
 msgstr "Kernel"
 
-#: src/steps/mod.rs:76
+#: src/steps/mod.rs:78
 msgid "step.title.keyboard_layout"
 msgstr "Keyboard Layout"
 
-#: src/steps/mod.rs:75
+#: src/steps/mod.rs:77
 msgid "step.title.language"
 msgstr "Language"
 
-#: src/steps/mod.rs:78
+#: src/steps/mod.rs:80
 msgid "step.title.mirror_list"
 msgstr "Mirror List"
 
-#: src/steps/mod.rs:77
+#: src/steps/mod.rs:79
 msgid "step.title.network"
 msgstr "Network"
 
-#: src/steps/mod.rs:81
+#: src/steps/mod.rs:83
 msgid "step.title.nvidia_driver"
 msgstr "NVIDIA Driver"
 
-#: src/steps/mod.rs:82
+#: src/steps/mod.rs:84
 msgid "step.title.timezone"
 msgstr "Timezone"
 
-#: src/steps/mod.rs:83
+#: src/steps/mod.rs:85
 msgid "step.title.user_account"
 msgstr "User Account"
 
-#: src/steps/mod.rs:192
+#: src/steps/mod.rs:194
 msgid "stub.body"
 msgstr "This step is not implemented yet."
 
-#: src/steps/mod.rs:192
+#: src/steps/mod.rs:194
 msgid "stub.hint"
 msgstr "Press Enter to continue."
 
-#: src/steps/timezone.rs:277
+#: src/steps/timezone.rs:280
 msgid "timezone_step.hint_region"
 msgstr "Up/Down=Select  Right/Enter=Timezones  Tab=Next control"
 
-#: src/steps/timezone.rs:276
+#: src/steps/timezone.rs:279
 msgid "timezone_step.hint_utc"
 msgstr "Up/Down=Select  Enter=Apply UTC and continue  Tab=Buttons"
 
-#: src/steps/timezone.rs:278
+#: src/steps/timezone.rs:281
 msgid "timezone_step.hint_zone"
 msgstr "Up/Down=Select  Left=Regions  Enter=Apply and continue"
 
-#: src/steps/timezone.rs:233
+#: src/steps/timezone.rs:234
 msgid "timezone_step.region_title"
 msgstr "Region"
 
-#: src/steps/timezone.rs:240
+#: src/steps/timezone.rs:242
 msgid "timezone_step.utc_direct"
 msgstr "(not used for UTC)"
 
-#: src/steps/timezone.rs:269
+#: src/steps/timezone.rs:271
 msgid "timezone_step.zone_title"
 msgstr "Timezone"
 
-#: src/steps/user.rs:223
+#: src/steps/user.rs:215
 msgid "user_step.confirm_password"
 msgstr "Confirm password"
 
-#: src/steps/user.rs:71
+#: src/steps/user.rs:72
 msgid "user_step.error_password_mismatch"
 msgstr "The passwords do not match."
 
-#: src/steps/user.rs:68
+#: src/steps/user.rs:69
 msgid "user_step.error_password_required"
 msgstr "The password cannot be empty."
 
-#: src/steps/user.rs:65
+#: src/steps/user.rs:66
 msgid "user_step.error_username_invalid"
 msgstr ""
 "Use lowercase letters, digits, underscores, and hyphens; start with a letter "
 "or underscore."
 
-#: src/steps/user.rs:62
+#: src/steps/user.rs:63
 msgid "user_step.error_username_required"
 msgstr "Enter a username."
 
-#: src/steps/user.rs:189
+#: src/steps/user.rs:181
 msgid "user_step.form_title"
 msgstr "Account details"
 
-#: src/steps/user.rs:215
+#: src/steps/user.rs:207
 msgid "user_step.password"
 msgstr "Password"
 
-#: src/steps/user.rs:73
+#: src/steps/user.rs:74
 msgid "user_step.ready"
 msgstr "Account details are valid."
 
-#: src/steps/user.rs:233
+#: src/steps/user.rs:225
 msgid "user_step.strength"
 msgstr "Password strength"
 
-#: src/steps/user.rs:132
+#: src/steps/user.rs:124
 msgid "user_step.strength_fair"
 msgstr "Fair"
 
-#: src/steps/user.rs:133
+#: src/steps/user.rs:125
 msgid "user_step.strength_good"
 msgstr "Good"
 
-#: src/steps/user.rs:134
+#: src/steps/user.rs:126
 msgid "user_step.strength_strong"
 msgstr "Strong"
 
-#: src/steps/user.rs:131
+#: src/steps/user.rs:123
 msgid "user_step.strength_weak"
 msgstr "Weak"
 
-#: src/steps/user.rs:207
+#: src/steps/user.rs:199
 msgid "user_step.username"
 msgstr "Username"

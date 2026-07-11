@@ -35,6 +35,7 @@ pub struct InstallerState {
 pub struct DiskState {
     pub esp_partition: Option<String>,
     pub target_partitions: Vec<String>,
+    pub affected_disks: Vec<String>,
     pub raid_mode: Option<BtrfsRaidMode>,
 }
 

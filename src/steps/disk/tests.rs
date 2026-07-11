@@ -178,6 +178,31 @@ fn roles_require_existing_gpt_esp_and_existing_distinct_targets() {
 }
 
 #[test]
+fn affected_disks_are_recorded_from_selected_partition_roles() {
+    let mut step = DiskStep::new();
+    step.disks = vec![
+        disk(
+            "nvme0n1",
+            vec![
+                esp_part("nvme0n1p1", Some("vfat")),
+                part("nvme0n1p2", 21 * 1024_u64.pow(3), None),
+            ],
+        ),
+        disk("sda", vec![part("sda1", 21 * 1024_u64.pow(3), None)]),
+    ];
+    step.parts = lsblk::flat_parts(&step.disks)
+        .into_iter()
+        .cloned()
+        .collect();
+    let mut state = state_with(Some("nvme0n1p1"), &["nvme0n1p2", "sda1"]);
+    state.disk.raid_mode = Some(BtrfsRaidMode::Raid0);
+
+    step.record_affected_disks(&mut state);
+
+    assert_eq!(state.disk.affected_disks, ["nvme0n1", "sda"]);
+}
+
+#[test]
 fn usable_capacity_single_and_raid_profiles() {
     let gib = 1024_u64.pow(3);
     assert_eq!(usable_capacity(&[21 * gib], None), Some(21 * gib));

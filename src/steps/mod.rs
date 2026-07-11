@@ -3,6 +3,7 @@
 //! created as individual steps get real implementations; until then a single
 //! `StubStep` services all 12 slots so navigation works end-to-end.
 
+mod confirm;
 mod disk;
 mod hostname;
 mod kernel;
@@ -23,6 +24,7 @@ use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 use std::process::ExitStatus;
 
+pub use confirm::ConfirmStep;
 pub use disk::DiskStep;
 pub use hostname::HostnameStep;
 pub use kernel::KernelStep;
@@ -218,7 +220,7 @@ pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
         Box::new(TimezoneStep::new()?),
         Box::new(UserStep::new()),
         Box::new(HostnameStep::new()),
-        Box::new(StubStep::new(StepId::Confirm)),
+        Box::new(ConfirmStep::new()),
         Box::new(StubStep::new(StepId::Install)),
     ])
 }

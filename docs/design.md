@@ -163,8 +163,16 @@ not receive the focus style.
     the value is committed. FQDNs are intentionally not accepted. Validation
     is live; Enter or footer Next commits a valid value and continues, while
     returning to the step restores the saved value.
-11. **Confirm** — full summary; linear Back/Next; final blocking dialog "This
-    will format disks. Continue?".
+11. **Confirm** — a scrollable, read-only summary of the target locale,
+    keyboard, kernel, NVIDIA driver, hostname, timezone, username, affected
+    physical disks, ESP, every Target partition, and the btrfs data profile
+    when RAID is used. Device relationships are derived from the latest lsblk
+    tree in the disk step and saved explicitly, never guessed by parsing device
+    names. The password is never included. The page
+    remains linear Back/Next with no per-item jump. Enter or Next opens a final
+    blocking dialog warning that the listed Target partitions will be
+    formatted and the ESP may be formatted; Cancel is focused by default and
+    Install must be selected explicitly before entering the install step.
 12. **Install** — see §5.
 
 ## 5. Install stage
@@ -244,6 +252,11 @@ button, and Esc always cancels.
 Step-owned modal dialogs receive all keyboard input before global shortcuts or
 footer focus. Esc therefore cancels the active step dialog, and Tab cannot
 activate controls behind it.
+
+The confirmation summary uses Up/Down (or j/k), Page Up/Page Down, Home, and
+End for scrolling when its contents exceed the available height. In its final
+dialog, Left/Right or Tab changes between Cancel and Install, Enter activates
+the focused button, and Esc cancels.
 
 ## 7. Deferred items (pending user direction)
 

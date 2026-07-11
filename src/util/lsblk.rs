@@ -83,6 +83,28 @@ pub fn flat_parts(devs: &[BlockDevice]) -> Vec<&BlockDevice> {
     out
 }
 
+/// Return physical disks containing any of the named partitions.
+///
+/// The result follows lsblk disk order and contains no duplicates. Deriving
+/// the relationship from the device tree avoids guessing from device names
+/// such as `sda1`, `nvme0n1p1`, or `mmcblk0p1`.
+pub fn parent_disks_for_partitions(devs: &[BlockDevice], partitions: &[String]) -> Vec<String> {
+    flat_disks(devs)
+        .into_iter()
+        .filter(|disk| descendant_matches(disk, partitions))
+        .map(|disk| disk.name.clone())
+        .collect()
+}
+
+fn descendant_matches(device: &BlockDevice, partitions: &[String]) -> bool {
+    device.children.as_deref().is_some_and(|children| {
+        children.iter().any(|child| {
+            child.kind == "part" && partitions.iter().any(|name| name == &child.name)
+                || descendant_matches(child, partitions)
+        })
+    })
+}
+
 fn walk_parts<'a>(device: &'a BlockDevice, out: &mut Vec<&'a BlockDevice>) {
     if device.kind == "part" {
         out.push(device);

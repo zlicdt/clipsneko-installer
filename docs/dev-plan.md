@@ -206,9 +206,13 @@ confirm screen can show a full summary.
   `^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$`. Uppercase letters are
   accepted and preserved, while FQDNs are rejected; Enter and
   footer Next commit a valid value, and re-entry restores it.
-- `src/steps/confirm.rs` — full summary of all state; linear Back/Next;
-  final blocking "this will format disks" dialog before handing off to the
-  install step.
+- `src/steps/confirm.rs` — scrollable summary of locale, keyboard, kernel,
+  NVIDIA, hostname, timezone, username, affected disks, ESP, every Target,
+  and any RAID profile, while never reading or rendering the password.
+  Device-to-disk relationships are derived from the latest lsblk tree in the
+  disk step and saved explicitly. The page remains linear Back/Next, and a
+  final blocking dialog defaults to Cancel and requires explicitly selecting
+  Install before handing off to the install step.
 - `src/util/geoip.rs` — ip-api.com fetch + JSON parse.
 - `src/util/password.rs` — strength heuristic (length, char classes,
   common-password check) returning a weak/fair/good/strong level; secret
@@ -231,8 +235,9 @@ confirm screen can show a full summary.
 - Hostname validation rejects invalid input live, and the install stage writes
   the committed value to `/etc/hostname` plus its `127.0.1.1` mapping in
   `/etc/hosts`.
-- Confirm screen shows every choice; the blocking dialog appears before
-  the install step.
+- Confirm screen shows every requested choice and every affected disk and
+  partition without exposing the password; long summaries scroll. The
+  blocking dialog defaults to Cancel and appears before the install step.
 
 ### Unit tests
 
@@ -243,10 +248,13 @@ confirm screen can show a full summary.
   and translated rendering.
 - NVIDIA-kernel compatibility matrix (all kernels × current open variants).
 - Username regex (valid/invalid boundary cases).
-- Hostname regex (length, leading/trailing hyphen, uppercase rejection).
+- Hostname regex (length, leading/trailing hyphen, uppercase acceptance and
+  preservation).
 - Password strength heuristic (empty, short, all-lower, mixed, common
   password from a small fixture list).
 - `util::geoip` JSON parse on a fixture response (and a malformed one).
+- Confirmation summary completeness, affected-disk derivation, password
+  exclusion, scrolling, and explicit final-dialog acceptance.
 
 ### Dependencies
 

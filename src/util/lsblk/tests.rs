@@ -146,6 +146,29 @@ fn flat_parts_handles_nested_partitions() {
 }
 
 #[test]
+fn parent_disks_are_derived_from_the_tree_without_name_guessing() {
+    let json = br#"{"blockdevices":[
+      {"name":"nvme0n1","type":"disk","size":0,"children":[
+        {"name":"nvme0n1p1","type":"part","size":0}
+      ]},
+      {"name":"mmcblk0","type":"disk","size":0,"children":[
+        {"name":"mmcblk0p1","type":"part","size":0}
+      ]}
+    ]}"#;
+    let root = parse_lsblk(json).unwrap();
+    let selected = vec![
+        "mmcblk0p1".to_string(),
+        "nvme0n1p1".to_string(),
+        "nvme0n1p1".to_string(),
+    ];
+
+    assert_eq!(
+        parent_disks_for_partitions(&root.blockdevices, &selected),
+        ["nvme0n1", "mmcblk0"]
+    );
+}
+
+#[test]
 fn human_size_formats_cleanly() {
     assert_eq!(human_size(0), "0B");
     assert_eq!(human_size(512), "512B");

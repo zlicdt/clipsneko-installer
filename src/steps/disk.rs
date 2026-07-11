@@ -278,6 +278,7 @@ impl DiskStep {
                 state.disk.target_partitions.retain(|name| name != &part);
             }
         }
+        state.disk.affected_disks.clear();
         state.disk.raid_mode = None;
     }
 
@@ -312,6 +313,7 @@ impl DiskStep {
             self.show_error(t!("disk_step.error_capacity"));
             return StepAction::None;
         }
+        self.record_affected_disks(state);
         let wipes = compute_wipe_list(&self.parts, state);
         if wipes.is_empty() {
             StepAction::Next
@@ -322,6 +324,15 @@ impl DiskStep {
             };
             StepAction::None
         }
+    }
+
+    fn record_affected_disks(&self, state: &mut InstallerState) {
+        let mut partitions = Vec::with_capacity(state.disk.target_partitions.len() + 1);
+        if let Some(esp) = &state.disk.esp_partition {
+            partitions.push(esp.clone());
+        }
+        partitions.extend(state.disk.target_partitions.iter().cloned());
+        state.disk.affected_disks = lsblk::parent_disks_for_partitions(&self.disks, &partitions);
     }
 
     fn render_disk_picker(&mut self, frame: &mut Frame, area: Rect, body_focused: bool) {
@@ -687,6 +698,7 @@ fn reconcile_assignments(parts: &[BlockDevice], protected: &[String], state: &mu
     }
     if state.disk.target_partitions != previous_targets || state.disk.esp_partition != previous_esp
     {
+        state.disk.affected_disks.clear();
         state.disk.raid_mode = None;
     }
 }
