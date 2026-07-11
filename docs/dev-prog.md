@@ -17,6 +17,10 @@ it moves from "Not done" to "Done" and stays there.
 - Cargo scaffolding, the release profile, `.gitignore`, CI, and build-time
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
+- The English project README presents the logo and live CI status, summarizes
+  the installer and its supported environment, documents Arch/ClipsNeko and
+  Ubuntu build prerequisites, and provides verified release-build and
+  development-check commands with a destructive-installation warning.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. English,
   Simplified Chinese, Traditional Chinese, Japanese, German, Korean, and
   Russian are available in the language picker. The POT and all seven catalogs
