@@ -9,7 +9,7 @@ use crate::state::{InstallerState, UserInfo};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::password::{password_strength, PasswordStrength, SecretString};
-use crate::util::ui::input_border_style;
+use crate::util::ui::focusable_block;
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -105,12 +105,10 @@ impl UserStep {
         let scroll = display_width.saturating_sub(visible_width) as u16;
         frame.render_widget(
             Paragraph::new(display)
-                .block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .border_style(input_border_style(focused))
-                        .title(title),
-                )
+                .block(focusable_block(
+                    Block::default().borders(Borders::ALL).title(title),
+                    focused,
+                ))
                 .scroll((0, scroll)),
             area,
         );

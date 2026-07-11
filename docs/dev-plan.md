@@ -19,6 +19,9 @@ Every milestone is considered done only when **all** of the following hold:
   into a testable function and the `Command::new(...)` wrapper just calls it.
 - Manual run test on a test VM or the ClipsNeko Live ISO for the milestone's
   runtime behavior.
+- Every focused bordered body control renders both its border and title in bold
+  white. Moving focus to a footer button restores the body border to its
+  default style without changing the footer's existing focus treatment.
 - `po/clipsneko-installer.pot` and both `.po` files are consistent with
   every `t!()` string added or changed.
 - `docs/dev-prog.md` updated: finished items moved from "Not done" to "Done".

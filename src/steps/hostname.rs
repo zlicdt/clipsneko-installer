@@ -7,7 +7,7 @@
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::input_border_style;
+use crate::util::ui::focusable_block;
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -105,12 +105,12 @@ impl Step for HostnameStep {
         let scroll = display_width.saturating_sub(visible_width) as u16;
         frame.render_widget(
             Paragraph::new(display)
-                .block(
+                .block(focusable_block(
                     Block::default()
                         .borders(Borders::ALL)
-                        .border_style(input_border_style(body_focused))
                         .title(t!("hostname_step.hostname")),
-                )
+                    body_focused,
+                ))
                 .scroll((0, scroll)),
             rows[1],
         );

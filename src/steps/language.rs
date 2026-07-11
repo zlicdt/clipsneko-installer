@@ -5,6 +5,7 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::locale_list::list_utf8_locales;
+use crate::util::ui::focusable_block;
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -159,11 +160,12 @@ impl Step for LanguageStep {
             Style::default()
         };
         let ui_list = List::new(ui_items)
-            .block(
+            .block(focusable_block(
                 Block::default()
                     .borders(Borders::ALL)
                     .title(t!("language_step.ui_title")),
-            )
+                body_focused && self.focus == LanguageFocus::UiLanguage,
+            ))
             .highlight_style(ui_highlight);
         frame.render_stateful_widget(ui_list, columns[0], &mut self.ui_state);
 
@@ -181,11 +183,12 @@ impl Step for LanguageStep {
             Style::default()
         };
         let locale_list = List::new(locale_items)
-            .block(
+            .block(focusable_block(
                 Block::default()
                     .borders(Borders::ALL)
                     .title(t!("language_step.target_title")),
-            )
+                body_focused && self.focus == LanguageFocus::TargetLocale,
+            ))
             .highlight_style(locale_highlight);
         frame.render_stateful_widget(locale_list, columns[1], &mut self.locale_state);
 

@@ -25,7 +25,7 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
-use crate::util::ui::{centered_rect, input_border_style};
+use crate::util::ui::{centered_rect, focusable_block};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -221,11 +221,12 @@ impl Step for MirrorStep {
             Style::default()
         };
         let list = List::new(items)
-            .block(
+            .block(focusable_block(
                 Block::default()
                     .borders(Borders::ALL)
                     .title(t!("mirror_step.list_title")),
-            )
+                body_focused && self.focus == MirrorFocus::List,
+            ))
             .highlight_style(list_highlight);
         frame.render_stateful_widget(list, chunks[0], &mut self.list_state);
 
@@ -245,12 +246,12 @@ impl Step for MirrorStep {
         let horizontal_scroll = input_width.saturating_sub(visible_width) as u16;
         let input_focused = body_focused && self.focus == MirrorFocus::Input;
         let input_box = Paragraph::new(input_display)
-            .block(
+            .block(focusable_block(
                 Block::default()
                     .borders(Borders::ALL)
-                    .border_style(input_border_style(input_focused))
                     .title(t!("mirror_step.input_title")),
-            )
+                input_focused,
+            ))
             .scroll((0, horizontal_scroll));
         frame.render_widget(input_box, chunks[1]);
 

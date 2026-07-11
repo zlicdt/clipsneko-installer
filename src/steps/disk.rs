@@ -6,7 +6,7 @@ use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::lsblk::{self, BlockDevice};
 use crate::util::process::{is_root, privileged_command};
-use crate::util::ui::centered_rect;
+use crate::util::ui::{centered_rect, focusable_block};
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -365,11 +365,12 @@ impl DiskStep {
         )
         .header(header)
         .column_spacing(1)
-        .block(
+        .block(focusable_block(
             Block::default()
                 .borders(Borders::ALL)
                 .title(t!("disk_step.list_title_disk")),
-        )
+            body_focused,
+        ))
         .row_highlight_style(row_highlight);
         frame.render_stateful_widget(table, area, &mut self.table_state);
     }
@@ -441,11 +442,12 @@ impl DiskStep {
         )
         .header(header)
         .column_spacing(1)
-        .block(
+        .block(focusable_block(
             Block::default()
                 .borders(Borders::ALL)
                 .title(t!("disk_step.list_title_parts")),
-        )
+            body_focused,
+        ))
         .row_highlight_style(row_highlight);
         frame.render_stateful_widget(table, area, &mut self.table_state);
     }

@@ -41,8 +41,12 @@ AGENTS.md
 ## 4. Wizard flow
 
 Linear: Back/Next only, no per-item jump from the confirm page.
-Every editable text input uses a bold white border while focused; its
-unfocused border uses the terminal's default style.
+Every focused bordered body control uses a bold white border and title. This
+applies consistently to lists, tables, editable text inputs, and the actionable
+network-status panel. When focus moves to a footer button, body-control borders
+return to the terminal's default style and the footer keeps its existing
+reversed focus style. Non-interactive container and informational borders do
+not receive the focus style.
 
 1. **Language and locale** — two independent lists on one step:
    - Installer UI language: en / zh_CN. Space applies the highlighted language

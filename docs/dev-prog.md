@@ -60,8 +60,11 @@ it moves from "Not done" to "Done" and stays there.
 - Body widgets know whether the footer owns focus, preventing a list cursor and
   footer button from both appearing focused. Shared dialog centering, wrapping,
   minimum-width layout, and horizontal mirror-input scrolling are implemented.
-  Every editable text input now shares a bold white focused border; list
-  highlights and semantic colors such as password strength remain independent.
+  Every focused bordered body control now shares a bold white border and title,
+  including lists, tables, text inputs, and the actionable network panel. The
+  style clears when a footer button owns focus; footer focus, list highlights,
+  non-interactive containers, and semantic colors such as password strength
+  retain their existing independent styles.
 - **Language/locale step:** independent UI-language and target-locale lists are
   implemented. UI switching is live; target locales come from commented or
   enabled UTF-8 entries in `/etc/locale.gen`; `en_US.UTF-8` is the required
@@ -133,7 +136,7 @@ it moves from "Not done" to "Done" and stays there.
   `passwd -l root`; the installer creates the wheel user and leaves root-account
   policy unchanged.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (119 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (120 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done

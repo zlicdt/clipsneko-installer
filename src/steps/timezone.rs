@@ -10,6 +10,7 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::geoip;
+use crate::util::ui::focusable_block;
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -227,11 +228,12 @@ impl Step for TimezoneStep {
             Style::default()
         };
         let region_list = List::new(region_items)
-            .block(
+            .block(focusable_block(
                 Block::default()
                     .borders(Borders::ALL)
                     .title(t!("timezone_step.region_title")),
-            )
+                body_focused && self.focus == TimezoneFocus::Region,
+            ))
             .highlight_style(region_highlight);
         frame.render_stateful_widget(region_list, panels[0], &mut self.region_state);
 
@@ -263,11 +265,12 @@ impl Step for TimezoneStep {
             Style::default()
         };
         let zone_list = List::new(zone_items)
-            .block(
+            .block(focusable_block(
                 Block::default()
                     .borders(Borders::ALL)
                     .title(t!("timezone_step.zone_title")),
-            )
+                body_focused && self.focus == TimezoneFocus::Zone,
+            ))
             .style(zone_style)
             .highlight_style(zone_highlight);
         frame.render_stateful_widget(zone_list, panels[2], &mut self.zone_state);

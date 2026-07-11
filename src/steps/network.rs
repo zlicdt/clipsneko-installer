@@ -21,6 +21,7 @@
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
+use crate::util::ui::focusable_block;
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -91,7 +92,7 @@ impl Step for NetworkStep {
         frame: &mut Frame,
         area: Rect,
         state: &InstallerState,
-        _body_focused: bool,
+        body_focused: bool,
     ) {
         let chunks = Layout::default()
             .direction(Direction::Vertical)
@@ -134,9 +135,12 @@ impl Step for NetworkStep {
             lines.push(Line::from(t!("network_step.status_disconnected")));
         }
 
-        let block = Block::default()
-            .borders(Borders::ALL)
-            .title(t!("network_step.title"));
+        let block = focusable_block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(t!("network_step.title")),
+            body_focused,
+        );
         frame.render_widget(Paragraph::new(lines).block(block), chunks[0]);
 
         frame.render_widget(

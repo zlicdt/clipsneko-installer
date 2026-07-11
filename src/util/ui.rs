@@ -2,12 +2,13 @@
 
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
+use ratatui::widgets::Block;
 
-/// Return the shared border style for editable text inputs.
+/// Return the shared style for a focused interactive border and its title.
 ///
-/// A focused input uses a bold white border; an unfocused input keeps the
+/// A focused widget uses a bold white border; an unfocused widget keeps the
 /// terminal's default style.
-pub fn input_border_style(focused: bool) -> Style {
+pub fn focused_border_style(focused: bool) -> Style {
     if focused {
         Style::default()
             .fg(Color::White)
@@ -15,6 +16,12 @@ pub fn input_border_style(focused: bool) -> Style {
     } else {
         Style::default()
     }
+}
+
+/// Apply the shared focus style to both a block's border and title.
+pub fn focusable_block(block: Block<'_>, focused: bool) -> Block<'_> {
+    let style = focused_border_style(focused);
+    block.border_style(style).title_style(style)
 }
 
 /// Return a horizontally centered rectangle whose width is a percentage of
@@ -42,11 +49,22 @@ mod tests {
     use super::*;
 
     #[test]
-    fn input_border_is_bold_white_only_while_focused() {
-        let focused = input_border_style(true);
+    fn interactive_border_is_bold_white_only_while_focused() {
+        let focused = focused_border_style(true);
         assert_eq!(focused.fg, Some(Color::White));
         assert!(focused.add_modifier.contains(Modifier::BOLD));
 
-        assert_eq!(input_border_style(false), Style::default());
+        assert_eq!(focused_border_style(false), Style::default());
+    }
+
+    #[test]
+    fn focusable_block_styles_its_border_and_title_together() {
+        let block = Block::default().title("Title");
+        let style = focused_border_style(true);
+
+        assert_eq!(
+            focusable_block(block.clone(), true),
+            block.border_style(style).title_style(style)
+        );
     }
 }

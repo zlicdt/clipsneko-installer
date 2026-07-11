@@ -19,6 +19,7 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
+use crate::util::ui::focusable_block;
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -160,11 +161,12 @@ impl Step for KeyboardStep {
             Style::default()
         };
         let list = List::new(items)
-            .block(
+            .block(focusable_block(
                 Block::default()
                     .borders(Borders::ALL)
                     .title(t!("keyboard_step.title")),
-            )
+                body_focused,
+            ))
             .highlight_style(highlight_style);
 
         frame.render_stateful_widget(list, chunks[0], &mut self.list_state);
