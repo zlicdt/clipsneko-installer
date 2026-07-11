@@ -19,12 +19,12 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
-use crate::util::ui::focusable_block;
+use crate::util::ui::{focusable_block, rounded_block};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
-use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph};
+use ratatui::widgets::{List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
 pub struct KeyboardStep {
@@ -162,9 +162,7 @@ impl Step for KeyboardStep {
         };
         let list = List::new(items)
             .block(focusable_block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("keyboard_step.title")),
+                rounded_block().title(t!("keyboard_step.title")),
                 body_focused,
             ))
             .highlight_style(highlight_style);

@@ -51,7 +51,8 @@ applies consistently to lists, tables, editable text inputs, and the actionable
 network-status panel. When focus moves to a footer button, body-control borders
 return to the terminal's default style and the footer keeps its existing
 reversed focus style. Non-interactive container and informational borders do
-not receive the focus style.
+not receive the focus style. Every visible border, including modal dialogs and
+informational containers, uses rounded corners.
 
 1. **Language and locale** — two coordinated lists on one step:
    - Installer UI language: en / zh_CN / zh_TW / ja / de / ko / ru. Space

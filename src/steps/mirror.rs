@@ -25,12 +25,12 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
-use crate::util::ui::{centered_rect, focusable_block};
+use crate::util::ui::{centered_rect, focusable_block, rounded_block};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
-use ratatui::widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph, Wrap};
+use ratatui::widgets::{Clear, List, ListItem, ListState, Paragraph, Wrap};
 use ratatui::Frame;
 
 /// Path to the pacman mirrorlist. On the ClipsNeko ISO this is always
@@ -222,9 +222,7 @@ impl Step for MirrorStep {
         };
         let list = List::new(items)
             .block(focusable_block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("mirror_step.list_title")),
+                rounded_block().title(t!("mirror_step.list_title")),
                 body_focused && self.focus == MirrorFocus::List,
             ))
             .highlight_style(list_highlight);
@@ -247,9 +245,7 @@ impl Step for MirrorStep {
         let input_focused = body_focused && self.focus == MirrorFocus::Input;
         let input_box = Paragraph::new(input_display)
             .block(focusable_block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("mirror_step.input_title")),
+                rounded_block().title(t!("mirror_step.input_title")),
                 input_focused,
             ))
             .scroll((0, horizontal_scroll));
@@ -365,11 +361,7 @@ impl MirrorStep {
             ratatui::text::Line::from(t!("mirror_step.error_hint")),
         ];
         let dialog = Paragraph::new(text)
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("mirror_step.error_title")),
-            )
+            .block(rounded_block().title(t!("mirror_step.error_title")))
             .alignment(Alignment::Center)
             .wrap(Wrap { trim: true });
         frame.render_widget(Clear, area);

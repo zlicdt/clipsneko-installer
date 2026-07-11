@@ -9,13 +9,13 @@ use crate::state::{InstallerState, UserInfo};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::password::{password_strength, PasswordStrength, SecretString};
-use crate::util::ui::focusable_block;
+use crate::util::ui::{focusable_block, rounded_block};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Style};
 use ratatui::text::Line;
-use ratatui::widgets::{Block, Borders, Gauge, Paragraph};
+use ratatui::widgets::{Gauge, Paragraph};
 use ratatui::Frame;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -105,10 +105,7 @@ impl UserStep {
         let scroll = display_width.saturating_sub(visible_width) as u16;
         frame.render_widget(
             Paragraph::new(display)
-                .block(focusable_block(
-                    Block::default().borders(Borders::ALL).title(title),
-                    focused,
-                ))
+                .block(focusable_block(rounded_block().title(title), focused))
                 .scroll((0, scroll)),
             area,
         );
@@ -176,9 +173,7 @@ impl Step for UserStep {
             width,
             height,
         );
-        let form_block = Block::default()
-            .borders(Borders::ALL)
-            .title(t!("user_step.form_title"));
+        let form_block = rounded_block().title(t!("user_step.form_title"));
         let inner = form_block.inner(form_area);
         frame.render_widget(form_block, form_area);
 
@@ -227,7 +222,7 @@ impl Step for UserStep {
         );
         frame.render_widget(
             Gauge::default()
-                .block(Block::default().borders(Borders::ALL))
+                .block(rounded_block())
                 .gauge_style(Style::default().fg(color).bg(Color::Black))
                 .ratio(ratio)
                 .label(strength_label),

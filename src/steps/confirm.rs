@@ -6,13 +6,13 @@
 use crate::state::{BtrfsRaidMode, InstallerState, NvidiaChoice};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::{centered_rect, focusable_block};
+use crate::util::ui::{centered_rect, focusable_block, rounded_block};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, Borders, Clear, Paragraph, Wrap};
+use ratatui::widgets::{Clear, Paragraph, Wrap};
 use ratatui::Frame;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -87,11 +87,7 @@ impl ConfirmStep {
             Line::from(t!("confirm_step.dialog.hint")),
         ];
         let dialog = Paragraph::new(lines)
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("confirm_step.dialog.title")),
-            )
+            .block(rounded_block().title(t!("confirm_step.dialog.title")))
             .alignment(Alignment::Center)
             .wrap(Wrap { trim: true });
         frame.render_widget(Clear, area);
@@ -137,9 +133,7 @@ impl Step for ConfirmStep {
 
         let summary = Paragraph::new(lines)
             .block(focusable_block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("confirm_step.summary_title")),
+                rounded_block().title(t!("confirm_step.summary_title")),
                 body_focused,
             ))
             .scroll((self.scroll, 0));

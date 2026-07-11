@@ -21,13 +21,13 @@
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::focusable_block;
+use crate::util::ui::{focusable_block, rounded_block};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::Line;
-use ratatui::widgets::{Block, Borders, Paragraph};
+use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 use std::process::Command;
 
@@ -136,9 +136,7 @@ impl Step for NetworkStep {
         }
 
         let block = focusable_block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(t!("network_step.title")),
+            rounded_block().title(t!("network_step.title")),
             body_focused,
         );
         frame.render_widget(Paragraph::new(lines).block(block), chunks[0]);

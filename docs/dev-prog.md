@@ -68,7 +68,9 @@ it moves from "Not done" to "Done" and stays there.
   including lists, tables, text inputs, and the actionable network panel. The
   style clears when a footer button owns focus; footer focus, list highlights,
   non-interactive containers, and semantic colors such as password strength
-  retain their existing independent styles.
+  retain their existing independent styles. Every visible border, including
+  modal dialogs and informational containers, is created through the shared
+  rounded-corner block constructor.
 - **Language/locale step:** coordinated UI-language and target-locale lists are
   implemented. UI switching is live and automatically selects the matching
   target locale. The target list contains every commented or enabled UTF-8
@@ -188,7 +190,7 @@ it moves from "Not done" to "Done" and stays there.
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (150 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (151 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done

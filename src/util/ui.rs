@@ -2,7 +2,14 @@
 
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
-use ratatui::widgets::Block;
+use ratatui::widgets::{Block, BorderType, Borders};
+
+/// Return the shared block with all four borders rendered using rounded corners.
+pub fn rounded_block() -> Block<'static> {
+    Block::default()
+        .borders(Borders::ALL)
+        .border_type(BorderType::Rounded)
+}
 
 /// Return the shared style for a focused interactive border and its title.
 ///
@@ -65,6 +72,16 @@ mod tests {
         assert_eq!(
             focusable_block(block.clone(), true),
             block.border_style(style).title_style(style)
+        );
+    }
+
+    #[test]
+    fn rounded_block_uses_the_shared_border_shape() {
+        assert_eq!(
+            rounded_block(),
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
         );
     }
 }

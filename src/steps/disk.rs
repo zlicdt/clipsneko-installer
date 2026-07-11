@@ -6,13 +6,13 @@ use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::lsblk::{self, BlockDevice};
 use crate::util::process::{is_root, privileged_command};
-use crate::util::ui::{centered_rect, focusable_block};
+use crate::util::ui::{centered_rect, focusable_block, rounded_block};
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, Borders, Cell, Clear, Paragraph, Row, Table, TableState, Wrap};
+use ratatui::widgets::{Cell, Clear, Paragraph, Row, Table, TableState, Wrap};
 use ratatui::Frame;
 
 fn selected_style() -> Style {
@@ -388,9 +388,7 @@ impl DiskStep {
         .header(header)
         .column_spacing(1)
         .block(focusable_block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(t!("disk_step.list_title_disk")),
+            rounded_block().title(t!("disk_step.list_title_disk")),
             body_focused,
         ))
         .row_highlight_style(row_highlight);
@@ -465,9 +463,7 @@ impl DiskStep {
         .header(header)
         .column_spacing(1)
         .block(focusable_block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(t!("disk_step.list_title_parts")),
+            rounded_block().title(t!("disk_step.list_title_parts")),
             body_focused,
         ))
         .row_highlight_style(row_highlight);
@@ -499,7 +495,7 @@ impl DiskStep {
         lines.push(Line::from(""));
         lines.push(Line::from(t!("disk_step.role_dialog.hint")));
         let dialog = Paragraph::new(lines)
-            .block(Block::default().borders(Borders::ALL).title(title))
+            .block(rounded_block().title(title))
             .alignment(Alignment::Center);
         frame.render_widget(Clear, area);
         frame.render_widget(dialog, area);
@@ -523,11 +519,7 @@ impl DiskStep {
         lines.push(Line::from(""));
         lines.push(Line::from(t!("disk_step.raid_dialog.hint")));
         let dialog = Paragraph::new(lines)
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("disk_step.raid_dialog.title")),
-            )
+            .block(rounded_block().title(t!("disk_step.raid_dialog.title")))
             .alignment(Alignment::Center);
         frame.render_widget(Clear, area);
         frame.render_widget(dialog, area);
@@ -541,11 +533,7 @@ impl DiskStep {
             Line::from(""),
             Line::from(t!("disk_step.error_hint")),
         ])
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(t!("disk_step.error_title")),
-        )
+        .block(rounded_block().title(t!("disk_step.error_title")))
         .alignment(Alignment::Center)
         .wrap(Wrap { trim: true });
         frame.render_widget(Clear, area);
@@ -565,11 +553,7 @@ impl DiskStep {
         lines.push(Line::from(""));
         lines.push(Line::from(t!("disk_step.wipe_dialog.hint")));
         let dialog = Paragraph::new(lines)
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("disk_step.wipe_dialog.window_title")),
-            )
+            .block(rounded_block().title(t!("disk_step.wipe_dialog.window_title")))
             .alignment(Alignment::Center)
             .wrap(Wrap { trim: true });
         frame.render_widget(Clear, area);

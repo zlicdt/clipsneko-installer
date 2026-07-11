@@ -7,13 +7,13 @@
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::focusable_block;
+use crate::util::ui::{focusable_block, rounded_block};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::Line;
-use ratatui::widgets::{Block, Borders, Paragraph};
+use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 
 /// Centered hostname form used by wizard step 10.
@@ -82,9 +82,7 @@ impl Step for HostnameStep {
             width,
             height,
         );
-        let form_block = Block::default()
-            .borders(Borders::ALL)
-            .title(t!("hostname_step.form_title"));
+        let form_block = rounded_block().title(t!("hostname_step.form_title"));
         let inner = form_block.inner(form_area);
         frame.render_widget(form_block, form_area);
 
@@ -106,9 +104,7 @@ impl Step for HostnameStep {
         frame.render_widget(
             Paragraph::new(display)
                 .block(focusable_block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .title(t!("hostname_step.hostname")),
+                    rounded_block().title(t!("hostname_step.hostname")),
                     body_focused,
                 ))
                 .scroll((0, scroll)),

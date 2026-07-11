@@ -7,13 +7,13 @@ use crate::state::InstallerState;
 use crate::steps::{build_steps, Step, StepAction};
 use crate::t;
 use crate::util::process::run_fullscreen;
-use crate::util::ui::centered_rect;
+use crate::util::ui::{centered_rect, rounded_block};
 use crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, Borders, Clear, Paragraph};
+use ratatui::widgets::{Clear, Paragraph};
 use ratatui::Frame;
 use ratatui::Terminal;
 use std::io::Stdout;
@@ -302,7 +302,7 @@ impl App {
             Line::from(t!("quit_dialog.hint")),
         ];
         let dialog = Paragraph::new(text)
-            .block(Block::default().borders(Borders::ALL))
+            .block(rounded_block())
             .alignment(Alignment::Center);
         frame.render_widget(Clear, area);
         frame.render_widget(dialog, area);

@@ -10,12 +10,12 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::geoip;
-use crate::util::ui::focusable_block;
+use crate::util::ui::{focusable_block, rounded_block};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
-use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph};
+use ratatui::widgets::{List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 use std::process::Command;
 
@@ -229,9 +229,7 @@ impl Step for TimezoneStep {
         };
         let region_list = List::new(region_items)
             .block(focusable_block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("timezone_step.region_title")),
+                rounded_block().title(t!("timezone_step.region_title")),
                 body_focused && self.focus == TimezoneFocus::Region,
             ))
             .highlight_style(region_highlight);
@@ -266,9 +264,7 @@ impl Step for TimezoneStep {
         };
         let zone_list = List::new(zone_items)
             .block(focusable_block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("timezone_step.zone_title")),
+                rounded_block().title(t!("timezone_step.zone_title")),
                 body_focused && self.focus == TimezoneFocus::Zone,
             ))
             .style(zone_style)

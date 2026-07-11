@@ -21,7 +21,9 @@ Every milestone is considered done only when **all** of the following hold:
   runtime behavior.
 - Every focused bordered body control renders both its border and title in bold
   white. Moving focus to a footer button restores the body border to its
-  default style without changing the footer's existing focus treatment.
+  default style without changing the footer's existing focus treatment. All
+  visible borders, including dialogs and informational containers, use the
+  shared rounded-corner block constructor.
 - `po/clipsneko-installer.pot` and both `.po` files are consistent with
   every `t!()` string added or changed.
 - `docs/dev-prog.md` updated: finished items moved from "Not done" to "Done".

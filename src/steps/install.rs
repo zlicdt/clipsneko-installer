@@ -7,13 +7,13 @@ use crate::installer::{
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::centered_rect;
+use crate::util::ui::{centered_rect, rounded_block};
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, Borders, Clear, Paragraph, Wrap};
+use ratatui::widgets::{Clear, Paragraph, Wrap};
 use ratatui::Frame;
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 
@@ -155,7 +155,7 @@ impl InstallStep {
             Line::from(t!("install_step.progress.wait")),
         ])
         .alignment(Alignment::Center)
-        .block(Block::default().borders(Borders::ALL));
+        .block(rounded_block());
         frame.render_widget(body, centered_rect(76, 8, area));
     }
 
@@ -193,7 +193,7 @@ impl InstallStep {
         ])
         .alignment(Alignment::Center)
         .wrap(Wrap { trim: true })
-        .block(Block::default().borders(Borders::ALL));
+        .block(rounded_block());
         let dialog_area = centered_rect(82, 10, area);
         frame.render_widget(Clear, dialog_area);
         frame.render_widget(dialog, dialog_area);
@@ -233,7 +233,7 @@ impl InstallStep {
         ])
         .alignment(Alignment::Center)
         .wrap(Wrap { trim: true })
-        .block(Block::default().borders(Borders::ALL));
+        .block(rounded_block());
         let dialog_area = centered_rect(82, 10, area);
         frame.render_widget(Clear, dialog_area);
         frame.render_widget(dialog, dialog_area);
@@ -317,11 +317,7 @@ impl Step for InstallStep {
                 let log = Paragraph::new(self.log_text.as_str())
                     .scroll((self.log_scroll, 0))
                     .wrap(Wrap { trim: false })
-                    .block(
-                        Block::default()
-                            .borders(Borders::ALL)
-                            .title(t!("install_step.log.title")),
-                    );
+                    .block(rounded_block().title(t!("install_step.log.title")));
                 frame.render_widget(log, area);
             }
         }

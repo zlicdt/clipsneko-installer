@@ -5,12 +5,12 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::locale_list::list_utf8_locales;
-use crate::util::ui::focusable_block;
+use crate::util::ui::{focusable_block, rounded_block};
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
-use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph};
+use ratatui::widgets::{List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
 const ALL_LANGS: [UiLang; 7] = [
@@ -239,9 +239,7 @@ impl Step for LanguageStep {
         };
         let ui_list = List::new(ui_items)
             .block(focusable_block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("language_step.ui_title")),
+                rounded_block().title(t!("language_step.ui_title")),
                 body_focused && self.focus == LanguageFocus::UiLanguage,
             ))
             .highlight_style(ui_highlight);
@@ -272,9 +270,7 @@ impl Step for LanguageStep {
         };
         let locale_list = List::new(locale_items)
             .block(focusable_block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(t!("language_step.target_title")),
+                rounded_block().title(t!("language_step.target_title")),
                 body_focused && self.focus == LanguageFocus::TargetLocale,
             ))
             .highlight_style(locale_highlight);
