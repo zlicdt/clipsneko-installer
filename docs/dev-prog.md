@@ -23,7 +23,10 @@ it moves from "Not done" to "Done" and stays there.
   tags trigger an Arch `base-devel` container, verify that the tag, Cargo, and
   PKGBUILD versions agree, set the requested makepkg packager identity, build
   the package as an unprivileged user, preserve it as an Actions artifact, and
-  upload it to the corresponding generated GitHub Release.
+  upload it to the corresponding generated GitHub Release. The release job
+  writes valid locale/encoding pairs to `locale.gen`, generates all seven UI
+  locales before `makepkg`, and verifies that `en_US.UTF-8` is available before
+  running the locale-dependent test suite.
 - The English project README presents the logo and live CI status, summarizes
   the installer and its supported environment, documents Arch/ClipsNeko and
   Ubuntu build prerequisites, and provides verified release-build and
