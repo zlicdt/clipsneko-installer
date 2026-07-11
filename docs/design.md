@@ -183,7 +183,7 @@ not receive the focus style.
   or more Target partitions were chosen, use the data RAID mode already chosen
   in the disk step (`raid0` or `raid1`; metadata is always `raid1`) and run
   `mkfs.btrfs -f -d <mode> -m raid1 <part1> <part2> ...`. Create
-  subvolumes `@`, `@home`; remount root with `-o compress=zstd:1,subvol=@`;
+  subvolumes `@`, `@home`; remount root with `-o compress=zstd,subvol=@`;
   `@home` at `/mnt/home`.
 - ESP: skip if already vfat, else `mkfs.vfat -F32`; mount at `/mnt/boot/efi`.
 - No extra-partition mapping in v0.1 (see §4 step 5).
@@ -199,8 +199,9 @@ The installer does not parse or generate repository configuration.
 adds packages derived from wizard state. `-P` copies the Live ISO's
 `pacman.conf` and `pacman.d` configuration to the target.
 
-12.4 `genfstab -U /mnt >> /mnt/etc/fstab` — verify btrfs entries carry
-`compress=zstd:1,subvol=@` / `subvol=@home`.
+12.4 `genfstab -U /mnt >> /mnt/etc/fstab` — verify btrfs entries carry like
+`rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@` and
+`rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@home`
 
 12.5 `arch-chroot /mnt`:
 
@@ -210,9 +211,8 @@ adds packages derived from wizard state. `-P` copies the Live ISO's
 - write `<hostname>\n` to `/etc/hostname`; add the conventional
   `127.0.1.1 <hostname>` mapping to `/etc/hosts` alongside the localhost
   IPv4/IPv6 entries
-- `useradd -m -G wheel -s /bin/zsh <user>`; `chpasswd`
+- `useradd -m -G wheel -s /bin/zsh <user>`; `passwd <user>`
 - uncomment `%wheel ALL=(ALL:ALL) ALL` in `/etc/sudoers`
-- use the pacman configuration copied by `pacstrap -P`
 - mkinitcpio: **if NVIDIA was installed, remove `kms` from HOOKS in
   `/etc/mkinitcpio.conf`**; then `mkinitcpio -P`. (No MODULES additions needed:
   the default `filesystems` HOOK + btrfs-progs already cover btrfs, and current
