@@ -187,9 +187,11 @@ confirm screen can show a full summary.
   incompatible by changing the kernel resets to `nvidia-open-dkms` on entry.
   Kernel headers are already an unconditional part of the selected kernel's
   install package set.
-- `src/steps/timezone.rs` — `curl -s http://ip-api.com/json` → `timezone`
-  field default; fallback UTC; manual override by typing `Region/City` or
-  picking from `/usr/share/zoneinfo/`.
+- `src/steps/timezone.rs` — GeoIP timezone default with UTC fallback; a
+  two-list picker populated by `timedatectl list-timezones`. The first list is
+  the ten supported geographic regions plus direct UTC; the second contains
+  full timezone names and is disabled for UTC. Legacy top-level aliases and
+  `Etc/*` are excluded, and there is no manual text input.
 - `src/steps/user.rs` — username (`^[a-z_][a-z0-9_-]*$`), optional GECOS,
   password + confirm with a strength bar; writes account metadata to
   `state.user` and keeps the confirmed password only in a non-Debug
@@ -210,9 +212,11 @@ confirm screen can show a full summary.
   `state.kernel`, and maps every choice to its matching headers package.
 - NVIDIA variant list is correctly filtered by the chosen kernel;
   incompatible options are visible but not selectable.
-- Timezone defaults to the GeoIP result when online, UTC when not; manual
-  override accepts only `Region/City` strings that exist under
-  `/usr/share/zoneinfo/`.
+- Timezone defaults to a supported GeoIP result when online and UTC otherwise.
+  Up/Down navigates the focused list; Right/Enter enters a geographic region,
+  Left returns to the region list, and Enter applies a concrete timezone or
+  direct UTC. The UTC choice visibly disables the second list, and Tab reaches
+  both lists and the footer in order.
 - Username validation rejects invalid names live; password strength bar
   updates as the user types; confirm mismatch blocks Next.
 - Hostname validation rejects invalid input live.
@@ -223,6 +227,9 @@ confirm screen can show a full summary.
 
 - Kernel and unconditional matching-headers package derivation for all four
   choices.
+- Timezone output parsing and filtering, GeoIP/default restoration, UTC
+  fallback, two-list focus/navigation, direct UTC behavior, footer commit,
+  and translated rendering.
 - NVIDIA-kernel compatibility matrix (all kernels × current open variants).
 - Username regex (valid/invalid boundary cases).
 - Hostname regex (length, leading/trailing hyphen, uppercase rejection).

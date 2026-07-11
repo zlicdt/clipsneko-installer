@@ -18,7 +18,7 @@ it moves from "Not done" to "Done" and stays there.
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. The POT
-  and en/zh_CN catalogs contain the same 103 message IDs with no untranslated,
+  and en/zh_CN catalogs contain the same 108 message IDs with no untranslated,
   fuzzy, or obsolete entries. zh_TW support was removed because it had no
   catalog and is outside the locked language set.
 - UI language changes only `LC_MESSAGES` and remains independent of the target
@@ -104,12 +104,18 @@ it moves from "Not done" to "Done" and stays there.
   incompatible saved choice to the DKMS default. NVIDIA contributes only its
   selected package because kernel headers are derived unconditionally by the
   kernel choice.
+- **Timezone step:** GeoIP supplies the initial choice with a UTC fallback;
+  saved choices are restored without another request. A two-panel picker uses
+  `timedatectl list-timezones` for the ten supported geographic regions and
+  their concrete zones, filters legacy top-level and `Etc` aliases, and offers
+  UTC directly with the second panel visibly disabled. Arrow, Enter,
+  Tab/Shift+Tab, and footer commit paths are implemented and tested.
 - Password handoff is locked for M3/M4b: a non-Debug zeroizing `SecretString`
   will feed `<username>:<password>` only through `chpasswd` stdin, never command
   arguments, summaries, tracing, or logs, and is cleared immediately after use
   as well as on Drop.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (95 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (105 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -126,10 +132,11 @@ it moves from "Not done" to "Done" and stays there.
   output, protected Live media, responsive tables in both languages, role
   assignment, RAID profiles, and wipe dialogs still need an interactive
   multi-disk Live ISO/VM check.
-- **M3 selection and identity:** the kernel and NVIDIA steps still need an
-  interactive bilingual Live ISO/VM check. Timezone, user, hostname, and
-  confirmation remain stubs; the password secret, validation rules, GeoIP
-  behavior, and final confirmation UI are not yet code.
+- **M3 selection and identity:** the kernel, NVIDIA, and timezone steps still
+  need an interactive bilingual Live ISO/VM check, including real GeoIP and
+  `timedatectl` data. User, hostname, and confirmation remain stubs; the
+  password secret, identity validation rules, and final confirmation UI are
+  not yet code.
 - **M4a install stage:** btrfs format/RAID/subvolume and ESP format/mount logic
   is not implemented.
 - **M4b install stage:** packages.list loading, dynamic package derivation,

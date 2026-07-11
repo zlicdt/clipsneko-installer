@@ -1,9 +1,8 @@
 //! Utility helpers shared across steps and the installer stage.
 //!
-//! Currently houses the subprocess / privilege helpers (`process` module) and
-//! the `lsblk` JSON parser. Future M3 util modules (`geoip`, `password`,
-//! `locale_list`) will live here too.
+//! Currently houses subprocess helpers and parsers shared by wizard steps.
 
+pub mod geoip;
 pub mod locale_list;
 pub mod lsblk;
 pub mod process;

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 10:04+0800\n"
+"POT-Creation-Date: 2026-07-11 10:25+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Simplified Chinese\n"
@@ -367,58 +367,82 @@ msgstr "左/右=选择  Enter=确认  Esc=取消"
 msgid "quit_dialog.title"
 msgstr "确定要退出吗？"
 
-#: src/steps/mod.rs:79
+#: src/steps/mod.rs:81
 msgid "step.title.confirm_installation"
 msgstr "确认安装"
 
-#: src/steps/mod.rs:73
+#: src/steps/mod.rs:75
 msgid "step.title.disk_partitioning"
 msgstr "磁盘分区"
 
-#: src/steps/mod.rs:78
+#: src/steps/mod.rs:80
 msgid "step.title.hostname"
 msgstr "主机名"
 
-#: src/steps/mod.rs:80
+#: src/steps/mod.rs:82
 msgid "step.title.installing"
 msgstr "安装中"
 
-#: src/steps/mod.rs:74
+#: src/steps/mod.rs:76
 msgid "step.title.kernel"
 msgstr "内核"
 
-#: src/steps/mod.rs:70
+#: src/steps/mod.rs:72
 msgid "step.title.keyboard_layout"
 msgstr "键盘布局"
 
-#: src/steps/mod.rs:69
+#: src/steps/mod.rs:71
 msgid "step.title.language"
 msgstr "语言"
 
-#: src/steps/mod.rs:72
+#: src/steps/mod.rs:74
 msgid "step.title.mirror_list"
 msgstr "镜像列表"
 
-#: src/steps/mod.rs:71
+#: src/steps/mod.rs:73
 msgid "step.title.network"
 msgstr "网络"
 
-#: src/steps/mod.rs:75
+#: src/steps/mod.rs:77
 msgid "step.title.nvidia_driver"
 msgstr "NVIDIA 驱动"
 
-#: src/steps/mod.rs:76
+#: src/steps/mod.rs:78
 msgid "step.title.timezone"
 msgstr "时区"
 
-#: src/steps/mod.rs:77
+#: src/steps/mod.rs:79
 msgid "step.title.user_account"
 msgstr "用户账户"
 
-#: src/steps/mod.rs:186
+#: src/steps/mod.rs:188
 msgid "stub.body"
 msgstr "此步骤尚未实现。"
 
-#: src/steps/mod.rs:186
+#: src/steps/mod.rs:188
 msgid "stub.hint"
 msgstr "按 Enter 继续。"
+
+#: src/steps/timezone.rs:277
+msgid "timezone_step.hint_region"
+msgstr "↑/↓=选择  →/Enter=进入时区列表  Tab=下一控件"
+
+#: src/steps/timezone.rs:276
+msgid "timezone_step.hint_utc"
+msgstr "↑/↓=选择  Enter=应用 UTC 并继续  Tab=按钮"
+
+#: src/steps/timezone.rs:278
+msgid "timezone_step.hint_zone"
+msgstr "↑/↓=选择  ←=返回地区列表  Enter=应用并继续"
+
+#: src/steps/timezone.rs:233
+msgid "timezone_step.region_title"
+msgstr "地区"
+
+#: src/steps/timezone.rs:240
+msgid "timezone_step.utc_direct"
+msgstr "（UTC 无需选择具体时区）"
+
+#: src/steps/timezone.rs:269
+msgid "timezone_step.zone_title"
+msgstr "时区"

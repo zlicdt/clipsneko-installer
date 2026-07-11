@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 10:04+0800\n"
+"POT-Creation-Date: 2026-07-11 10:25+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -367,58 +367,82 @@ msgstr ""
 msgid "quit_dialog.title"
 msgstr ""
 
-#: src/steps/mod.rs:79
+#: src/steps/mod.rs:81
 msgid "step.title.confirm_installation"
 msgstr ""
 
-#: src/steps/mod.rs:73
+#: src/steps/mod.rs:75
 msgid "step.title.disk_partitioning"
 msgstr ""
 
-#: src/steps/mod.rs:78
+#: src/steps/mod.rs:80
 msgid "step.title.hostname"
 msgstr ""
 
-#: src/steps/mod.rs:80
+#: src/steps/mod.rs:82
 msgid "step.title.installing"
 msgstr ""
 
-#: src/steps/mod.rs:74
+#: src/steps/mod.rs:76
 msgid "step.title.kernel"
 msgstr ""
 
-#: src/steps/mod.rs:70
+#: src/steps/mod.rs:72
 msgid "step.title.keyboard_layout"
 msgstr ""
 
-#: src/steps/mod.rs:69
+#: src/steps/mod.rs:71
 msgid "step.title.language"
 msgstr ""
 
-#: src/steps/mod.rs:72
+#: src/steps/mod.rs:74
 msgid "step.title.mirror_list"
 msgstr ""
 
-#: src/steps/mod.rs:71
+#: src/steps/mod.rs:73
 msgid "step.title.network"
 msgstr ""
 
-#: src/steps/mod.rs:75
+#: src/steps/mod.rs:77
 msgid "step.title.nvidia_driver"
 msgstr ""
 
-#: src/steps/mod.rs:76
+#: src/steps/mod.rs:78
 msgid "step.title.timezone"
 msgstr ""
 
-#: src/steps/mod.rs:77
+#: src/steps/mod.rs:79
 msgid "step.title.user_account"
 msgstr ""
 
-#: src/steps/mod.rs:186
+#: src/steps/mod.rs:188
 msgid "stub.body"
 msgstr ""
 
-#: src/steps/mod.rs:186
+#: src/steps/mod.rs:188
 msgid "stub.hint"
+msgstr ""
+
+#: src/steps/timezone.rs:277
+msgid "timezone_step.hint_region"
+msgstr ""
+
+#: src/steps/timezone.rs:276
+msgid "timezone_step.hint_utc"
+msgstr ""
+
+#: src/steps/timezone.rs:278
+msgid "timezone_step.hint_zone"
+msgstr ""
+
+#: src/steps/timezone.rs:233
+msgid "timezone_step.region_title"
+msgstr ""
+
+#: src/steps/timezone.rs:240
+msgid "timezone_step.utc_direct"
+msgstr ""
+
+#: src/steps/timezone.rs:269
+msgid "timezone_step.zone_title"
 msgstr ""

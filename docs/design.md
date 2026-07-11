@@ -124,9 +124,21 @@ Linear: Back/Next only, no per-item jump from the confirm page.
    Kernel headers are already included unconditionally by the kernel choice;
    NVIDIA selection only contributes the selected driver package.
 
-8. **Timezone** — `curl -s http://ip-api.com/json` → `timezone` field; fallback
-   UTC; user may override by typing `Region/City` or picking from
-   `/usr/share/zoneinfo/`.
+8. **Timezone** — `curl --max-time 5 --fail --silent --show-error
+   http://ip-api.com/json` provides the initial `timezone`; failed or
+   unsupported detection falls back to `UTC`. The available values come from
+   `timedatectl list-timezones` and are presented as two side-by-side lists.
+   The first list contains `Africa`, `America`, `Antarctica`, `Arctic`, `Asia`,
+   `Atlantic`, `Australia`, `Europe`, `Indian`, `Pacific`, and the direct
+   `UTC` choice. This excludes legacy top-level aliases and the `Etc`
+   compatibility namespace. Selecting a geographic region enables the second
+   list of full timezone names such as `Asia/Shanghai`; selecting `UTC` dims
+   and disables the second list. Up/Down moves within a list, Right or Enter
+   enters the timezone list, Left returns to the region list, and Enter on a
+   concrete timezone (or on `UTC`) applies it and continues. Tab/Shift+Tab
+   traverses both lists and then the footer. Returning to the step restores
+   the saved timezone without repeating GeoIP detection. There is no manual
+   timezone text input.
 9. **User** — single user:
    - username validated `^[a-z_][a-z0-9_-]*$`
    - GECOS optional
