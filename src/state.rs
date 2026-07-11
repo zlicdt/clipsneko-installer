@@ -83,14 +83,43 @@ impl KernelChoice {
     }
 }
 
-/// Nvidia package chosen in step 7.
+/// NVIDIA package chosen in step 7.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum NvidiaChoice {
-    #[default]
     None,
     NvidiaOpen,
+    #[default]
     NvidiaOpenDkms,
     NvidiaOpenLts,
+}
+
+impl NvidiaChoice {
+    /// All NVIDIA choices in their UI display order.
+    pub const ALL: [Self; 4] = [
+        Self::None,
+        Self::NvidiaOpen,
+        Self::NvidiaOpenLts,
+        Self::NvidiaOpenDkms,
+    ];
+
+    /// Package added to pacstrap, or `None` when no NVIDIA driver is wanted.
+    pub const fn package_name(self) -> Option<&'static str> {
+        match self {
+            Self::None => None,
+            Self::NvidiaOpen => Some("nvidia-open"),
+            Self::NvidiaOpenDkms => Some("nvidia-open-dkms"),
+            Self::NvidiaOpenLts => Some("nvidia-open-lts"),
+        }
+    }
+
+    /// Whether this choice supports the selected kernel.
+    pub const fn is_compatible_with(self, kernel: KernelChoice) -> bool {
+        match self {
+            Self::None | Self::NvidiaOpenDkms => true,
+            Self::NvidiaOpen => matches!(kernel, KernelChoice::Linux),
+            Self::NvidiaOpenLts => matches!(kernel, KernelChoice::LinuxLts),
+        }
+    }
 }
 
 /// Non-secret user account info collected in step 9. The password lives in a

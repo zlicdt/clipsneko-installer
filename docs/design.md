@@ -108,6 +108,11 @@ Linear: Back/Next only, no per-item jump from the confirm page.
    `linux-zen-headers`, or `linux-hardened-headers`.
 7. **NVIDIA** — "no NVIDIA" OR one variant from the compatible matrix below
    (incompatible options disabled in the UI). Default: `nvidia-open-dkms`.
+   Disabled variants are dimmed, carry an "incompatible with selected kernel"
+   suffix, and are skipped by keyboard navigation. If a user returns to the
+   kernel step and makes the saved NVIDIA choice incompatible, entering the
+   NVIDIA step automatically resets it to the compatible default
+   `nvidia-open-dkms`.
 
    | kernel          | allowed NVIDIA packages                 |
    |-----------------|-----------------------------------------|

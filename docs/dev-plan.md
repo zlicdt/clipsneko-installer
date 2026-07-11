@@ -182,8 +182,11 @@ confirm screen can show a full summary.
   matching headers package for installation.
 - `src/steps/nvidia.rs` — "no NVIDIA" or one package from the current
   `nvidia-open` / `nvidia-open-lts` / `nvidia-open-dkms` matrix, filtered by
-  the chosen kernel (see `design.md` §4 step 7). Kernel headers are already an
-  unconditional part of the selected kernel's install package set.
+  the chosen kernel (see `design.md` §4 step 7). Incompatible choices remain
+  visible but dimmed and are skipped by navigation. A saved choice made
+  incompatible by changing the kernel resets to `nvidia-open-dkms` on entry.
+  Kernel headers are already an unconditional part of the selected kernel's
+  install package set.
 - `src/steps/timezone.rs` — `curl -s http://ip-api.com/json` → `timezone`
   field default; fallback UTC; manual override by typing `Region/City` or
   picking from `/usr/share/zoneinfo/`.

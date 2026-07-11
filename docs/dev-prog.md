@@ -18,7 +18,7 @@ it moves from "Not done" to "Done" and stays there.
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. The POT
-  and en/zh_CN catalogs contain the same 94 message IDs with no untranslated,
+  and en/zh_CN catalogs contain the same 103 message IDs with no untranslated,
   fuzzy, or obsolete entries. zh_TW support was removed because it had no
   catalog and is outside the locked language set.
 - UI language changes only `LC_MESSAGES` and remains independent of the target
@@ -96,16 +96,20 @@ it moves from "Not done" to "Done" and stays there.
   footer Next commit consistently; returning to the step restores the saved
   choice. Every kernel maps to its matching headers package, which M4b will
   always include in the dynamic pacstrap package set.
-- The current NVIDIA design uses `nvidia-open`, `nvidia-open-lts`, and
-  `nvidia-open-dkms`. Kernel headers are derived unconditionally by the kernel
-  choice rather than by NVIDIA selection. The documented NVIDIA default is
-  `nvidia-open-dkms`.
+- **NVIDIA step:** no-driver, `nvidia-open`, `nvidia-open-lts`, and
+  `nvidia-open-dkms` choices are implemented with the documented per-kernel
+  compatibility matrix. The default is `nvidia-open-dkms`; incompatible
+  choices remain visible with a dimmed translated suffix and are skipped by
+  navigation. Returning after a kernel change automatically resets an
+  incompatible saved choice to the DKMS default. NVIDIA contributes only its
+  selected package because kernel headers are derived unconditionally by the
+  kernel choice.
 - Password handoff is locked for M3/M4b: a non-Debug zeroizing `SecretString`
   will feed `<username>:<password>` only through `chpasswd` stdin, never command
   arguments, summaries, tracing, or logs, and is cleared immediately after use
   as well as on Drop.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (88 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (95 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -122,10 +126,10 @@ it moves from "Not done" to "Done" and stays there.
   output, protected Live media, responsive tables in both languages, role
   assignment, RAID profiles, and wipe dialogs still need an interactive
   multi-disk Live ISO/VM check.
-- **M3 selection and identity:** the kernel step still needs an interactive
-  bilingual Live ISO/VM check. NVIDIA, timezone, user, hostname, and
-  confirmation remain stubs; the documented NVIDIA matrix, password secret,
-  validation rules, GeoIP behavior, and final confirmation UI are not yet code.
+- **M3 selection and identity:** the kernel and NVIDIA steps still need an
+  interactive bilingual Live ISO/VM check. Timezone, user, hostname, and
+  confirmation remain stubs; the password secret, validation rules, GeoIP
+  behavior, and final confirmation UI are not yet code.
 - **M4a install stage:** btrfs format/RAID/subvolume and ESP format/mount logic
   is not implemented.
 - **M4b install stage:** packages.list loading, dynamic package derivation,

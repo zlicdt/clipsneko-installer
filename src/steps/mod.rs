@@ -9,6 +9,7 @@ mod keyboard;
 mod language;
 mod mirror;
 mod network;
+mod nvidia;
 
 use crate::state::InstallerState;
 use crate::t;
@@ -25,6 +26,7 @@ pub use keyboard::KeyboardStep;
 pub use language::LanguageStep;
 pub use mirror::MirrorStep;
 pub use network::NetworkStep;
+pub use nvidia::NvidiaStep;
 
 /// Result of a step handling a key.
 pub enum StepAction {
@@ -206,7 +208,7 @@ pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
         Box::new(MirrorStep::new()?),
         Box::new(DiskStep::new()),
         Box::new(KernelStep::new()),
-        Box::new(StubStep::new(StepId::Nvidia)),
+        Box::new(NvidiaStep::new()),
         Box::new(StubStep::new(StepId::Timezone)),
         Box::new(StubStep::new(StepId::User)),
         Box::new(StubStep::new(StepId::Hostname)),

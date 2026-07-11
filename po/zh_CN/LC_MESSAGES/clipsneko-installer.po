@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 08:07+0800\n"
+"POT-Creation-Date: 2026-07-11 10:04+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Simplified Chinese\n"
@@ -327,6 +327,38 @@ msgstr "✗ 未连接"
 msgid "network_step.title"
 msgstr "配置网络"
 
+#: src/steps/nvidia.rs:136
+msgid "nvidia_step.headers_hint"
+msgstr "所选内核对应的头文件包已自动包含。"
+
+#: src/steps/nvidia.rs:110
+msgid "nvidia_step.incompatible_suffix"
+msgstr "（与选定内核不兼容）"
+
+#: src/steps/nvidia.rs:137
+msgid "nvidia_step.key_hint"
+msgstr "上/下=选择  空格=应用  Enter=应用并继续"
+
+#: src/steps/nvidia.rs:185
+msgid "nvidia_step.option.none"
+msgstr "不安装 NVIDIA 驱动"
+
+#: src/steps/nvidia.rs:186
+msgid "nvidia_step.option.nvidia_open"
+msgstr "nvidia-open — 用于 linux 的开放内核模块"
+
+#: src/steps/nvidia.rs:187
+msgid "nvidia_step.option.nvidia_open_dkms"
+msgstr "nvidia-open-dkms — DKMS 开放内核模块（支持所有可选内核）"
+
+#: src/steps/nvidia.rs:188
+msgid "nvidia_step.option.nvidia_open_lts"
+msgstr "nvidia-open-lts — 用于 linux-lts 的开放内核模块"
+
+#: src/steps/nvidia.rs:130
+msgid "nvidia_step.title"
+msgstr "选择 NVIDIA 驱动"
+
 #: src/app.rs:293
 msgid "quit_dialog.hint"
 msgstr "左/右=选择  Enter=确认  Esc=取消"
@@ -335,58 +367,58 @@ msgstr "左/右=选择  Enter=确认  Esc=取消"
 msgid "quit_dialog.title"
 msgstr "确定要退出吗？"
 
-#: src/steps/mod.rs:77
+#: src/steps/mod.rs:79
 msgid "step.title.confirm_installation"
 msgstr "确认安装"
 
-#: src/steps/mod.rs:71
+#: src/steps/mod.rs:73
 msgid "step.title.disk_partitioning"
 msgstr "磁盘分区"
 
-#: src/steps/mod.rs:76
+#: src/steps/mod.rs:78
 msgid "step.title.hostname"
 msgstr "主机名"
 
-#: src/steps/mod.rs:78
+#: src/steps/mod.rs:80
 msgid "step.title.installing"
 msgstr "安装中"
 
-#: src/steps/mod.rs:72
+#: src/steps/mod.rs:74
 msgid "step.title.kernel"
 msgstr "内核"
 
-#: src/steps/mod.rs:68
+#: src/steps/mod.rs:70
 msgid "step.title.keyboard_layout"
 msgstr "键盘布局"
 
-#: src/steps/mod.rs:67
+#: src/steps/mod.rs:69
 msgid "step.title.language"
 msgstr "语言"
 
-#: src/steps/mod.rs:70
+#: src/steps/mod.rs:72
 msgid "step.title.mirror_list"
 msgstr "镜像列表"
 
-#: src/steps/mod.rs:69
+#: src/steps/mod.rs:71
 msgid "step.title.network"
 msgstr "网络"
 
-#: src/steps/mod.rs:73
+#: src/steps/mod.rs:75
 msgid "step.title.nvidia_driver"
 msgstr "NVIDIA 驱动"
 
-#: src/steps/mod.rs:74
+#: src/steps/mod.rs:76
 msgid "step.title.timezone"
 msgstr "时区"
 
-#: src/steps/mod.rs:75
+#: src/steps/mod.rs:77
 msgid "step.title.user_account"
 msgstr "用户账户"
 
-#: src/steps/mod.rs:184
+#: src/steps/mod.rs:186
 msgid "stub.body"
 msgstr "此步骤尚未实现。"
 
-#: src/steps/mod.rs:184
+#: src/steps/mod.rs:186
 msgid "stub.hint"
 msgstr "按 Enter 继续。"
