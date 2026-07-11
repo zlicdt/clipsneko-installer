@@ -1,13 +1,13 @@
-<div style="display: flex; align-items: center; gap: 5px; height: 100px">
-  <img src="public/clipsneko-logo.svg" alt="Description" style="width: 200px; height: 100px">
-  <h1>ClipsNeko Linux Installer</h1>
-</div>
+<h1>
+  <img src="./public/clipsneko-logo.svg" align="center" height="100" alt="项目Logo" />
+  ClipsNeko Linux Installer
+</h1>
 
-<p align="center"><b>
-  Our TUI installer.</b>
+<p>
+  <b>Our TUI installer.</b>
 </p>
 
-<p align="center">
+<p>
   <a href="https://github.com/zlicdt/clipsneko-installer/actions/workflows/build.yml"><img src="https://github.com/zlicdt/clipsneko-installer/actions/workflows/build.yml/badge.svg?branch=main" alt="CI status"></a>
 </p>
 
