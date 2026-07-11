@@ -450,7 +450,7 @@ msgstr "繁體中文"
 
 #: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr "上/下=選択  Space=切替  Enter=既定/次へ  [*]=既定"
+msgstr "↑/↓=選択  Space=切替  L=LANG  Enter=次へ  [*]=LANG"
 
 #: src/steps/language.rs:284
 msgid "language_step.hint_ui"

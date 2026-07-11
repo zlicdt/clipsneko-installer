@@ -37,6 +37,16 @@ fn renders_all_language_labels() {
 }
 
 #[test]
+fn english_target_hint_fits_the_minimum_terminal_width() {
+    set_language(UiLang::En).unwrap();
+    let hint = t!("language_step.hint_target");
+    assert!(
+        ratatui::text::Line::from(hint.as_str()).width() <= 60,
+        "target-locale hint is too wide: {hint:?}"
+    );
+}
+
+#[test]
 fn highlight_moves_on_down_without_wedging() {
     // Regression: the old `&self` + clone-state render lost ratatui's
     // offset bookkeeping and could wedge after a few Up/Down presses.
@@ -146,7 +156,38 @@ fn locale_toggle_keeps_one_selected_and_moves_a_removed_default() {
 }
 
 #[test]
-fn enter_sets_the_highlighted_locale_as_default_and_enables_it() {
+fn l_sets_the_highlighted_locale_as_default_and_enables_it() {
+    let mut step = LanguageStep::new().unwrap();
+    let mut state = InstallerState::default();
+    step.activate(&mut state).unwrap();
+    step.focus = LanguageFocus::TargetLocale;
+    let zh_index = step
+        .locales
+        .iter()
+        .position(|locale| locale == "zh_CN.UTF-8")
+        .unwrap();
+    step.locale_state.select(Some(zh_index));
+
+    let action = step
+        .handle_key(
+            crossterm::event::KeyEvent::new(
+                KeyCode::Char('l'),
+                crossterm::event::KeyModifiers::NONE,
+            ),
+            &mut state,
+        )
+        .unwrap();
+
+    assert!(matches!(action, StepAction::None));
+    assert_eq!(state.target_locale.as_deref(), Some("zh_CN.UTF-8"));
+    assert!(state
+        .target_locales
+        .iter()
+        .any(|locale| locale == "zh_CN.UTF-8"));
+}
+
+#[test]
+fn enter_advances_without_changing_locale_choices() {
     let mut step = LanguageStep::new().unwrap();
     let mut state = InstallerState::default();
     step.activate(&mut state).unwrap();
@@ -166,11 +207,8 @@ fn enter_sets_the_highlighted_locale_as_default_and_enables_it() {
         .unwrap();
 
     assert!(matches!(action, StepAction::Next));
-    assert_eq!(state.target_locale.as_deref(), Some("zh_CN.UTF-8"));
-    assert!(state
-        .target_locales
-        .iter()
-        .any(|locale| locale == "zh_CN.UTF-8"));
+    assert_eq!(state.target_locale.as_deref(), Some("en_US.UTF-8"));
+    assert_eq!(state.target_locales, ["en_US.UTF-8"]);
 }
 
 #[test]

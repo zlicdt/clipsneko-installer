@@ -443,7 +443,7 @@ msgstr "繁體中文"
 
 #: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr "Up/Down=Select  Space=Toggle  Enter=Default/Next  [*]=Default"
+msgstr "↑/↓=Move  Space=Toggle  L=LANG  Enter=Next  [*]=LANG"
 
 #: src/steps/language.rs:284
 msgid "language_step.hint_ui"

@@ -456,8 +456,7 @@ msgstr "繁體中文"
 
 #: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr ""
-"Auf/Ab=Auswahl  Leertaste=Umschalten  Enter=Standard/Weiter  [*]=Standard"
+msgstr "↑/↓=Wahl  Leer=Umschalten  L=LANG  Enter=Weiter  [*]=LANG"
 
 #: src/steps/language.rs:284
 msgid "language_step.hint_ui"

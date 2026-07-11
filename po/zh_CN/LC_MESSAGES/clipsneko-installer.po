@@ -439,7 +439,7 @@ msgstr "繁體中文"
 
 #: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr "上/下=选择  空格=勾选/取消  回车=默认/下一步  [*]=默认"
+msgstr "↑/↓=选择  空格=勾选/取消  L=LANG  回车=下一步  [*]=LANG"
 
 #: src/steps/language.rs:284
 msgid "language_step.hint_ui"

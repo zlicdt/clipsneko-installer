@@ -315,6 +315,12 @@ impl Step for LanguageStep {
                 }
                 StepAction::None
             }
+            KeyCode::Char('l') | KeyCode::Char('L')
+                if self.focus == LanguageFocus::TargetLocale =>
+            {
+                self.set_highlighted_as_default(state);
+                StepAction::None
+            }
             KeyCode::Enter => match self.focus {
                 LanguageFocus::UiLanguage => {
                     self.apply_ui_language(self.highlighted_ui(), state)?;
@@ -322,7 +328,7 @@ impl Step for LanguageStep {
                     StepAction::None
                 }
                 LanguageFocus::TargetLocale => {
-                    self.set_highlighted_as_default(state);
+                    self.store_locale_choices(state);
                     StepAction::Next
                 }
             },

@@ -62,8 +62,10 @@ online, and configure mirrors — everything required before any disk work.
   installer, and a multi-select list of every UTF-8 target locale parsed from
   locale.gen. Apply UI language live through `set_language()` and add its
   matching locale to the target set. Space toggles target locales but cannot
-  remove the last selection; Enter chooses the default `LANG`. Persist
-  `state.ui_lang`, `state.target_locales`, and `state.target_locale`.
+  remove the last selection; L enables the highlighted locale if necessary and
+  chooses it as the default `LANG`, while Enter advances without changing
+  locale choices. Persist `state.ui_lang`, `state.target_locales`, and
+  `state.target_locale`.
 - `src/steps/keyboard.rs` — list keymaps from `localectl list-keymaps`;
   `loadkeys` immediately on selection; persist `state.keymap`.
 - `src/steps/network.rs` — suspend ratatui, run `nmtui` full-screen, resume;

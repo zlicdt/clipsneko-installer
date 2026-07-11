@@ -445,7 +445,7 @@ msgstr "繁體中文"
 
 #: src/steps/language.rs:285
 msgid "language_step.hint_target"
-msgstr "위/아래=선택  Space=전환  Enter=기본값/다음  [*]=기본값"
+msgstr "↑/↓=선택  Space=전환  L=LANG  Enter=다음  [*]=LANG"
 
 #: src/steps/language.rs:284
 msgid "language_step.hint_ui"

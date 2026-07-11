@@ -65,12 +65,13 @@ not receive the focus style.
      the highlighted locale, but the last selected locale cannot be removed.
      If the default is removed while another selection remains, the next
      selected list item (wrapping at the end) becomes the default.
-   - Tab/Shift+Tab moves between the two lists and footer buttons. Enter on the
-     UI list applies it and moves to the target list; Enter on the target list
-     selects it if necessary, makes it the default `LANG`, and advances. The
-     enabled locale set and its default persist separately from `state.ui_lang`.
-     Locale/catalog failures are fatal Live ISO invariant failures, with no
-     language fallback.
+   - On the target-locale list, L selects the highlighted locale if necessary
+     and makes it the default `LANG`; Enter advances without changing the
+     enabled set or its default. Tab/Shift+Tab moves between the two lists and
+     footer buttons. Enter on the UI list applies it and moves to the target
+     list. The enabled locale set and its default persist separately from
+     `state.ui_lang`. Locale/catalog failures are fatal Live ISO invariant
+     failures, with no language fallback.
 2. **Keyboard** — list from `localectl list-keymaps`; `loadkeys` immediately;
    persisted to target `/etc/vconsole.conf`.
 3. **Network** — suspend ratatui, run `nmtui`; on return verify with

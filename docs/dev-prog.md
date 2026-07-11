@@ -74,10 +74,12 @@ it moves from "Not done" to "Done" and stays there.
   target locale. The target list contains every commented or enabled UTF-8
   entry in `/etc/locale.gen`, supports multiple bold-white selections, starts
   with `en_US.UTF-8`, and prevents removing the final selection. Space toggles
-  selection; Enter selects and records the default `LANG`. Removing the default
-  while another locale remains transfers the default to the next selected row.
-  Automatically added locales may be removed under the same rule. Re-entry,
-  Tab/Shift+Tab, Enter, and footer commit paths are covered.
+  selection; L enables the highlighted locale when needed and records it as the
+  default `LANG`, while Enter advances without changing locale choices.
+  Removing the default while another locale remains transfers the default to
+  the next selected row. Automatically added locales may be removed under the
+  same rule. Re-entry, Tab/Shift+Tab, L, Enter, and footer commit paths are
+  covered.
 - **Keyboard step:** keymaps and the active VC keymap come from `localectl`;
   Space/Enter/footer Next apply with `loadkeys`; missing or malformed invariant
   data is fatal; shared state and re-entry synchronization are implemented.
@@ -186,7 +188,7 @@ it moves from "Not done" to "Done" and stays there.
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (148 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (150 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
