@@ -2,7 +2,7 @@
 name = "clipsneko-installer"
 version = "0.1.0"
 edition = "2021"
-description = "Lightweight TUI installer for ClipsNeko Linux"
+description = "Installer for ClipsNeko Linux"
 license = "MIT"
 build = "build.rs"
 
