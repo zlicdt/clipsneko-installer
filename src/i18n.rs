@@ -15,6 +15,11 @@ const DOMAIN: &str = "clipsneko-installer";
 pub enum UiLang {
     En,
     ZhCn,
+    ZhTw,
+    Ja,
+    De,
+    Ko,
+    Ru,
 }
 
 impl UiLang {
@@ -23,6 +28,11 @@ impl UiLang {
         match self {
             UiLang::En => "en_US.UTF-8",
             UiLang::ZhCn => "zh_CN.UTF-8",
+            UiLang::ZhTw => "zh_TW.UTF-8",
+            UiLang::Ja => "ja_JP.UTF-8",
+            UiLang::De => "de_DE.UTF-8",
+            UiLang::Ko => "ko_KR.UTF-8",
+            UiLang::Ru => "ru_RU.UTF-8",
         }
     }
 
@@ -30,6 +40,11 @@ impl UiLang {
         match self {
             UiLang::En => "en",
             UiLang::ZhCn => "zh_CN",
+            UiLang::ZhTw => "zh_TW",
+            UiLang::Ja => "ja",
+            UiLang::De => "de",
+            UiLang::Ko => "ko",
+            UiLang::Ru => "ru",
         }
     }
 }
@@ -37,8 +52,8 @@ impl UiLang {
 /// Initialize gettext with the given UI language. Must be called once at
 /// startup; calling it again switches the active translation at runtime.
 ///
-/// The ClipsNeko ISO build is responsible for generating both
-/// `en_US.UTF-8` and `zh_CN.UTF-8` and installing both release catalogs.
+/// The ClipsNeko ISO build is responsible for generating every supported
+/// locale and installing every release catalog.
 /// Missing locale/catalog state is a fatal Live ISO invariant violation.
 pub fn set_language(lang: UiLang) -> Result<()> {
     // setlocale must succeed for gettext to pick the right .mo file.
@@ -79,4 +94,27 @@ macro_rules! t {
     ($s:literal) => {
         $crate::i18n::translate($s)
     };
+}
+
+#[cfg(test)]
+mod tests {
+    use super::UiLang;
+
+    #[test]
+    fn supported_languages_map_to_release_locales_and_catalogs() {
+        let expected = [
+            (UiLang::En, "en_US.UTF-8", "en"),
+            (UiLang::ZhCn, "zh_CN.UTF-8", "zh_CN"),
+            (UiLang::ZhTw, "zh_TW.UTF-8", "zh_TW"),
+            (UiLang::Ja, "ja_JP.UTF-8", "ja"),
+            (UiLang::De, "de_DE.UTF-8", "de"),
+            (UiLang::Ko, "ko_KR.UTF-8", "ko"),
+            (UiLang::Ru, "ru_RU.UTF-8", "ru"),
+        ];
+
+        for (language, locale, catalog) in expected {
+            assert_eq!(language.code(), locale);
+            assert_eq!(language.catalog_directory(), catalog);
+        }
+    }
 }

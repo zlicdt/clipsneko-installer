@@ -32,10 +32,11 @@ jobs:
 
       - name: Check translations
         run: |
-          msgfmt --check --check-header -o /dev/null po/en/LC_MESSAGES/clipsneko-installer.po
-          msgfmt --check --check-header -o /dev/null po/zh_CN/LC_MESSAGES/clipsneko-installer.po
-          msgcmp --use-fuzzy po/en/LC_MESSAGES/clipsneko-installer.po po/clipsneko-installer.pot
-          msgcmp --use-fuzzy po/zh_CN/LC_MESSAGES/clipsneko-installer.po po/clipsneko-installer.pot
+          for lang in en zh_CN zh_TW ja de ko ru; do
+            catalog="po/$lang/LC_MESSAGES/clipsneko-installer.po"
+            msgfmt --check --check-header -o /dev/null "$catalog"
+            msgcmp --use-fuzzy "$catalog" po/clipsneko-installer.pot
+          done
 
       - name: Build release
         run: cargo build --release

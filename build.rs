@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 const DOMAIN: &str = "clipsneko-installer";
-const LANGS: &[&str] = &["en", "zh_CN"];
+const LANGS: &[&str] = &["en", "zh_CN", "zh_TW", "ja", "de", "ko", "ru"];
 
 fn main() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is always set");

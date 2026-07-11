@@ -1,4 +1,4 @@
-# ClipsNeko Linux Installer — translation template.
+# ClipsNeko Linux Installer — Russian translation.
 # Copyright (C) 2026 ClipsNeko Linux
 # This file is distributed under the same license as the clipsneko-installer package.
 #
@@ -7,680 +7,693 @@ msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-11 13:53+0800\n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: \n"
+"PO-Revision-Date: 2026-07-11 00:00+0800\n"
+"Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/app.rs:219
 msgid "app.step_indicator"
-msgstr ""
+msgstr "Шаг"
 
 #: src/app.rs:216
 msgid "app.title"
-msgstr ""
+msgstr "Установщик ClipsNeko Linux"
 
 #: src/app.rs:260
 msgid "button.back"
-msgstr ""
+msgstr "Назад"
 
 #: src/app.rs:294 src/steps/confirm.rs:79
 msgid "button.cancel"
-msgstr ""
+msgstr "Отмена"
 
 #: src/app.rs:274
 msgid "button.next"
-msgstr ""
+msgstr "Далее"
 
 #: src/app.rs:295
 msgid "button.quit"
-msgstr ""
+msgstr "Выйти"
 
 #: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
 #: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
 #: src/steps/confirm.rs:345 src/steps/network.rs:111
 msgid "common.not_available"
-msgstr ""
+msgstr "Недоступно"
 
 #: src/steps/confirm.rs:283 src/steps/confirm.rs:289
 msgid "confirm_step.affected_disk"
-msgstr ""
+msgstr "Затрагиваемый диск"
 
 #: src/steps/confirm.rs:325
 msgid "confirm_step.data_profile"
-msgstr ""
+msgstr "Профиль данных"
 
 #: src/steps/confirm.rs:76
 msgid "confirm_step.dialog.body"
 msgstr ""
+"Указанные целевые разделы будут отформатированы; ESP также может быть "
+"отформатирован. Продолжить установку?"
 
 #: src/steps/confirm.rs:87
 msgid "confirm_step.dialog.hint"
-msgstr ""
+msgstr "Влево/Вправо=Выбор  Enter=Подтвердить  Esc=Отмена"
 
 #: src/steps/confirm.rs:82
 msgid "confirm_step.dialog.install"
-msgstr ""
+msgstr "Установить"
 
 #: src/steps/confirm.rs:93
 msgid "confirm_step.dialog.title"
-msgstr ""
+msgstr "Подтверждение установки"
 
 #: src/steps/confirm.rs:296
 msgid "confirm_step.esp"
-msgstr ""
+msgstr "Системный раздел EFI"
 
 #: src/steps/confirm.rs:148
 msgid "confirm_step.hint"
-msgstr ""
+msgstr "Вверх/Вниз=Прокрутка  Enter=Проверить установку"
 
 #: src/steps/confirm.rs:262
 msgid "confirm_step.hostname"
-msgstr ""
+msgstr "Имя хоста"
 
 #: src/steps/confirm.rs:254
 msgid "confirm_step.kernel"
-msgstr ""
+msgstr "Ядро"
 
 #: src/steps/confirm.rs:250
 msgid "confirm_step.keyboard"
-msgstr ""
+msgstr "Клавиатура"
 
 #: src/steps/confirm.rs:246
 msgid "confirm_step.locale"
-msgstr ""
+msgstr "Целевая локаль"
 
 #: src/steps/confirm.rs:352
 msgid "confirm_step.no_nvidia"
-msgstr ""
+msgstr "Без драйвера NVIDIA"
 
 #: src/steps/confirm.rs:260
 msgid "confirm_step.nvidia"
-msgstr ""
+msgstr "Драйвер NVIDIA"
 
 #: src/steps/confirm.rs:142
 msgid "confirm_step.summary_title"
-msgstr ""
+msgstr "Сводка установки"
 
 #: src/steps/confirm.rs:307 src/steps/confirm.rs:313
 msgid "confirm_step.target_partition"
-msgstr ""
+msgstr "Цель установки"
 
 #: src/steps/confirm.rs:266
 msgid "confirm_step.timezone"
-msgstr ""
+msgstr "Часовой пояс"
 
 #: src/steps/confirm.rs:270
 msgid "confirm_step.username"
-msgstr ""
+msgstr "Имя пользователя"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
 msgid "disk_step.column_device"
-msgstr ""
+msgstr "Устройство"
 
 #: src/steps/disk.rs:445
 msgid "disk_step.column_filesystem"
-msgstr ""
+msgstr "Файловая система"
 
 #: src/steps/disk.rs:446
 msgid "disk_step.column_label"
-msgstr ""
+msgstr "Метка"
 
 #: src/steps/disk.rs:367
 msgid "disk_step.column_model"
-msgstr ""
+msgstr "Модель"
 
 #: src/steps/disk.rs:447
 msgid "disk_step.column_role"
-msgstr ""
+msgstr "Роль"
 
 #: src/steps/disk.rs:369 src/steps/disk.rs:444
 msgid "disk_step.column_size"
-msgstr ""
+msgstr "Размер"
 
 #: src/steps/disk.rs:370
 msgid "disk_step.column_status"
-msgstr ""
+msgstr "Состояние"
 
 #: src/steps/disk.rs:368
 msgid "disk_step.column_transport"
-msgstr ""
+msgstr "Подключение"
 
 #: src/steps/disk.rs:314
 msgid "disk_step.error_capacity"
-msgstr ""
+msgstr "Доступная ёмкость цели для выбранного профиля должна превышать 20 ГиБ."
 
 #: src/steps/disk.rs:542
 msgid "disk_step.error_hint"
-msgstr ""
+msgstr "Esc/Enter — закрыть."
 
 #: src/steps/disk.rs:255
 msgid "disk_step.error_invalid_esp"
-msgstr ""
+msgstr "Этот раздел не является системным разделом EFI на GPT."
 
 #: src/steps/disk.rs:125
 msgid "disk_step.error_partprobe"
 msgstr ""
+"partprobe не смог обновить таблицу разделов. Снова откройте cfdisk и "
+"повторите попытку."
 
 #: src/steps/disk.rs:223
 msgid "disk_step.error_protected_part"
 msgstr ""
+"Этот раздел находится на защищённом Live-носителе или носителе только для "
+"чтения."
 
 #: src/steps/disk.rs:547
 msgid "disk_step.error_title"
-msgstr ""
+msgstr "Ошибка настройки диска"
 
 #: src/steps/disk.rs:800
 msgid "disk_step.hint_disk"
-msgstr ""
+msgstr "Enter=cfdisk  Вверх/Вниз=Выбор  Tab=Фокус"
 
 #: src/steps/disk.rs:801
 msgid "disk_step.hint_parts"
-msgstr ""
+msgstr "Enter=Роль  R=RAID  Вверх/Вниз=Выбор  Tab=Фокус"
 
 #: src/steps/disk.rs:393
 msgid "disk_step.list_title_disk"
-msgstr ""
+msgstr "Выберите диск для разметки"
 
 #: src/steps/disk.rs:470
 msgid "disk_step.list_title_parts"
-msgstr ""
+msgstr "Назначьте роли разделов"
 
 #: src/steps/disk.rs:524
 msgid "disk_step.raid_dialog.hint"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Enter=Подтвердить  Esc=Отмена"
 
 #: src/steps/disk.rs:511
 msgid "disk_step.raid_dialog.raid0"
-msgstr ""
+msgstr "RAID0 (ёмкость)"
 
 #: src/steps/disk.rs:512
 msgid "disk_step.raid_dialog.raid1"
-msgstr ""
+msgstr "RAID1 (избыточность)"
 
 #: src/steps/disk.rs:529
 msgid "disk_step.raid_dialog.title"
-msgstr ""
+msgstr "Выбор профиля данных btrfs"
 
 #: src/steps/disk.rs:809
 msgid "disk_step.raid_label"
-msgstr ""
+msgstr "Профиль данных"
 
 #: src/steps/disk.rs:500
 msgid "disk_step.role_dialog.hint"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Enter=Подтвердить  Esc=Отмена"
 
 #: src/steps/disk.rs:481
 msgid "disk_step.role_dialog.title"
-msgstr ""
+msgstr "Назначить роль для"
 
 #: src/steps/disk.rs:420 src/steps/disk.rs:607
 msgid "disk_step.role_esp"
-msgstr ""
+msgstr "ESP"
 
 #: src/steps/disk.rs:418
 msgid "disk_step.role_protected"
-msgstr ""
+msgstr "Защищён"
 
 #: src/steps/disk.rs:422 src/steps/disk.rs:608
 msgid "disk_step.role_target"
-msgstr ""
+msgstr "Цель установки"
 
 #: src/steps/disk.rs:424 src/steps/disk.rs:609
 msgid "disk_step.role_unassigned"
-msgstr ""
+msgstr "Не назначен"
 
 #: src/steps/disk.rs:601
 msgid "disk_step.status_available"
-msgstr ""
+msgstr "Доступен"
 
 #: src/steps/disk.rs:595
 msgid "disk_step.status_live_media"
-msgstr ""
+msgstr "Live-носитель"
 
 #: src/steps/disk.rs:597
 msgid "disk_step.status_read_only"
-msgstr ""
+msgstr "Только чтение"
 
 #: src/steps/disk.rs:599
 msgid "disk_step.status_removable"
-msgstr ""
+msgstr "Съёмный"
 
 #: src/steps/disk.rs:662
 msgid "disk_step.wipe_dialog.esp_prefix"
-msgstr ""
+msgstr "ESP (FAT32):"
 
 #: src/steps/disk.rs:566
 msgid "disk_step.wipe_dialog.hint"
-msgstr ""
+msgstr "Enter=Продолжить  Esc=Отмена"
 
 #: src/steps/disk.rs:656
 msgid "disk_step.wipe_dialog.target_prefix"
-msgstr ""
+msgstr "Цель установки (btrfs):"
 
 #: src/steps/disk.rs:559
 msgid "disk_step.wipe_dialog.title"
-msgstr ""
+msgstr "Эти разделы будут отформатированы; все данные на них будут утеряны:"
 
 #: src/steps/disk.rs:571
 msgid "disk_step.wipe_dialog.window_title"
-msgstr ""
+msgstr "Предупреждение: потеря данных"
 
 #: src/app.rs:266
 msgid "footer.hint"
-msgstr ""
+msgstr "Tab=Фокус  Ctrl+C=Выйти"
 
 #: src/steps/hostname.rs:37
 msgid "hostname_step.error_invalid"
-msgstr ""
+msgstr "Используйте 1–63 ASCII-буквы, цифры или дефисы внутри имени."
 
 #: src/steps/hostname.rs:34
 msgid "hostname_step.error_required"
-msgstr ""
+msgstr "Введите имя хоста."
 
 #: src/steps/hostname.rs:87
 msgid "hostname_step.form_title"
-msgstr ""
+msgstr "Имя хоста системы"
 
 #: src/steps/hostname.rs:126
 msgid "hostname_step.hint"
-msgstr ""
+msgstr "1–63 ASCII-буквы, цифры или дефисы внутри имени"
 
 #: src/steps/hostname.rs:111
 msgid "hostname_step.hostname"
-msgstr ""
+msgstr "Имя хоста"
 
 #: src/steps/hostname.rs:39
 msgid "hostname_step.ready"
-msgstr ""
+msgstr "Имя хоста допустимо."
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
 msgstr ""
+"Установка остановлена. Текущие точки монтирования останутся без изменений."
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
-msgstr ""
+msgstr "Вернуться"
 
 #: src/steps/install.rs:176
 msgid "install_step.failure.title"
-msgstr ""
+msgstr "Сбой установки"
 
 #: src/steps/install.rs:189
 msgid "install_step.failure.view_log"
-msgstr ""
+msgstr "Просмотреть журнал"
 
 #: src/steps/install.rs:323
 msgid "install_step.log.title"
-msgstr ""
+msgstr "Журнал установки (Esc/Enter — вернуться)"
 
 #: src/steps/install.rs:138
 msgid "install_step.progress.bootloader"
-msgstr ""
+msgstr "Установка загрузчика"
 
 #: src/steps/install.rs:132
 msgid "install_step.progress.formatting"
-msgstr ""
+msgstr "Форматирование целевых файловых систем"
 
 #: src/steps/install.rs:135
 msgid "install_step.progress.fstab"
-msgstr ""
+msgstr "Создание таблицы файловых систем"
 
 #: src/steps/install.rs:137
 msgid "install_step.progress.initramfs"
-msgstr ""
+msgstr "Создание образов initramfs"
 
 #: src/steps/install.rs:133
 msgid "install_step.progress.mounting"
-msgstr ""
+msgstr "Создание и монтирование подтомов"
 
 #: src/steps/install.rs:134
 msgid "install_step.progress.packages"
-msgstr ""
+msgstr "Установка системных пакетов"
 
 #: src/steps/install.rs:144
 msgid "install_step.progress.rebooting"
-msgstr ""
+msgstr "Отмонтирование цели и перезагрузка"
 
 #: src/steps/install.rs:136
 msgid "install_step.progress.target_config"
-msgstr ""
+msgstr "Настройка установленной системы"
 
 #: src/steps/install.rs:155
 msgid "install_step.progress.wait"
-msgstr ""
+msgstr "Идёт установка. Не выключайте и не перезагружайте компьютер."
 
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
 msgstr ""
+"Установка завершена. Перезагрузить сейчас? Вариант «Не сейчас» оставит /mnt "
+"смонтированным."
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"
-msgstr ""
+msgstr "Не сейчас"
 
 #: src/steps/install.rs:224
 msgid "install_step.success.reboot"
-msgstr ""
+msgstr "Перезагрузить"
 
 #: src/steps/install.rs:216
 msgid "install_step.success.title"
-msgstr ""
+msgstr "Установка завершена"
 
 #: src/steps/kernel.rs:106
 msgid "kernel_step.headers_hint"
-msgstr ""
+msgstr "Соответствующие заголовки ядра устанавливаются автоматически."
 
 #: src/steps/kernel.rs:107
 msgid "kernel_step.key_hint"
-msgstr ""
+msgstr "Space=Выбор  Enter=Далее"
 
 #: src/steps/kernel.rs:159
 msgid "kernel_step.option.linux"
-msgstr ""
+msgstr "linux — стандартное ядро"
 
 #: src/steps/kernel.rs:162
 msgid "kernel_step.option.linux_hardened"
-msgstr ""
+msgstr "linux-hardened — усиленное для безопасности ядро"
 
 #: src/steps/kernel.rs:160
 msgid "kernel_step.option.linux_lts"
-msgstr ""
+msgstr "linux-lts — ядро с долгосрочной поддержкой"
 
 #: src/steps/kernel.rs:161
 msgid "kernel_step.option.linux_zen"
-msgstr ""
+msgstr "linux-zen — ядро, оптимизированное для рабочего стола (по умолчанию)"
 
 #: src/steps/kernel.rs:99
 msgid "kernel_step.title"
-msgstr ""
+msgstr "Выбор ядра"
 
 #: src/steps/keyboard.rs:174
 msgid "keyboard_step.hint"
-msgstr ""
+msgstr "Space=Выбор  Enter=Далее"
 
 #: src/steps/keyboard.rs:167
 msgid "keyboard_step.title"
-msgstr ""
+msgstr "Выбор раскладки клавиатуры"
 
 #: src/steps/language.rs:35
 msgid "language.name.english"
-msgstr ""
+msgstr "English"
 
 #: src/steps/language.rs:39
 msgid "language.name.german"
-msgstr ""
+msgstr "Deutsch"
 
 #: src/steps/language.rs:38
 msgid "language.name.japanese"
-msgstr ""
+msgstr "日本語"
 
 #: src/steps/language.rs:40
 msgid "language.name.korean"
-msgstr ""
+msgstr "한국어"
 
 #: src/steps/language.rs:41
 msgid "language.name.russian"
-msgstr ""
+msgstr "Русский"
 
 #: src/steps/language.rs:36
 msgid "language.name.simplified_chinese"
-msgstr ""
+msgstr "简体中文"
 
 #: src/steps/language.rs:37
 msgid "language.name.traditional_chinese"
-msgstr ""
+msgstr "繁體中文"
 
 #: src/steps/language.rs:210
 msgid "language_step.hint_target"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Space=Применить  Enter=Далее  Shift+Tab=UI"
 
 #: src/steps/language.rs:209
 msgid "language_step.hint_ui"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Space=Применить  Enter/Tab=Целевая локаль"
 
 #: src/steps/language.rs:202
 msgid "language_step.target_title"
-msgstr ""
+msgstr "Локаль целевой системы"
 
 #: src/steps/language.rs:179
 msgid "language_step.ui_title"
-msgstr ""
+msgstr "Язык установщика"
 
 #: src/steps/mirror.rs:365
 msgid "mirror_step.error_hint"
-msgstr ""
+msgstr "Esc/Enter — закрыть и повторить."
 
 #: src/steps/mirror.rs:126
 msgid "mirror_step.error_invalid_url"
 msgstr ""
+"Неверный URL сервера. Он должен начинаться с http://, https://, ftp:// или "
+"rsync://."
 
 #: src/steps/mirror.rs:164
 msgid "mirror_step.error_pacman"
-msgstr ""
+msgstr "Сбой pacman -Sy. Проверьте сеть или выберите другое зеркало."
 
 #: src/steps/mirror.rs:371
 msgid "mirror_step.error_title"
-msgstr ""
+msgstr "Проверка не пройдена"
 
 #: src/steps/mirror.rs:262
 msgid "mirror_step.hint_input"
-msgstr ""
+msgstr "Ввод URL  Shift+Tab=Регионы  Tab=Кнопки  Enter=Применить"
 
 #: src/steps/mirror.rs:260
 msgid "mirror_step.hint_list"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Tab=Ввод  Enter=Применить"
 
 #: src/steps/mirror.rs:237
 msgid "mirror_step.input_label"
-msgstr ""
+msgstr "Сервер"
 
 #: src/steps/mirror.rs:252
 msgid "mirror_step.input_title"
-msgstr ""
+msgstr "Зеркало, заданное вручную"
 
 #: src/steps/mirror.rs:227
 msgid "mirror_step.list_title"
-msgstr ""
+msgstr "Выбор региона"
 
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
-msgstr ""
+msgstr "Enter=Далее  N=nmtui  R=Повторная проверка"
 
 #: src/steps/network.rs:106
 msgid "network_step.hint_disconnected"
-msgstr ""
+msgstr "Enter=nmtui  R=Повторная проверка"
 
 #: src/steps/network.rs:126
 msgid "network_step.label_address"
-msgstr ""
+msgstr "Адрес"
 
 #: src/steps/network.rs:131
 msgid "network_step.label_gateway"
-msgstr ""
+msgstr "Шлюз"
 
 #: src/steps/network.rs:116
 msgid "network_step.label_interface"
-msgstr ""
+msgstr "Интерфейс"
 
 #: src/steps/network.rs:112
 msgid "network_step.status_connected"
-msgstr ""
+msgstr "✓ Подключено"
 
 #: src/steps/network.rs:135
 msgid "network_step.status_disconnected"
-msgstr ""
+msgstr "✗ Нет подключения"
 
 #: src/steps/network.rs:141
 msgid "network_step.title"
-msgstr ""
+msgstr "Настройка сети"
 
 #: src/steps/nvidia.rs:138
 msgid "nvidia_step.headers_hint"
-msgstr ""
+msgstr "Соответствующие заголовки ядра уже включены."
 
 #: src/steps/nvidia.rs:111
 msgid "nvidia_step.incompatible_suffix"
-msgstr ""
+msgstr "(несовместимо с выбранным ядром)"
 
 #: src/steps/nvidia.rs:139
 msgid "nvidia_step.key_hint"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Space=Применить  Enter=Применить и продолжить"
 
 #: src/steps/nvidia.rs:187
 msgid "nvidia_step.option.none"
-msgstr ""
+msgstr "Без драйвера NVIDIA"
 
 #: src/steps/nvidia.rs:188
 msgid "nvidia_step.option.nvidia_open"
-msgstr ""
+msgstr "nvidia-open — открытые модули ядра для linux"
 
 #: src/steps/nvidia.rs:189
 msgid "nvidia_step.option.nvidia_open_dkms"
-msgstr ""
+msgstr "nvidia-open-dkms — открытые DKMS-модули ядра (все поддерживаемые ядра)"
 
 #: src/steps/nvidia.rs:190
 msgid "nvidia_step.option.nvidia_open_lts"
-msgstr ""
+msgstr "nvidia-open-lts — открытые модули ядра для linux-lts"
 
 #: src/steps/nvidia.rs:131
 msgid "nvidia_step.title"
-msgstr ""
+msgstr "Выбор драйвера NVIDIA"
 
 #: src/app.rs:302
 msgid "quit_dialog.hint"
-msgstr ""
+msgstr "Влево/Вправо=Выбор  Enter=Подтвердить  Esc=Отмена"
 
 #: src/app.rs:298
 msgid "quit_dialog.title"
-msgstr ""
+msgstr "Вы действительно хотите выйти?"
 
 #: src/steps/mod.rs:85
 msgid "step.title.confirm_installation"
-msgstr ""
+msgstr "Подтверждение установки"
 
 #: src/steps/mod.rs:79
 msgid "step.title.disk_partitioning"
-msgstr ""
+msgstr "Разметка диска"
 
 #: src/steps/mod.rs:84
 msgid "step.title.hostname"
-msgstr ""
+msgstr "Имя хоста"
 
 #: src/steps/mod.rs:86
 msgid "step.title.installing"
-msgstr ""
+msgstr "Установка"
 
 #: src/steps/mod.rs:80
 msgid "step.title.kernel"
-msgstr ""
+msgstr "Ядро"
 
 #: src/steps/mod.rs:76
 msgid "step.title.keyboard_layout"
-msgstr ""
+msgstr "Раскладка клавиатуры"
 
 #: src/steps/mod.rs:75
 msgid "step.title.language"
-msgstr ""
+msgstr "Язык"
 
 #: src/steps/mod.rs:78
 msgid "step.title.mirror_list"
-msgstr ""
+msgstr "Список зеркал"
 
 #: src/steps/mod.rs:77
 msgid "step.title.network"
-msgstr ""
+msgstr "Сеть"
 
 #: src/steps/mod.rs:81
 msgid "step.title.nvidia_driver"
-msgstr ""
+msgstr "Драйвер NVIDIA"
 
 #: src/steps/mod.rs:82
 msgid "step.title.timezone"
-msgstr ""
+msgstr "Часовой пояс"
 
 #: src/steps/mod.rs:83
 msgid "step.title.user_account"
-msgstr ""
+msgstr "Учётная запись"
 
 #: src/steps/timezone.rs:280
 msgid "timezone_step.hint_region"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Вправо/Enter=Часовые пояса  Tab=Следующий элемент"
 
 #: src/steps/timezone.rs:279
 msgid "timezone_step.hint_utc"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Enter=Применить UTC и продолжить  Tab=Кнопки"
 
 #: src/steps/timezone.rs:281
 msgid "timezone_step.hint_zone"
-msgstr ""
+msgstr "Вверх/Вниз=Выбор  Влево=Регионы  Enter=Применить и продолжить"
 
 #: src/steps/timezone.rs:234
 msgid "timezone_step.region_title"
-msgstr ""
+msgstr "Регион"
 
 #: src/steps/timezone.rs:242
 msgid "timezone_step.utc_direct"
-msgstr ""
+msgstr "(не используется для UTC)"
 
 #: src/steps/timezone.rs:271
 msgid "timezone_step.zone_title"
-msgstr ""
+msgstr "Часовой пояс"
 
 #: src/steps/user.rs:215
 msgid "user_step.confirm_password"
-msgstr ""
+msgstr "Подтверждение пароля"
 
 #: src/steps/user.rs:72
 msgid "user_step.error_password_mismatch"
-msgstr ""
+msgstr "Пароли не совпадают."
 
 #: src/steps/user.rs:69
 msgid "user_step.error_password_required"
-msgstr ""
+msgstr "Пароль не может быть пустым."
 
 #: src/steps/user.rs:66
 msgid "user_step.error_username_invalid"
 msgstr ""
+"Используйте строчные буквы, цифры, знаки подчёркивания и дефисы; начните с "
+"буквы или знака подчёркивания."
 
 #: src/steps/user.rs:63
 msgid "user_step.error_username_required"
-msgstr ""
+msgstr "Введите имя пользователя."
 
 #: src/steps/user.rs:181
 msgid "user_step.form_title"
-msgstr ""
+msgstr "Данные учётной записи"
 
 #: src/steps/user.rs:207
 msgid "user_step.password"
-msgstr ""
+msgstr "Пароль"
 
 #: src/steps/user.rs:74
 msgid "user_step.ready"
-msgstr ""
+msgstr "Данные учётной записи допустимы."
 
 #: src/steps/user.rs:225
 msgid "user_step.strength"
-msgstr ""
+msgstr "Стойкость пароля"
 
 #: src/steps/user.rs:124
 msgid "user_step.strength_fair"
-msgstr ""
+msgstr "Средний"
 
 #: src/steps/user.rs:125
 msgid "user_step.strength_good"
-msgstr ""
+msgstr "Хороший"
 
 #: src/steps/user.rs:126
 msgid "user_step.strength_strong"
-msgstr ""
+msgstr "Сильный"
 
 #: src/steps/user.rs:123
 msgid "user_step.strength_weak"
-msgstr ""
+msgstr "Слабый"
 
 #: src/steps/user.rs:199
 msgid "user_step.username"
-msgstr ""
+msgstr "Имя пользователя"

@@ -57,8 +57,9 @@ online, and configure mirrors — everything required before any disk work.
 
 ### Deliverables
 
-- `src/steps/language.rs` — two independent lists: `UiLang::En` / `UiLang::ZhCn`
-  for the installer, and every UTF-8 target locale parsed from locale.gen.
+- `src/steps/language.rs` — two independent lists: the seven supported UI
+  languages (`en`, `zh_CN`, `zh_TW`, `ja`, `de`, `ko`, and `ru`) for the
+  installer, and every UTF-8 target locale parsed from locale.gen.
   Apply UI language live through `set_language()`; persist `state.ui_lang` and
   `state.target_locale` independently.
 - `src/steps/keyboard.rs` — list keymaps from `localectl list-keymaps`;
@@ -88,9 +89,9 @@ online, and configure mirrors — everything required before any disk work.
 
 ### Acceptance
 
-- Language picker switches the whole UI between English and 简体中文 live;
-  the independent target-locale picker defaults to `en_US.UTF-8`; the zh_CN
-  `.mo` is visually verified.
+- Language picker switches the whole UI live among all seven supported
+  languages; the independent target-locale picker defaults to `en_US.UTF-8`;
+  every release `.mo` is visually verified.
 - Keyboard list loads from `localectl`; selecting one runs `loadkeys` and
   the effect is visible in the next text input.
 - `nmtui` opens full-screen, returns to the wizard, and the connectivity

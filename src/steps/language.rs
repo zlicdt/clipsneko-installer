@@ -13,7 +13,15 @@ use ratatui::style::{Modifier, Style};
 use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
-const ALL_LANGS: [UiLang; 2] = [UiLang::En, UiLang::ZhCn];
+const ALL_LANGS: [UiLang; 7] = [
+    UiLang::En,
+    UiLang::ZhCn,
+    UiLang::ZhTw,
+    UiLang::Ja,
+    UiLang::De,
+    UiLang::Ko,
+    UiLang::Ru,
+];
 const DEFAULT_TARGET_LOCALE: &str = "en_US.UTF-8";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -26,6 +34,11 @@ fn language_label(lang: UiLang) -> String {
     match lang {
         UiLang::En => t!("language.name.english"),
         UiLang::ZhCn => t!("language.name.simplified_chinese"),
+        UiLang::ZhTw => t!("language.name.traditional_chinese"),
+        UiLang::Ja => t!("language.name.japanese"),
+        UiLang::De => t!("language.name.german"),
+        UiLang::Ko => t!("language.name.korean"),
+        UiLang::Ru => t!("language.name.russian"),
     }
 }
 

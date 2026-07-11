@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 13:34+0800\n"
+"POT-Creation-Date: 2026-07-11 13:53+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
 "Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
 "Language-Team: Simplified Chinese\n"
@@ -405,27 +405,47 @@ msgstr "Space=选择  Enter=下一步"
 msgid "keyboard_step.title"
 msgstr "选择键盘布局"
 
-#: src/steps/language.rs:27
+#: src/steps/language.rs:35
 msgid "language.name.english"
 msgstr "English"
 
-#: src/steps/language.rs:28
+#: src/steps/language.rs:39
+msgid "language.name.german"
+msgstr "Deutsch"
+
+#: src/steps/language.rs:38
+msgid "language.name.japanese"
+msgstr "日本語"
+
+#: src/steps/language.rs:40
+msgid "language.name.korean"
+msgstr "한국어"
+
+#: src/steps/language.rs:41
+msgid "language.name.russian"
+msgstr "Русский"
+
+#: src/steps/language.rs:36
 msgid "language.name.simplified_chinese"
 msgstr "简体中文"
 
-#: src/steps/language.rs:197
+#: src/steps/language.rs:37
+msgid "language.name.traditional_chinese"
+msgstr "繁體中文"
+
+#: src/steps/language.rs:210
 msgid "language_step.hint_target"
 msgstr "上/下=选择  Space=应用  Enter=下一步  Shift+Tab=界面语言"
 
-#: src/steps/language.rs:196
+#: src/steps/language.rs:209
 msgid "language_step.hint_ui"
 msgstr "上/下=选择  Space=应用  Enter/Tab=目标系统"
 
-#: src/steps/language.rs:189
+#: src/steps/language.rs:202
 msgid "language_step.target_title"
 msgstr "目标系统区域设置"
 
-#: src/steps/language.rs:166
+#: src/steps/language.rs:179
 msgid "language_step.ui_title"
 msgstr "安装程序语言"
 

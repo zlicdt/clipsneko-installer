@@ -12,7 +12,8 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
 - Rust (Edition 2021)
 - TUI: `ratatui` + `crossterm`
 - i18n: `gettext-rs` (binds to system libgettext), `.po/.mo` workflow; `en` is the
-  source/POT language, `zh_CN` the first translation.
+  source/POT language. Supported UI languages are `en`, `zh_CN`, `zh_TW`, `ja`,
+  `de`, `ko`, and `ru`.
 - Subprocess: `std::process::Command` — always shell out to existing tools, never
   reimplement. Commands needing root go through `util::process::privileged_command()`
   (prepends `sudo` when euid != 0; see `design.md` §9).
@@ -32,7 +33,7 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
   **English**.
 - TUI strings are **never hardcoded** — every user-facing string goes through
   the `t!()` macro (backed by gettext).
-- The installer UI language (en/zh_CN) is independent of the target system's
+- The installer UI language is independent of the target system's
   locale.
 
 ## 4. Don't reinvent wheels
@@ -57,10 +58,9 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
 
 - Add a UI string → wrap in `t!(...)` at the call site.
 - After adding/changing strings: regenerate the POT (`xgettext` or the project's
-  script), then update `po/en/LC_MESSAGES/clipsneko-installer.po` (identity) and
-  `po/zh_CN/LC_MESSAGES/clipsneko-installer.po` (translation).
-- Never leave a UI string untranslated in `zh_CN` unless intentionally marked
-  fuzzy.
+  script), then update the English identity catalog and every translation.
+- Never leave a UI string untranslated in a supported catalog unless
+  intentionally marked fuzzy.
 
 ## 7. Progress logging (mandatory)
 

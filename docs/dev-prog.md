@@ -17,10 +17,11 @@ it moves from "Not done" to "Done" and stays there.
 - Cargo scaffolding, the release profile, `.gitignore`, CI, and build-time
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
-- i18n uses stable dot-separated IDs and a literal-only `t!()` macro. The POT
-  and en/zh_CN catalogs contain the same 162 message IDs with no untranslated,
-  fuzzy, or obsolete entries. zh_TW support was removed because it had no
-  catalog and is outside the locked language set.
+- i18n uses stable dot-separated IDs and a literal-only `t!()` macro. English,
+  Simplified Chinese, Traditional Chinese, Japanese, German, Korean, and
+  Russian are available in the language picker. The POT and all seven catalogs
+  contain the same 167 message IDs with no untranslated, fuzzy, or obsolete
+  entries. CI and build-time MO generation cover every supported catalog.
 - UI language changes only `LC_MESSAGES` and remains independent of the target
   system locale. Debug builds load generated catalogs from OUT_DIR; release
   builds use the GNU-standard `/usr/share/locale` path without a runtime
@@ -174,25 +175,26 @@ it moves from "Not done" to "Done" and stays there.
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (142 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (143 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
 
-- **M1 runtime acceptance:** the two languages and target-locale list, keyboard
-  changes, nmtui return path, mirror rewrite, and release catalogs still need an
-  interactive check on the actual ClipsNeko Live ISO or a matching VM. The
-  packaging must install `config/packages.list` and both MO catalogs at their
-  documented system paths.
+- **M1 runtime acceptance:** all seven UI languages and the target-locale list,
+  keyboard changes, nmtui return path, mirror rewrite, and release catalogs
+  still need an interactive check on the actual ClipsNeko Live ISO or a
+  matching VM. The ISO must generate all seven documented UI locales, and
+  packaging must install `config/packages.list` plus every MO catalog at its
+  documented system path.
 - **Full-screen restoration test seam:** the helper's actual terminal-state
   bookkeeping on subprocess spawn failure has not been automated; current
   coverage tests privilege command construction only.
 - **M2 runtime acceptance:** cfdisk suspension, partprobe recovery, real lsblk
-  output, protected Live media, responsive tables in both languages, role
+  output, protected Live media, responsive tables in all supported languages, role
   assignment, RAID profiles, and wipe dialogs still need an interactive
   multi-disk Live ISO/VM check.
 - **M3 selection and identity:** the kernel, NVIDIA, timezone, user-account,
-  hostname, and confirmation steps still need an interactive bilingual Live
+  hostname, and confirmation steps still need an interactive multilingual Live
   ISO/VM check, including real GeoIP, `timedatectl` data, centered-form
   layouts, input focus, masking, strength colors, hostname validation, and the
   final summary/destructive-dialog review before install.

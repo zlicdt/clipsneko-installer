@@ -1,4 +1,4 @@
-# ClipsNeko Linux Installer — translation template.
+# ClipsNeko Linux Installer — Traditional Chinese translation.
 # Copyright (C) 2026 ClipsNeko Linux
 # This file is distributed under the same license as the clipsneko-installer package.
 #
@@ -7,680 +7,680 @@ msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-11 13:53+0800\n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: \n"
+"PO-Revision-Date: 2026-07-07 00:00+0800\n"
+"Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
+"Language-Team: Traditional Chinese\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/app.rs:219
 msgid "app.step_indicator"
-msgstr ""
+msgstr "步驟"
 
 #: src/app.rs:216
 msgid "app.title"
-msgstr ""
+msgstr "ClipsNeko Linux 安裝程式"
 
 #: src/app.rs:260
 msgid "button.back"
-msgstr ""
+msgstr "上一步"
 
 #: src/app.rs:294 src/steps/confirm.rs:79
 msgid "button.cancel"
-msgstr ""
+msgstr "取消"
 
 #: src/app.rs:274
 msgid "button.next"
-msgstr ""
+msgstr "下一步"
 
 #: src/app.rs:295
 msgid "button.quit"
-msgstr ""
+msgstr "離開"
 
 #: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
 #: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
 #: src/steps/confirm.rs:345 src/steps/network.rs:111
 msgid "common.not_available"
-msgstr ""
+msgstr "無法使用"
 
 #: src/steps/confirm.rs:283 src/steps/confirm.rs:289
 msgid "confirm_step.affected_disk"
-msgstr ""
+msgstr "受影響的磁碟"
 
 #: src/steps/confirm.rs:325
 msgid "confirm_step.data_profile"
-msgstr ""
+msgstr "資料設定檔"
 
 #: src/steps/confirm.rs:76
 msgid "confirm_step.dialog.body"
-msgstr ""
+msgstr "列出的目標分割區將被格式化，ESP 分割區也可能被格式化。是否繼續安裝？"
 
 #: src/steps/confirm.rs:87
 msgid "confirm_step.dialog.hint"
-msgstr ""
+msgstr "左/右=選擇  Enter=確認  Esc=取消"
 
 #: src/steps/confirm.rs:82
 msgid "confirm_step.dialog.install"
-msgstr ""
+msgstr "安裝"
 
 #: src/steps/confirm.rs:93
 msgid "confirm_step.dialog.title"
-msgstr ""
+msgstr "確認安裝"
 
 #: src/steps/confirm.rs:296
 msgid "confirm_step.esp"
-msgstr ""
+msgstr "EFI 系統分割區"
 
 #: src/steps/confirm.rs:148
 msgid "confirm_step.hint"
-msgstr ""
+msgstr "上/下=滾動  Enter=確認安裝"
 
 #: src/steps/confirm.rs:262
 msgid "confirm_step.hostname"
-msgstr ""
+msgstr "主機名稱"
 
 #: src/steps/confirm.rs:254
 msgid "confirm_step.kernel"
-msgstr ""
+msgstr "核心"
 
 #: src/steps/confirm.rs:250
 msgid "confirm_step.keyboard"
-msgstr ""
+msgstr "鍵盤配置"
 
 #: src/steps/confirm.rs:246
 msgid "confirm_step.locale"
-msgstr ""
+msgstr "目標系統區域設定"
 
 #: src/steps/confirm.rs:352
 msgid "confirm_step.no_nvidia"
-msgstr ""
+msgstr "不安裝 NVIDIA 驅動程式"
 
 #: src/steps/confirm.rs:260
 msgid "confirm_step.nvidia"
-msgstr ""
+msgstr "NVIDIA 驅動程式"
 
 #: src/steps/confirm.rs:142
 msgid "confirm_step.summary_title"
-msgstr ""
+msgstr "安裝摘要"
 
 #: src/steps/confirm.rs:307 src/steps/confirm.rs:313
 msgid "confirm_step.target_partition"
-msgstr ""
+msgstr "安裝目標"
 
 #: src/steps/confirm.rs:266
 msgid "confirm_step.timezone"
-msgstr ""
+msgstr "時區"
 
 #: src/steps/confirm.rs:270
 msgid "confirm_step.username"
-msgstr ""
+msgstr "使用者名稱"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
 msgid "disk_step.column_device"
-msgstr ""
+msgstr "裝置"
 
 #: src/steps/disk.rs:445
 msgid "disk_step.column_filesystem"
-msgstr ""
+msgstr "檔案系統"
 
 #: src/steps/disk.rs:446
 msgid "disk_step.column_label"
-msgstr ""
+msgstr "標籤"
 
 #: src/steps/disk.rs:367
 msgid "disk_step.column_model"
-msgstr ""
+msgstr "型號"
 
 #: src/steps/disk.rs:447
 msgid "disk_step.column_role"
-msgstr ""
+msgstr "角色"
 
 #: src/steps/disk.rs:369 src/steps/disk.rs:444
 msgid "disk_step.column_size"
-msgstr ""
+msgstr "容量"
 
 #: src/steps/disk.rs:370
 msgid "disk_step.column_status"
-msgstr ""
+msgstr "狀態"
 
 #: src/steps/disk.rs:368
 msgid "disk_step.column_transport"
-msgstr ""
+msgstr "介面"
 
 #: src/steps/disk.rs:314
 msgid "disk_step.error_capacity"
-msgstr ""
+msgstr "所選資料設定檔的可用目標容量必須大於 20 GiB。"
 
 #: src/steps/disk.rs:542
 msgid "disk_step.error_hint"
-msgstr ""
+msgstr "按 Esc 或 Enter 關閉。"
 
 #: src/steps/disk.rs:255
 msgid "disk_step.error_invalid_esp"
-msgstr ""
+msgstr "此分割區不是 GPT EFI 系統分割區。"
 
 #: src/steps/disk.rs:125
 msgid "disk_step.error_partprobe"
-msgstr ""
+msgstr "partprobe 無法重新整理分割區表。請重新開啟 cfdisk 後再試。"
 
 #: src/steps/disk.rs:223
 msgid "disk_step.error_protected_part"
-msgstr ""
+msgstr "此分割區屬於受保護的 Live 媒體或唯讀磁碟。"
 
 #: src/steps/disk.rs:547
 msgid "disk_step.error_title"
-msgstr ""
+msgstr "磁碟設定錯誤"
 
 #: src/steps/disk.rs:800
 msgid "disk_step.hint_disk"
-msgstr ""
+msgstr "Enter=cfdisk  上/下=選擇  Tab=切換焦點"
 
 #: src/steps/disk.rs:801
 msgid "disk_step.hint_parts"
-msgstr ""
+msgstr "Enter=角色  R=RAID  上/下=選擇  Tab=焦點"
 
 #: src/steps/disk.rs:393
 msgid "disk_step.list_title_disk"
-msgstr ""
+msgstr "選擇要分割區的磁碟"
 
 #: src/steps/disk.rs:470
 msgid "disk_step.list_title_parts"
-msgstr ""
+msgstr "指派分割區角色"
 
 #: src/steps/disk.rs:524
 msgid "disk_step.raid_dialog.hint"
-msgstr ""
+msgstr "上/下=選擇  Enter=確認  Esc=取消"
 
 #: src/steps/disk.rs:511
 msgid "disk_step.raid_dialog.raid0"
-msgstr ""
+msgstr "RAID0（容量優先）"
 
 #: src/steps/disk.rs:512
 msgid "disk_step.raid_dialog.raid1"
-msgstr ""
+msgstr "RAID1（冗餘優先）"
 
 #: src/steps/disk.rs:529
 msgid "disk_step.raid_dialog.title"
-msgstr ""
+msgstr "選擇 btrfs 資料設定檔"
 
 #: src/steps/disk.rs:809
 msgid "disk_step.raid_label"
-msgstr ""
+msgstr "資料設定檔"
 
 #: src/steps/disk.rs:500
 msgid "disk_step.role_dialog.hint"
-msgstr ""
+msgstr "上/下=選擇  Enter=確認  Esc=取消"
 
 #: src/steps/disk.rs:481
 msgid "disk_step.role_dialog.title"
-msgstr ""
+msgstr "為分割區指派角色"
 
 #: src/steps/disk.rs:420 src/steps/disk.rs:607
 msgid "disk_step.role_esp"
-msgstr ""
+msgstr "ESP"
 
 #: src/steps/disk.rs:418
 msgid "disk_step.role_protected"
-msgstr ""
+msgstr "受保護"
 
 #: src/steps/disk.rs:422 src/steps/disk.rs:608
 msgid "disk_step.role_target"
-msgstr ""
+msgstr "安裝目標"
 
 #: src/steps/disk.rs:424 src/steps/disk.rs:609
 msgid "disk_step.role_unassigned"
-msgstr ""
+msgstr "未指派"
 
 #: src/steps/disk.rs:601
 msgid "disk_step.status_available"
-msgstr ""
+msgstr "可用"
 
 #: src/steps/disk.rs:595
 msgid "disk_step.status_live_media"
-msgstr ""
+msgstr "Live 媒體"
 
 #: src/steps/disk.rs:597
 msgid "disk_step.status_read_only"
-msgstr ""
+msgstr "唯讀"
 
 #: src/steps/disk.rs:599
 msgid "disk_step.status_removable"
-msgstr ""
+msgstr "可卸除"
 
 #: src/steps/disk.rs:662
 msgid "disk_step.wipe_dialog.esp_prefix"
-msgstr ""
+msgstr "ESP 分割區（FAT32）："
 
 #: src/steps/disk.rs:566
 msgid "disk_step.wipe_dialog.hint"
-msgstr ""
+msgstr "Enter=繼續  Esc=取消"
 
 #: src/steps/disk.rs:656
 msgid "disk_step.wipe_dialog.target_prefix"
-msgstr ""
+msgstr "安裝目標（btrfs）："
 
 #: src/steps/disk.rs:559
 msgid "disk_step.wipe_dialog.title"
-msgstr ""
+msgstr "以下分割區將被格式化，其中的全部資料都會遺失："
 
 #: src/steps/disk.rs:571
 msgid "disk_step.wipe_dialog.window_title"
-msgstr ""
+msgstr "警告：資料將遺失"
 
 #: src/app.rs:266
 msgid "footer.hint"
-msgstr ""
+msgstr "Tab=切換焦點  Ctrl+C=離開"
 
 #: src/steps/hostname.rs:37
 msgid "hostname_step.error_invalid"
-msgstr ""
+msgstr "請使用 1–63 個 ASCII 字母、數字或非首尾連字元。"
 
 #: src/steps/hostname.rs:34
 msgid "hostname_step.error_required"
-msgstr ""
+msgstr "請輸入主機名稱。"
 
 #: src/steps/hostname.rs:87
 msgid "hostname_step.form_title"
-msgstr ""
+msgstr "系統主機名稱"
 
 #: src/steps/hostname.rs:126
 msgid "hostname_step.hint"
-msgstr ""
+msgstr "1–63 個 ASCII 字母、數字或非首尾連字元"
 
 #: src/steps/hostname.rs:111
 msgid "hostname_step.hostname"
-msgstr ""
+msgstr "主機名稱"
 
 #: src/steps/hostname.rs:39
 msgid "hostname_step.ready"
-msgstr ""
+msgstr "主機名稱有效。"
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
-msgstr ""
+msgstr "安裝已停止，目前掛載將保持不變。"
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
-msgstr ""
+msgstr "返回"
 
 #: src/steps/install.rs:176
 msgid "install_step.failure.title"
-msgstr ""
+msgstr "安裝失敗"
 
 #: src/steps/install.rs:189
 msgid "install_step.failure.view_log"
-msgstr ""
+msgstr "檢視記錄檔"
 
 #: src/steps/install.rs:323
 msgid "install_step.log.title"
-msgstr ""
+msgstr "安裝記錄檔（Esc/Enter 返回）"
 
 #: src/steps/install.rs:138
 msgid "install_step.progress.bootloader"
-msgstr ""
+msgstr "正在安裝開機載入程式"
 
 #: src/steps/install.rs:132
 msgid "install_step.progress.formatting"
-msgstr ""
+msgstr "正在格式化目標檔案系統"
 
 #: src/steps/install.rs:135
 msgid "install_step.progress.fstab"
-msgstr ""
+msgstr "正在產生檔案系統表"
 
 #: src/steps/install.rs:137
 msgid "install_step.progress.initramfs"
-msgstr ""
+msgstr "正在產生 initramfs 映像檔"
 
 #: src/steps/install.rs:133
 msgid "install_step.progress.mounting"
-msgstr ""
+msgstr "正在建立並掛載子磁碟區"
 
 #: src/steps/install.rs:134
 msgid "install_step.progress.packages"
-msgstr ""
+msgstr "正在安裝系統套件"
 
 #: src/steps/install.rs:144
 msgid "install_step.progress.rebooting"
-msgstr ""
+msgstr "正在卸載目標並重新啟動"
 
 #: src/steps/install.rs:136
 msgid "install_step.progress.target_config"
-msgstr ""
+msgstr "正在設定已安裝的系統"
 
 #: src/steps/install.rs:155
 msgid "install_step.progress.wait"
-msgstr ""
+msgstr "安裝正在進行，請勿關閉或重新啟動電腦。"
 
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
-msgstr ""
+msgstr "安裝已完成。現在重新啟動嗎？暫不重新啟動將保留 /mnt 掛載。"
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"
-msgstr ""
+msgstr "暫不重新啟動"
 
 #: src/steps/install.rs:224
 msgid "install_step.success.reboot"
-msgstr ""
+msgstr "重新啟動"
 
 #: src/steps/install.rs:216
 msgid "install_step.success.title"
-msgstr ""
+msgstr "安裝完成"
 
 #: src/steps/kernel.rs:106
 msgid "kernel_step.headers_hint"
-msgstr ""
+msgstr "將自動安裝匹配的核心標頭檔套件。"
 
 #: src/steps/kernel.rs:107
 msgid "kernel_step.key_hint"
-msgstr ""
+msgstr "Space=選擇  Enter=下一步"
 
 #: src/steps/kernel.rs:159
 msgid "kernel_step.option.linux"
-msgstr ""
+msgstr "linux — 標準核心"
 
 #: src/steps/kernel.rs:162
 msgid "kernel_step.option.linux_hardened"
-msgstr ""
+msgstr "linux-hardened — 安全強化核心"
 
 #: src/steps/kernel.rs:160
 msgid "kernel_step.option.linux_lts"
-msgstr ""
+msgstr "linux-lts — 長期支援核心"
 
 #: src/steps/kernel.rs:161
 msgid "kernel_step.option.linux_zen"
-msgstr ""
+msgstr "linux-zen — 桌面最佳化核心（預設）"
 
 #: src/steps/kernel.rs:99
 msgid "kernel_step.title"
-msgstr ""
+msgstr "選擇核心"
 
 #: src/steps/keyboard.rs:174
 msgid "keyboard_step.hint"
-msgstr ""
+msgstr "Space=選擇  Enter=下一步"
 
 #: src/steps/keyboard.rs:167
 msgid "keyboard_step.title"
-msgstr ""
+msgstr "選擇鍵盤配置"
 
 #: src/steps/language.rs:35
 msgid "language.name.english"
-msgstr ""
+msgstr "English"
 
 #: src/steps/language.rs:39
 msgid "language.name.german"
-msgstr ""
+msgstr "Deutsch"
 
 #: src/steps/language.rs:38
 msgid "language.name.japanese"
-msgstr ""
+msgstr "日本語"
 
 #: src/steps/language.rs:40
 msgid "language.name.korean"
-msgstr ""
+msgstr "한국어"
 
 #: src/steps/language.rs:41
 msgid "language.name.russian"
-msgstr ""
+msgstr "Русский"
 
 #: src/steps/language.rs:36
 msgid "language.name.simplified_chinese"
-msgstr ""
+msgstr "简体中文"
 
 #: src/steps/language.rs:37
 msgid "language.name.traditional_chinese"
-msgstr ""
+msgstr "繁體中文"
 
 #: src/steps/language.rs:210
 msgid "language_step.hint_target"
-msgstr ""
+msgstr "上/下=選擇  Space=套用  Enter=下一步  Shift+Tab=介面語言"
 
 #: src/steps/language.rs:209
 msgid "language_step.hint_ui"
-msgstr ""
+msgstr "上/下=選擇  Space=套用  Enter/Tab=目標系統"
 
 #: src/steps/language.rs:202
 msgid "language_step.target_title"
-msgstr ""
+msgstr "目標系統區域設定"
 
 #: src/steps/language.rs:179
 msgid "language_step.ui_title"
-msgstr ""
+msgstr "安裝程式語言"
 
 #: src/steps/mirror.rs:365
 msgid "mirror_step.error_hint"
-msgstr ""
+msgstr "Esc/Enter 關閉並重試。"
 
 #: src/steps/mirror.rs:126
 msgid "mirror_step.error_invalid_url"
-msgstr ""
+msgstr "無效的伺服器 URL。必須以 http://、https://、ftp:// 或 rsync:// 開頭。"
 
 #: src/steps/mirror.rs:164
 msgid "mirror_step.error_pacman"
-msgstr ""
+msgstr "pacman -Sy 失敗。請檢查網路或嘗試其他鏡像站。"
 
 #: src/steps/mirror.rs:371
 msgid "mirror_step.error_title"
-msgstr ""
+msgstr "驗證失敗"
 
 #: src/steps/mirror.rs:262
 msgid "mirror_step.hint_input"
-msgstr ""
+msgstr "輸入 URL  Shift+Tab=地區  Tab=按鈕  Enter=套用"
 
 #: src/steps/mirror.rs:260
 msgid "mirror_step.hint_list"
-msgstr ""
+msgstr "上/下=選擇  Tab=輸入  Enter=套用"
 
 #: src/steps/mirror.rs:237
 msgid "mirror_step.input_label"
-msgstr ""
+msgstr "伺服器"
 
 #: src/steps/mirror.rs:252
 msgid "mirror_step.input_title"
-msgstr ""
+msgstr "手動鏡像來源"
 
 #: src/steps/mirror.rs:227
 msgid "mirror_step.list_title"
-msgstr ""
+msgstr "選擇地區"
 
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
-msgstr ""
+msgstr "Enter=下一步  N=nmtui  R=重新檢查"
 
 #: src/steps/network.rs:106
 msgid "network_step.hint_disconnected"
-msgstr ""
+msgstr "Enter=nmtui  R=重新檢查"
 
 #: src/steps/network.rs:126
 msgid "network_step.label_address"
-msgstr ""
+msgstr "位址"
 
 #: src/steps/network.rs:131
 msgid "network_step.label_gateway"
-msgstr ""
+msgstr "閘道器"
 
 #: src/steps/network.rs:116
 msgid "network_step.label_interface"
-msgstr ""
+msgstr "介面"
 
 #: src/steps/network.rs:112
 msgid "network_step.status_connected"
-msgstr ""
+msgstr "✓ 已連線"
 
 #: src/steps/network.rs:135
 msgid "network_step.status_disconnected"
-msgstr ""
+msgstr "✗ 未連線"
 
 #: src/steps/network.rs:141
 msgid "network_step.title"
-msgstr ""
+msgstr "設定網路"
 
 #: src/steps/nvidia.rs:138
 msgid "nvidia_step.headers_hint"
-msgstr ""
+msgstr "所選核心對應的標頭檔套件已自動包含。"
 
 #: src/steps/nvidia.rs:111
 msgid "nvidia_step.incompatible_suffix"
-msgstr ""
+msgstr "（與選定核心不相容）"
 
 #: src/steps/nvidia.rs:139
 msgid "nvidia_step.key_hint"
-msgstr ""
+msgstr "上/下=選擇  空格=套用  Enter=套用並繼續"
 
 #: src/steps/nvidia.rs:187
 msgid "nvidia_step.option.none"
-msgstr ""
+msgstr "不安裝 NVIDIA 驅動程式"
 
 #: src/steps/nvidia.rs:188
 msgid "nvidia_step.option.nvidia_open"
-msgstr ""
+msgstr "nvidia-open — 用於 linux 的開放核心模組"
 
 #: src/steps/nvidia.rs:189
 msgid "nvidia_step.option.nvidia_open_dkms"
-msgstr ""
+msgstr "nvidia-open-dkms — DKMS 開放核心模組（支援所有可選核心）"
 
 #: src/steps/nvidia.rs:190
 msgid "nvidia_step.option.nvidia_open_lts"
-msgstr ""
+msgstr "nvidia-open-lts — 用於 linux-lts 的開放核心模組"
 
 #: src/steps/nvidia.rs:131
 msgid "nvidia_step.title"
-msgstr ""
+msgstr "選擇 NVIDIA 驅動程式"
 
 #: src/app.rs:302
 msgid "quit_dialog.hint"
-msgstr ""
+msgstr "左/右=選擇  Enter=確認  Esc=取消"
 
 #: src/app.rs:298
 msgid "quit_dialog.title"
-msgstr ""
+msgstr "確定要離開嗎？"
 
 #: src/steps/mod.rs:85
 msgid "step.title.confirm_installation"
-msgstr ""
+msgstr "確認安裝"
 
 #: src/steps/mod.rs:79
 msgid "step.title.disk_partitioning"
-msgstr ""
+msgstr "磁碟分割區"
 
 #: src/steps/mod.rs:84
 msgid "step.title.hostname"
-msgstr ""
+msgstr "主機名稱"
 
 #: src/steps/mod.rs:86
 msgid "step.title.installing"
-msgstr ""
+msgstr "安裝中"
 
 #: src/steps/mod.rs:80
 msgid "step.title.kernel"
-msgstr ""
+msgstr "核心"
 
 #: src/steps/mod.rs:76
 msgid "step.title.keyboard_layout"
-msgstr ""
+msgstr "鍵盤配置"
 
 #: src/steps/mod.rs:75
 msgid "step.title.language"
-msgstr ""
+msgstr "語言"
 
 #: src/steps/mod.rs:78
 msgid "step.title.mirror_list"
-msgstr ""
+msgstr "鏡像站列表"
 
 #: src/steps/mod.rs:77
 msgid "step.title.network"
-msgstr ""
+msgstr "網路"
 
 #: src/steps/mod.rs:81
 msgid "step.title.nvidia_driver"
-msgstr ""
+msgstr "NVIDIA 驅動程式"
 
 #: src/steps/mod.rs:82
 msgid "step.title.timezone"
-msgstr ""
+msgstr "時區"
 
 #: src/steps/mod.rs:83
 msgid "step.title.user_account"
-msgstr ""
+msgstr "使用者帳戶"
 
 #: src/steps/timezone.rs:280
 msgid "timezone_step.hint_region"
-msgstr ""
+msgstr "↑/↓=選擇  →/Enter=進入時區列表  Tab=下一控制元件"
 
 #: src/steps/timezone.rs:279
 msgid "timezone_step.hint_utc"
-msgstr ""
+msgstr "↑/↓=選擇  Enter=套用 UTC 並繼續  Tab=按鈕"
 
 #: src/steps/timezone.rs:281
 msgid "timezone_step.hint_zone"
-msgstr ""
+msgstr "↑/↓=選擇  ←=返回地區  Enter=套用並繼續"
 
 #: src/steps/timezone.rs:234
 msgid "timezone_step.region_title"
-msgstr ""
+msgstr "地區"
 
 #: src/steps/timezone.rs:242
 msgid "timezone_step.utc_direct"
-msgstr ""
+msgstr "（UTC 無需選擇具體時區）"
 
 #: src/steps/timezone.rs:271
 msgid "timezone_step.zone_title"
-msgstr ""
+msgstr "時區"
 
 #: src/steps/user.rs:215
 msgid "user_step.confirm_password"
-msgstr ""
+msgstr "確認密碼"
 
 #: src/steps/user.rs:72
 msgid "user_step.error_password_mismatch"
-msgstr ""
+msgstr "兩次輸入的密碼不一致。"
 
 #: src/steps/user.rs:69
 msgid "user_step.error_password_required"
-msgstr ""
+msgstr "密碼不能為空。"
 
 #: src/steps/user.rs:66
 msgid "user_step.error_username_invalid"
-msgstr ""
+msgstr "請使用小寫字母、數字、底線和連字元，並以小寫字母或底線開頭。"
 
 #: src/steps/user.rs:63
 msgid "user_step.error_username_required"
-msgstr ""
+msgstr "請輸入使用者名稱。"
 
 #: src/steps/user.rs:181
 msgid "user_step.form_title"
-msgstr ""
+msgstr "帳戶資訊"
 
 #: src/steps/user.rs:207
 msgid "user_step.password"
-msgstr ""
+msgstr "密碼"
 
 #: src/steps/user.rs:74
 msgid "user_step.ready"
-msgstr ""
+msgstr "帳戶資訊有效。"
 
 #: src/steps/user.rs:225
 msgid "user_step.strength"
-msgstr ""
+msgstr "密碼強度"
 
 #: src/steps/user.rs:124
 msgid "user_step.strength_fair"
-msgstr ""
+msgstr "一般"
 
 #: src/steps/user.rs:125
 msgid "user_step.strength_good"
-msgstr ""
+msgstr "良好"
 
 #: src/steps/user.rs:126
 msgid "user_step.strength_strong"
-msgstr ""
+msgstr "強"
 
 #: src/steps/user.rs:123
 msgid "user_step.strength_weak"
-msgstr ""
+msgstr "弱"
 
 #: src/steps/user.rs:199
 msgid "user_step.username"
-msgstr ""
+msgstr "使用者名稱"

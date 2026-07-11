@@ -1,4 +1,4 @@
-# ClipsNeko Linux Installer — translation template.
+# ClipsNeko Linux Installer — Korean translation.
 # Copyright (C) 2026 ClipsNeko Linux
 # This file is distributed under the same license as the clipsneko-installer package.
 #
@@ -7,680 +7,689 @@ msgstr ""
 "Project-Id-Version: clipsneko-installer 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-11 13:53+0800\n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: \n"
+"PO-Revision-Date: 2026-07-11 00:00+0800\n"
+"Last-Translator: ClipsNeko Linux <clipsneko@example.com>\n"
+"Language-Team: Korean\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/app.rs:219
 msgid "app.step_indicator"
-msgstr ""
+msgstr "단계"
 
 #: src/app.rs:216
 msgid "app.title"
-msgstr ""
+msgstr "ClipsNeko Linux 설치 프로그램"
 
 #: src/app.rs:260
 msgid "button.back"
-msgstr ""
+msgstr "뒤로"
 
 #: src/app.rs:294 src/steps/confirm.rs:79
 msgid "button.cancel"
-msgstr ""
+msgstr "취소"
 
 #: src/app.rs:274
 msgid "button.next"
-msgstr ""
+msgstr "다음"
 
 #: src/app.rs:295
 msgid "button.quit"
-msgstr ""
+msgstr "종료"
 
 #: src/steps/confirm.rs:258 src/steps/confirm.rs:276 src/steps/confirm.rs:284
 #: src/steps/confirm.rs:302 src/steps/confirm.rs:308 src/steps/confirm.rs:323
 #: src/steps/confirm.rs:345 src/steps/network.rs:111
 msgid "common.not_available"
-msgstr ""
+msgstr "사용할 수 없음"
 
 #: src/steps/confirm.rs:283 src/steps/confirm.rs:289
 msgid "confirm_step.affected_disk"
-msgstr ""
+msgstr "영향을 받는 디스크"
 
 #: src/steps/confirm.rs:325
 msgid "confirm_step.data_profile"
-msgstr ""
+msgstr "데이터 프로파일"
 
 #: src/steps/confirm.rs:76
 msgid "confirm_step.dialog.body"
 msgstr ""
+"목록의 설치 대상 파티션이 포맷되며 ESP도 포맷될 수 있습니다. 설치를 계속하시"
+"겠습니까?"
 
 #: src/steps/confirm.rs:87
 msgid "confirm_step.dialog.hint"
-msgstr ""
+msgstr "왼쪽/오른쪽=선택  Enter=확인  Esc=취소"
 
 #: src/steps/confirm.rs:82
 msgid "confirm_step.dialog.install"
-msgstr ""
+msgstr "설치"
 
 #: src/steps/confirm.rs:93
 msgid "confirm_step.dialog.title"
-msgstr ""
+msgstr "설치 확인"
 
 #: src/steps/confirm.rs:296
 msgid "confirm_step.esp"
-msgstr ""
+msgstr "EFI 시스템 파티션"
 
 #: src/steps/confirm.rs:148
 msgid "confirm_step.hint"
-msgstr ""
+msgstr "위/아래=스크롤  Enter=설치 내용 검토"
 
 #: src/steps/confirm.rs:262
 msgid "confirm_step.hostname"
-msgstr ""
+msgstr "호스트 이름"
 
 #: src/steps/confirm.rs:254
 msgid "confirm_step.kernel"
-msgstr ""
+msgstr "커널"
 
 #: src/steps/confirm.rs:250
 msgid "confirm_step.keyboard"
-msgstr ""
+msgstr "키보드"
 
 #: src/steps/confirm.rs:246
 msgid "confirm_step.locale"
-msgstr ""
+msgstr "대상 로케일"
 
 #: src/steps/confirm.rs:352
 msgid "confirm_step.no_nvidia"
-msgstr ""
+msgstr "NVIDIA 드라이버 없음"
 
 #: src/steps/confirm.rs:260
 msgid "confirm_step.nvidia"
-msgstr ""
+msgstr "NVIDIA 드라이버"
 
 #: src/steps/confirm.rs:142
 msgid "confirm_step.summary_title"
-msgstr ""
+msgstr "설치 요약"
 
 #: src/steps/confirm.rs:307 src/steps/confirm.rs:313
 msgid "confirm_step.target_partition"
-msgstr ""
+msgstr "설치 대상"
 
 #: src/steps/confirm.rs:266
 msgid "confirm_step.timezone"
-msgstr ""
+msgstr "시간대"
 
 #: src/steps/confirm.rs:270
 msgid "confirm_step.username"
-msgstr ""
+msgstr "사용자 이름"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
 msgid "disk_step.column_device"
-msgstr ""
+msgstr "장치"
 
 #: src/steps/disk.rs:445
 msgid "disk_step.column_filesystem"
-msgstr ""
+msgstr "파일 시스템"
 
 #: src/steps/disk.rs:446
 msgid "disk_step.column_label"
-msgstr ""
+msgstr "레이블"
 
 #: src/steps/disk.rs:367
 msgid "disk_step.column_model"
-msgstr ""
+msgstr "모델"
 
 #: src/steps/disk.rs:447
 msgid "disk_step.column_role"
-msgstr ""
+msgstr "역할"
 
 #: src/steps/disk.rs:369 src/steps/disk.rs:444
 msgid "disk_step.column_size"
-msgstr ""
+msgstr "크기"
 
 #: src/steps/disk.rs:370
 msgid "disk_step.column_status"
-msgstr ""
+msgstr "상태"
 
 #: src/steps/disk.rs:368
 msgid "disk_step.column_transport"
-msgstr ""
+msgstr "연결 방식"
 
 #: src/steps/disk.rs:314
 msgid "disk_step.error_capacity"
-msgstr ""
+msgstr "선택한 프로파일에서 사용 가능한 대상 용량은 20 GiB보다 커야 합니다."
 
 #: src/steps/disk.rs:542
 msgid "disk_step.error_hint"
-msgstr ""
+msgstr "Esc/Enter로 닫기"
 
 #: src/steps/disk.rs:255
 msgid "disk_step.error_invalid_esp"
-msgstr ""
+msgstr "이 파티션은 GPT EFI 시스템 파티션이 아닙니다."
 
 #: src/steps/disk.rs:125
 msgid "disk_step.error_partprobe"
 msgstr ""
+"partprobe가 파티션 테이블을 새로 고치지 못했습니다. cfdisk를 다시 열고 재시도"
+"하십시오."
 
 #: src/steps/disk.rs:223
 msgid "disk_step.error_protected_part"
-msgstr ""
+msgstr "이 파티션은 보호된 Live 또는 읽기 전용 미디어에 속합니다."
 
 #: src/steps/disk.rs:547
 msgid "disk_step.error_title"
-msgstr ""
+msgstr "디스크 구성 오류"
 
 #: src/steps/disk.rs:800
 msgid "disk_step.hint_disk"
-msgstr ""
+msgstr "Enter=cfdisk  위/아래=선택  Tab=포커스"
 
 #: src/steps/disk.rs:801
 msgid "disk_step.hint_parts"
-msgstr ""
+msgstr "Enter=역할  R=RAID  위/아래=선택  Tab=포커스"
 
 #: src/steps/disk.rs:393
 msgid "disk_step.list_title_disk"
-msgstr ""
+msgstr "파티션할 디스크 선택"
 
 #: src/steps/disk.rs:470
 msgid "disk_step.list_title_parts"
-msgstr ""
+msgstr "파티션 역할 할당"
 
 #: src/steps/disk.rs:524
 msgid "disk_step.raid_dialog.hint"
-msgstr ""
+msgstr "위/아래=선택  Enter=확인  Esc=취소"
 
 #: src/steps/disk.rs:511
 msgid "disk_step.raid_dialog.raid0"
-msgstr ""
+msgstr "RAID0(용량)"
 
 #: src/steps/disk.rs:512
 msgid "disk_step.raid_dialog.raid1"
-msgstr ""
+msgstr "RAID1(중복성)"
 
 #: src/steps/disk.rs:529
 msgid "disk_step.raid_dialog.title"
-msgstr ""
+msgstr "btrfs 데이터 프로파일 선택"
 
 #: src/steps/disk.rs:809
 msgid "disk_step.raid_label"
-msgstr ""
+msgstr "데이터 프로파일"
 
 #: src/steps/disk.rs:500
 msgid "disk_step.role_dialog.hint"
-msgstr ""
+msgstr "위/아래=선택  Enter=확인  Esc=취소"
 
 #: src/steps/disk.rs:481
 msgid "disk_step.role_dialog.title"
-msgstr ""
+msgstr "역할 할당 대상"
 
 #: src/steps/disk.rs:420 src/steps/disk.rs:607
 msgid "disk_step.role_esp"
-msgstr ""
+msgstr "ESP"
 
 #: src/steps/disk.rs:418
 msgid "disk_step.role_protected"
-msgstr ""
+msgstr "보호됨"
 
 #: src/steps/disk.rs:422 src/steps/disk.rs:608
 msgid "disk_step.role_target"
-msgstr ""
+msgstr "설치 대상"
 
 #: src/steps/disk.rs:424 src/steps/disk.rs:609
 msgid "disk_step.role_unassigned"
-msgstr ""
+msgstr "할당되지 않음"
 
 #: src/steps/disk.rs:601
 msgid "disk_step.status_available"
-msgstr ""
+msgstr "사용 가능"
 
 #: src/steps/disk.rs:595
 msgid "disk_step.status_live_media"
-msgstr ""
+msgstr "Live 미디어"
 
 #: src/steps/disk.rs:597
 msgid "disk_step.status_read_only"
-msgstr ""
+msgstr "읽기 전용"
 
 #: src/steps/disk.rs:599
 msgid "disk_step.status_removable"
-msgstr ""
+msgstr "이동식"
 
 #: src/steps/disk.rs:662
 msgid "disk_step.wipe_dialog.esp_prefix"
-msgstr ""
+msgstr "ESP (FAT32):"
 
 #: src/steps/disk.rs:566
 msgid "disk_step.wipe_dialog.hint"
-msgstr ""
+msgstr "Enter=계속  Esc=취소"
 
 #: src/steps/disk.rs:656
 msgid "disk_step.wipe_dialog.target_prefix"
-msgstr ""
+msgstr "설치 대상 (btrfs):"
 
 #: src/steps/disk.rs:559
 msgid "disk_step.wipe_dialog.title"
-msgstr ""
+msgstr "이 파티션들이 포맷되며 모든 데이터가 손실됩니다:"
 
 #: src/steps/disk.rs:571
 msgid "disk_step.wipe_dialog.window_title"
-msgstr ""
+msgstr "경고: 데이터 손실"
 
 #: src/app.rs:266
 msgid "footer.hint"
-msgstr ""
+msgstr "Tab=포커스  Ctrl+C=종료"
 
 #: src/steps/hostname.rs:37
 msgid "hostname_step.error_invalid"
-msgstr ""
+msgstr "1–63자의 ASCII 문자, 숫자 또는 중간의 하이픈을 사용하십시오."
 
 #: src/steps/hostname.rs:34
 msgid "hostname_step.error_required"
-msgstr ""
+msgstr "호스트 이름을 입력하십시오."
 
 #: src/steps/hostname.rs:87
 msgid "hostname_step.form_title"
-msgstr ""
+msgstr "시스템 호스트 이름"
 
 #: src/steps/hostname.rs:126
 msgid "hostname_step.hint"
-msgstr ""
+msgstr "1–63자 ASCII 문자, 숫자 또는 중간의 하이픈"
 
 #: src/steps/hostname.rs:111
 msgid "hostname_step.hostname"
-msgstr ""
+msgstr "호스트 이름"
 
 #: src/steps/hostname.rs:39
 msgid "hostname_step.ready"
-msgstr ""
+msgstr "호스트 이름이 유효합니다."
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
-msgstr ""
+msgstr "설치가 중지되었습니다. 현재 마운트 상태는 변경하지 않습니다."
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
-msgstr ""
+msgstr "돌아가기"
 
 #: src/steps/install.rs:176
 msgid "install_step.failure.title"
-msgstr ""
+msgstr "설치 실패"
 
 #: src/steps/install.rs:189
 msgid "install_step.failure.view_log"
-msgstr ""
+msgstr "로그 보기"
 
 #: src/steps/install.rs:323
 msgid "install_step.log.title"
-msgstr ""
+msgstr "설치 로그(Esc/Enter로 돌아가기)"
 
 #: src/steps/install.rs:138
 msgid "install_step.progress.bootloader"
-msgstr ""
+msgstr "부트로더 설치 중"
 
 #: src/steps/install.rs:132
 msgid "install_step.progress.formatting"
-msgstr ""
+msgstr "대상 파일 시스템 포맷 중"
 
 #: src/steps/install.rs:135
 msgid "install_step.progress.fstab"
-msgstr ""
+msgstr "파일 시스템 테이블 생성 중"
 
 #: src/steps/install.rs:137
 msgid "install_step.progress.initramfs"
-msgstr ""
+msgstr "initramfs 이미지 생성 중"
 
 #: src/steps/install.rs:133
 msgid "install_step.progress.mounting"
-msgstr ""
+msgstr "서브볼륨 생성 및 마운트 중"
 
 #: src/steps/install.rs:134
 msgid "install_step.progress.packages"
-msgstr ""
+msgstr "시스템 패키지 설치 중"
 
 #: src/steps/install.rs:144
 msgid "install_step.progress.rebooting"
-msgstr ""
+msgstr "대상을 마운트 해제하고 다시 시작하는 중"
 
 #: src/steps/install.rs:136
 msgid "install_step.progress.target_config"
-msgstr ""
+msgstr "설치된 시스템 구성 중"
 
 #: src/steps/install.rs:155
 msgid "install_step.progress.wait"
-msgstr ""
+msgstr "설치가 진행 중입니다. 컴퓨터를 끄거나 다시 시작하지 마십시오."
 
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
 msgstr ""
+"설치가 완료되었습니다. 지금 다시 시작하시겠습니까? '나중에'를 선택하면 /mnt"
+"가 마운트된 채로 유지됩니다."
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"
-msgstr ""
+msgstr "나중에"
 
 #: src/steps/install.rs:224
 msgid "install_step.success.reboot"
-msgstr ""
+msgstr "다시 시작"
 
 #: src/steps/install.rs:216
 msgid "install_step.success.title"
-msgstr ""
+msgstr "설치 완료"
 
 #: src/steps/kernel.rs:106
 msgid "kernel_step.headers_hint"
-msgstr ""
+msgstr "일치하는 커널 헤더가 자동으로 설치됩니다."
 
 #: src/steps/kernel.rs:107
 msgid "kernel_step.key_hint"
-msgstr ""
+msgstr "Space=선택  Enter=다음"
 
 #: src/steps/kernel.rs:159
 msgid "kernel_step.option.linux"
-msgstr ""
+msgstr "linux — 표준 커널"
 
 #: src/steps/kernel.rs:162
 msgid "kernel_step.option.linux_hardened"
-msgstr ""
+msgstr "linux-hardened — 보안 강화 커널"
 
 #: src/steps/kernel.rs:160
 msgid "kernel_step.option.linux_lts"
-msgstr ""
+msgstr "linux-lts — 장기 지원 커널"
 
 #: src/steps/kernel.rs:161
 msgid "kernel_step.option.linux_zen"
-msgstr ""
+msgstr "linux-zen — 데스크톱 최적화 커널(기본값)"
 
 #: src/steps/kernel.rs:99
 msgid "kernel_step.title"
-msgstr ""
+msgstr "커널 선택"
 
 #: src/steps/keyboard.rs:174
 msgid "keyboard_step.hint"
-msgstr ""
+msgstr "Space=선택  Enter=다음"
 
 #: src/steps/keyboard.rs:167
 msgid "keyboard_step.title"
-msgstr ""
+msgstr "키보드 배열 선택"
 
 #: src/steps/language.rs:35
 msgid "language.name.english"
-msgstr ""
+msgstr "English"
 
 #: src/steps/language.rs:39
 msgid "language.name.german"
-msgstr ""
+msgstr "Deutsch"
 
 #: src/steps/language.rs:38
 msgid "language.name.japanese"
-msgstr ""
+msgstr "日本語"
 
 #: src/steps/language.rs:40
 msgid "language.name.korean"
-msgstr ""
+msgstr "한국어"
 
 #: src/steps/language.rs:41
 msgid "language.name.russian"
-msgstr ""
+msgstr "Русский"
 
 #: src/steps/language.rs:36
 msgid "language.name.simplified_chinese"
-msgstr ""
+msgstr "简体中文"
 
 #: src/steps/language.rs:37
 msgid "language.name.traditional_chinese"
-msgstr ""
+msgstr "繁體中文"
 
 #: src/steps/language.rs:210
 msgid "language_step.hint_target"
-msgstr ""
+msgstr "위/아래=선택  Space=적용  Enter=다음  Shift+Tab=UI"
 
 #: src/steps/language.rs:209
 msgid "language_step.hint_ui"
-msgstr ""
+msgstr "위/아래=선택  Space=적용  Enter/Tab=대상 로케일"
 
 #: src/steps/language.rs:202
 msgid "language_step.target_title"
-msgstr ""
+msgstr "대상 시스템 로케일"
 
 #: src/steps/language.rs:179
 msgid "language_step.ui_title"
-msgstr ""
+msgstr "설치 프로그램 언어"
 
 #: src/steps/mirror.rs:365
 msgid "mirror_step.error_hint"
-msgstr ""
+msgstr "Esc/Enter로 닫고 다시 시도하십시오."
 
 #: src/steps/mirror.rs:126
 msgid "mirror_step.error_invalid_url"
 msgstr ""
+"잘못된 서버 URL입니다. http://, https://, ftp:// 또는 rsync://로 시작해야 합"
+"니다."
 
 #: src/steps/mirror.rs:164
 msgid "mirror_step.error_pacman"
 msgstr ""
+"pacman -Sy가 실패했습니다. 네트워크를 확인하거나 다른 미러를 사용해 보십시오."
 
 #: src/steps/mirror.rs:371
 msgid "mirror_step.error_title"
-msgstr ""
+msgstr "검증 실패"
 
 #: src/steps/mirror.rs:262
 msgid "mirror_step.hint_input"
-msgstr ""
+msgstr "URL 입력  Shift+Tab=지역  Tab=버튼  Enter=적용"
 
 #: src/steps/mirror.rs:260
 msgid "mirror_step.hint_list"
-msgstr ""
+msgstr "위/아래=선택  Tab=입력  Enter=적용"
 
 #: src/steps/mirror.rs:237
 msgid "mirror_step.input_label"
-msgstr ""
+msgstr "서버"
 
 #: src/steps/mirror.rs:252
 msgid "mirror_step.input_title"
-msgstr ""
+msgstr "수동 미러 소스"
 
 #: src/steps/mirror.rs:227
 msgid "mirror_step.list_title"
-msgstr ""
+msgstr "지역 선택"
 
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
-msgstr ""
+msgstr "Enter=다음  N=nmtui  R=다시 확인"
 
 #: src/steps/network.rs:106
 msgid "network_step.hint_disconnected"
-msgstr ""
+msgstr "Enter=nmtui  R=다시 확인"
 
 #: src/steps/network.rs:126
 msgid "network_step.label_address"
-msgstr ""
+msgstr "주소"
 
 #: src/steps/network.rs:131
 msgid "network_step.label_gateway"
-msgstr ""
+msgstr "게이트웨이"
 
 #: src/steps/network.rs:116
 msgid "network_step.label_interface"
-msgstr ""
+msgstr "인터페이스"
 
 #: src/steps/network.rs:112
 msgid "network_step.status_connected"
-msgstr ""
+msgstr "✓ 연결됨"
 
 #: src/steps/network.rs:135
 msgid "network_step.status_disconnected"
-msgstr ""
+msgstr "✗ 연결되지 않음"
 
 #: src/steps/network.rs:141
 msgid "network_step.title"
-msgstr ""
+msgstr "네트워크 구성"
 
 #: src/steps/nvidia.rs:138
 msgid "nvidia_step.headers_hint"
-msgstr ""
+msgstr "일치하는 커널 헤더가 이미 포함되어 있습니다."
 
 #: src/steps/nvidia.rs:111
 msgid "nvidia_step.incompatible_suffix"
-msgstr ""
+msgstr "(선택한 커널과 호환되지 않음)"
 
 #: src/steps/nvidia.rs:139
 msgid "nvidia_step.key_hint"
-msgstr ""
+msgstr "위/아래=선택  Space=적용  Enter=적용하고 계속"
 
 #: src/steps/nvidia.rs:187
 msgid "nvidia_step.option.none"
-msgstr ""
+msgstr "NVIDIA 드라이버 없음"
 
 #: src/steps/nvidia.rs:188
 msgid "nvidia_step.option.nvidia_open"
-msgstr ""
+msgstr "nvidia-open — linux용 오픈 커널 모듈"
 
 #: src/steps/nvidia.rs:189
 msgid "nvidia_step.option.nvidia_open_dkms"
-msgstr ""
+msgstr "nvidia-open-dkms — DKMS 오픈 커널 모듈(지원되는 모든 커널)"
 
 #: src/steps/nvidia.rs:190
 msgid "nvidia_step.option.nvidia_open_lts"
-msgstr ""
+msgstr "nvidia-open-lts — linux-lts용 오픈 커널 모듈"
 
 #: src/steps/nvidia.rs:131
 msgid "nvidia_step.title"
-msgstr ""
+msgstr "NVIDIA 드라이버 선택"
 
 #: src/app.rs:302
 msgid "quit_dialog.hint"
-msgstr ""
+msgstr "왼쪽/오른쪽=선택  Enter=확인  Esc=취소"
 
 #: src/app.rs:298
 msgid "quit_dialog.title"
-msgstr ""
+msgstr "정말 종료하시겠습니까?"
 
 #: src/steps/mod.rs:85
 msgid "step.title.confirm_installation"
-msgstr ""
+msgstr "설치 확인"
 
 #: src/steps/mod.rs:79
 msgid "step.title.disk_partitioning"
-msgstr ""
+msgstr "디스크 파티션"
 
 #: src/steps/mod.rs:84
 msgid "step.title.hostname"
-msgstr ""
+msgstr "호스트 이름"
 
 #: src/steps/mod.rs:86
 msgid "step.title.installing"
-msgstr ""
+msgstr "설치 중"
 
 #: src/steps/mod.rs:80
 msgid "step.title.kernel"
-msgstr ""
+msgstr "커널"
 
 #: src/steps/mod.rs:76
 msgid "step.title.keyboard_layout"
-msgstr ""
+msgstr "키보드 배열"
 
 #: src/steps/mod.rs:75
 msgid "step.title.language"
-msgstr ""
+msgstr "언어"
 
 #: src/steps/mod.rs:78
 msgid "step.title.mirror_list"
-msgstr ""
+msgstr "미러 목록"
 
 #: src/steps/mod.rs:77
 msgid "step.title.network"
-msgstr ""
+msgstr "네트워크"
 
 #: src/steps/mod.rs:81
 msgid "step.title.nvidia_driver"
-msgstr ""
+msgstr "NVIDIA 드라이버"
 
 #: src/steps/mod.rs:82
 msgid "step.title.timezone"
-msgstr ""
+msgstr "시간대"
 
 #: src/steps/mod.rs:83
 msgid "step.title.user_account"
-msgstr ""
+msgstr "사용자 계정"
 
 #: src/steps/timezone.rs:280
 msgid "timezone_step.hint_region"
-msgstr ""
+msgstr "위/아래=선택  오른쪽/Enter=시간대  Tab=다음 컨트롤"
 
 #: src/steps/timezone.rs:279
 msgid "timezone_step.hint_utc"
-msgstr ""
+msgstr "위/아래=선택  Enter=UTC 적용 및 계속  Tab=버튼"
 
 #: src/steps/timezone.rs:281
 msgid "timezone_step.hint_zone"
-msgstr ""
+msgstr "위/아래=선택  왼쪽=지역  Enter=적용하고 계속"
 
 #: src/steps/timezone.rs:234
 msgid "timezone_step.region_title"
-msgstr ""
+msgstr "지역"
 
 #: src/steps/timezone.rs:242
 msgid "timezone_step.utc_direct"
-msgstr ""
+msgstr "(UTC에서는 사용하지 않음)"
 
 #: src/steps/timezone.rs:271
 msgid "timezone_step.zone_title"
-msgstr ""
+msgstr "시간대"
 
 #: src/steps/user.rs:215
 msgid "user_step.confirm_password"
-msgstr ""
+msgstr "비밀번호 확인"
 
 #: src/steps/user.rs:72
 msgid "user_step.error_password_mismatch"
-msgstr ""
+msgstr "비밀번호가 일치하지 않습니다."
 
 #: src/steps/user.rs:69
 msgid "user_step.error_password_required"
-msgstr ""
+msgstr "비밀번호는 비워 둘 수 없습니다."
 
 #: src/steps/user.rs:66
 msgid "user_step.error_username_invalid"
-msgstr ""
+msgstr "소문자, 숫자, 밑줄 및 하이픈을 사용하고 문자 또는 밑줄로 시작하십시오."
 
 #: src/steps/user.rs:63
 msgid "user_step.error_username_required"
-msgstr ""
+msgstr "사용자 이름을 입력하십시오."
 
 #: src/steps/user.rs:181
 msgid "user_step.form_title"
-msgstr ""
+msgstr "계정 정보"
 
 #: src/steps/user.rs:207
 msgid "user_step.password"
-msgstr ""
+msgstr "비밀번호"
 
 #: src/steps/user.rs:74
 msgid "user_step.ready"
-msgstr ""
+msgstr "계정 정보가 유효합니다."
 
 #: src/steps/user.rs:225
 msgid "user_step.strength"
-msgstr ""
+msgstr "비밀번호 강도"
 
 #: src/steps/user.rs:124
 msgid "user_step.strength_fair"
-msgstr ""
+msgstr "보통"
 
 #: src/steps/user.rs:125
 msgid "user_step.strength_good"
-msgstr ""
+msgstr "좋음"
 
 #: src/steps/user.rs:126
 msgid "user_step.strength_strong"
-msgstr ""
+msgstr "강함"
 
 #: src/steps/user.rs:123
 msgid "user_step.strength_weak"
-msgstr ""
+msgstr "약함"
 
 #: src/steps/user.rs:199
 msgid "user_step.username"
-msgstr ""
+msgstr "사용자 이름"

@@ -34,6 +34,11 @@ config/     packages.list
 po/         clipsneko-installer.pot
             en/LC_MESSAGES/clipsneko-installer.po
             zh_CN/LC_MESSAGES/clipsneko-installer.po
+            zh_TW/LC_MESSAGES/clipsneko-installer.po
+            ja/LC_MESSAGES/clipsneko-installer.po
+            de/LC_MESSAGES/clipsneko-installer.po
+            ko/LC_MESSAGES/clipsneko-installer.po
+            ru/LC_MESSAGES/clipsneko-installer.po
 docs/       dev-plan.md dev-prog.md design.md
 AGENTS.md
 ```
@@ -49,8 +54,9 @@ reversed focus style. Non-interactive container and informational borders do
 not receive the focus style.
 
 1. **Language and locale** — two independent lists on one step:
-   - Installer UI language: en / zh_CN. Space applies the highlighted language
-     live through gettext; it changes `LC_MESSAGES` only.
+   - Installer UI language: en / zh_CN / zh_TW / ja / de / ko / ru. Space
+     applies the highlighted language live through gettext; it changes
+     `LC_MESSAGES` only.
    - Target-system locale: every UTF-8 locale parsed from `/etc/locale.gen`,
      defaulting to `en_US.UTF-8`; stored separately in state for M4b.
    - Tab/Shift+Tab moves between the two lists and footer buttons. Enter on the
@@ -292,9 +298,14 @@ The `zeroize` crate provides the memory clearing implementation.
 ## 8. i18n workflow
 
 - `en` is the POT source.
-- Add a UI string → wrap in `t!(...)`; update `.pot` and both `.po` files in
+- Supported UI locales and catalog directories are `en_US.UTF-8` → `en`,
+  `zh_CN.UTF-8` → `zh_CN`, `zh_TW.UTF-8` → `zh_TW`, `ja_JP.UTF-8` →
+  `ja`, `de_DE.UTF-8` → `de`, `ko_KR.UTF-8` → `ko`, and `ru_RU.UTF-8`
+  → `ru`. The Live ISO generates all seven locales and packaging installs
+  each MO under `/usr/share/locale/<catalog>/LC_MESSAGES/`.
+- Add a UI string → wrap in `t!(...)`; update `.pot` and every `.po` file in
   the same change.
-- `zh_CN` must not lag `en` by more than one session.
+- No supported translation may lag `en` by more than one session.
 - Changing the installer language sets `LC_MESSAGES` only; it does not alter
   other process locale categories or the target-system locale.
 - Debug builds load build-generated catalogs from OUT_DIR. Release builds use

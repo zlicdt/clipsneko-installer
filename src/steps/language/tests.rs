@@ -18,7 +18,7 @@ fn render_to_string(step: &mut LanguageStep, state: &InstallerState) -> String {
 }
 
 #[test]
-fn renders_both_language_labels() {
+fn renders_all_language_labels() {
     set_language(UiLang::En).unwrap();
     let mut step = LanguageStep::new().unwrap();
     let state = InstallerState::default();
@@ -31,6 +31,9 @@ fn renders_both_language_labels() {
         stripped.contains("简体中文"),
         "missing 简体中文 label; buffer was:\n{s:?}"
     );
+    for label in ["繁體中文", "日本語", "Deutsch", "한국어", "Русский"] {
+        assert!(stripped.contains(label), "missing {label} label");
+    }
 }
 
 #[test]
@@ -54,27 +57,25 @@ fn highlight_moves_on_down_without_wedging() {
     assert_eq!(step.highlighted_ui(), UiLang::ZhCn);
     let _ = render_to_string(&mut step, &state);
 
-    // Down again wraps back to English.
+    // Up returns to English without relying on the number of supported languages.
     step.handle_key(
-        crossterm::event::KeyEvent::new(KeyCode::Down, crossterm::event::KeyModifiers::NONE),
+        crossterm::event::KeyEvent::new(KeyCode::Up, crossterm::event::KeyModifiers::NONE),
         &mut state,
     )
     .unwrap();
     assert_eq!(step.highlighted_ui(), UiLang::En);
     let _ = render_to_string(&mut step, &state);
 
-    // One more Down returns to ZhCn.
+    // Up from the first entry wraps to the last; Down wraps back to English.
     step.handle_key(
-        crossterm::event::KeyEvent::new(KeyCode::Down, crossterm::event::KeyModifiers::NONE),
+        crossterm::event::KeyEvent::new(KeyCode::Up, crossterm::event::KeyModifiers::NONE),
         &mut state,
     )
     .unwrap();
-    assert_eq!(step.highlighted_ui(), UiLang::ZhCn);
+    assert_eq!(step.highlighted_ui(), UiLang::Ru);
     let _ = render_to_string(&mut step, &state);
-
-    // Up returns to English.
     step.handle_key(
-        crossterm::event::KeyEvent::new(KeyCode::Up, crossterm::event::KeyModifiers::NONE),
+        crossterm::event::KeyEvent::new(KeyCode::Down, crossterm::event::KeyModifiers::NONE),
         &mut state,
     )
     .unwrap();
