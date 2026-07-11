@@ -1,0 +1,52 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Prepare Arch build environment
+        run: |
+          pacman -Syu --needed --noconfirm git rust gettext
+          sed -i 's/^#\?PACKAGER=.*/PACKAGER="zlicdt <zlicdt@clipsneko.cc>"/' /etc/makepkg.conf
+          grep -Fx 'PACKAGER="zlicdt <zlicdt@clipsneko.cc>"' /etc/makepkg.conf
+          useradd --create-home builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: Verify release version
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          cargo_version="$(sed -n '/^\[package\]/,/^\[/ s/^version = "\([^"]*\)"/\1/p' Cargo.toml)"
+          pkgbuild_version="$(sed -n 's/^pkgver=//p' package/PKGBUILD)"
+
+          test "$tag_version" = "$cargo_version"
+          test "$tag_version" = "$pkgbuild_version"
+
+      - name: Build Arch package
+        working-directory: package
+        run: runuser -u builder -- makepkg --cleanbuild --noconfirm
+
+      - name: Preserve package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: clipsneko-installer-${{ github.ref_name }}-x86_64
+          path: package/*.pkg.tar.zst
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: package/*.pkg.tar.zst
+          generate_release_notes: true

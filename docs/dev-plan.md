@@ -88,7 +88,7 @@ online, and configure mirrors — everything required before any disk work.
 - `src/util/process.rs` — suspend-ratatui/run-subprocess/resume helper
   shared by interactive tools such as `nmtui` and `cfdisk`. Non-interactive
   commands such as `pacman -Sy` capture output without leaving the TUI.
-- Sample runtime package file in the repo: `config/packages.list`. The user's
+- Sample runtime package file in the repo: `config/packages.list`. The project
   PKGBUILD installs it to `/etc/clipsneko-installer/packages.list`; the
   installer exits if it is missing at startup. Repository configuration comes
   from the Live ISO's existing `pacman.conf`, not a separate runtime file.

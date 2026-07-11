@@ -3,7 +3,7 @@ name = "clipsneko-installer"
 version = "0.1.0"
 edition = "2021"
 description = "Installer for ClipsNeko Linux"
-license = "MIT"
+license = "GPL-3.0-only"
 build = "build.rs"
 
 [dependencies]

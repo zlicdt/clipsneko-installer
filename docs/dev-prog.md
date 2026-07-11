@@ -17,6 +17,13 @@ it moves from "Not done" to "Done" and stays there.
 - Cargo scaffolding, the release profile, `.gitignore`, CI, and build-time
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
+- Arch release packaging is present under `package/`. The PKGBUILD builds and
+  tests the locked Rust sources, installs the binary, backed-up runtime package
+  list, GPL license, and all seven GNU-standard MO catalogs. Numeric `vX.Y.Z`
+  tags trigger an Arch `base-devel` container, verify that the tag, Cargo, and
+  PKGBUILD versions agree, set the requested makepkg packager identity, build
+  the package as an unprivileged user, preserve it as an Actions artifact, and
+  upload it to the corresponding generated GitHub Release.
 - The English project README presents the logo and live CI status, summarizes
   the installer and its supported environment, documents Arch/ClipsNeko and
   Ubuntu build prerequisites, and provides verified release-build and
@@ -203,8 +210,9 @@ it moves from "Not done" to "Done" and stays there.
   selection, target-locale multi-selection/default handling, keyboard changes,
   nmtui return path, mirror rewrite, and release catalogs still need an
   interactive check on the actual ClipsNeko Live ISO or a matching VM. The ISO
-  must generate all seven documented UI locales, and packaging must install
-  `config/packages.list` plus every MO catalog at its documented system path.
+  must generate all seven documented UI locales, and the packaged
+  `config/packages.list` plus every MO catalog still need validation at their
+  documented system paths after installation.
 - **Full-screen restoration test seam:** the helper's actual terminal-state
   bookkeeping on subprocess spawn failure has not been automated; current
   coverage tests privilege command construction only.

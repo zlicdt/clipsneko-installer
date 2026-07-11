@@ -40,6 +40,7 @@ po/         clipsneko-installer.pot
             ko/LC_MESSAGES/clipsneko-installer.po
             ru/LC_MESSAGES/clipsneko-installer.po
 docs/       dev-plan.md dev-prog.md design.md
+package/    PKGBUILD
 AGENTS.md
 ```
 
