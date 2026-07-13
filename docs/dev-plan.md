@@ -404,24 +404,24 @@ M4b.
 
 ## M5 — Postinstall hook & polish
 
-The deferred "run a script as the new user inside the chroot" hook, plus
-the small polish items that were open since M0. **The postinstall hook is
-blocked on user direction** — its design (script path, package that
-installs it, invocation method, HOME/XDG env injection) must be decided
-with the user before this milestone can start.
+The target-user dotfiles hook plus the small polish items that were open since
+M0. The hook design is locked: its executable comes from the normal target
+package set and runs last through `runuser` with a clean login environment.
 
 ### Deliverables
 
-- `src/installer/postinstall.rs` — the user-mode script hook, per the
-  user's spec (blocked).
+- `src/installer/postinstall.rs` — run
+  `clipsneko-install-dotfiles -y` inside the chroot as the newly created user
+  through `runuser --login`, after all root-level installation commands.
 - F1 help screen content and rendering.
 - Final end-to-end install test on a test VM: a full run from language
   pick through reboot produces a bootable ClipsNeko system.
 
 ### Acceptance
 
-- The postinstall hook runs the specified script as the new user inside
-  the chroot, with the agreed env, and its output is captured to the log.
+- The postinstall hook runs the specified command as the new user inside the
+  chroot from that user's login environment, and its output is captured to the
+  log. A non-zero exit stops installation without fallback.
 - F1 shows a help screen listing all keybindings.
 - A full end-to-end install on a VM boots into a working system with the
   created user, zsh shell, NetworkManager, and GRUB; the installer leaves the
@@ -429,12 +429,12 @@ with the user before this milestone can start.
 
 ### Unit tests
 
-- Depends on the postinstall hook's design — at minimum, the argument/env
-  construction for the `runuser` (or equivalent) invocation.
+- Exact chroot and `runuser` argument construction, including command order,
+  login-environment selection, target username, and fixed `-y` argument.
 
 ### Dependencies
 
-M4c; postinstall hook blocked on user direction.
+M4c.
 
 ---
 
@@ -442,6 +442,3 @@ M4c; postinstall hook blocked on user direction.
 
 - **F1 help screen content** — what to show (keybindings only? per-step
   help? both?).
-- **Postinstall hook** (M5 blocker) — script path on disk, package that
-  installs it, invocation (`runuser -u <user> --` vs systemd user unit),
-  HOME/XDG env injection.

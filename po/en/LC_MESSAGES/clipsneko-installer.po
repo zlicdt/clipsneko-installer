@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: clipsneko-installer 0.1.0\n"
+"Project-Id-Version: clipsneko-installer 0.1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-11 14:44+0800\n"
 "PO-Revision-Date: 2026-07-07 00:00+0800\n"
@@ -348,6 +348,10 @@ msgstr "Creating and mounting subvolumes"
 #: src/steps/install.rs:134
 msgid "install_step.progress.packages"
 msgstr "Installing system packages"
+
+#: src/steps/install.rs:139
+msgid "install_step.progress.postinstall"
+msgstr "Installing user dotfiles"
 
 #: src/steps/install.rs:144
 msgid "install_step.progress.rebooting"

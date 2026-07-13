@@ -198,13 +198,22 @@ it moves from "Not done" to "Done" and stays there.
   normal footer are locked. Failure stops without rollback and offers Return
   or a scrollable log view. Success defaults to Reboot; reboot runs privileged
   recursive unmount then reboot, while Not now exits with `/mnt` preserved.
+- **M5 target-user dotfiles hook:** after all root-level target configuration,
+  the installer runs `clipsneko-install-dotfiles -y` as the newly created user
+  through `runuser --login` inside the chroot. This supplies the user's HOME and
+  working directory without inheriting Live ISO XDG paths. The command is a
+  required target-package invariant; its output is captured by the normal
+  installer log and a non-zero exit stops installation without fallback. Exact
+  chroot, login-environment, command, and username argument construction is
+  covered by an automated test, and the install spinner exposes a translated
+  postinstall progress state in all seven UI catalogs.
 - Destructive system work is isolated behind a command-runner seam. Automated
   tests cover command and package construction, ESP decisions, btrfs RAID and
   mount options, fstab validation, target-file transforms, stdin-only password
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (151 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (152 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -230,12 +239,10 @@ it moves from "Not done" to "Done" and stays there.
   final summary/destructive-dialog review before install.
 - **M4 runtime acceptance:** the full destructive pipeline, spinner/navigation
   lock, failure/log dialog, generated fstab, target configuration, GRUB output,
-  preserved-mount Not now path, and unmount/reboot path still need an
-  interactive multi-disk test on the actual ClipsNeko Live ISO or a disposable
-  matching VM.
+  target-user dotfiles result, preserved-mount Not now path, and unmount/reboot
+  path still need an interactive multi-disk test on the actual ClipsNeko Live
+  ISO or a disposable matching VM.
 - **F1 help:** content and rendering still need the user's decision; F1 is not
   advertised in the UI meanwhile.
-- **Postinstall hook:** blocked on the user's decisions about its path/package,
-  invocation method, and HOME/XDG environment injection.
 - **End-to-end acceptance:** no complete VM/Live ISO installation has yet
   produced and booted a target ClipsNeko system.

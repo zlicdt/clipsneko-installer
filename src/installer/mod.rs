@@ -7,6 +7,7 @@ pub mod bootloader;
 pub mod chroot;
 pub mod pacstrap;
 pub mod partition;
+pub mod postinstall;
 
 use crate::state::{BtrfsRaidMode, InstallerState, NvidiaChoice};
 use crate::util::password::SecretString;
@@ -187,6 +188,7 @@ pub enum InstallProgress {
     TargetConfig,
     Initramfs,
     Bootloader,
+    Postinstall,
 }
 
 /// Messages sent from the worker to the TUI.
@@ -219,6 +221,8 @@ pub fn run_install(mut config: InstallConfig, sender: &Sender<WorkerMessage>) ->
     chroot::generate_initramfs(&mut runner, config.nvidia)?;
     report(sender, InstallProgress::Bootloader);
     bootloader::install(&mut runner)?;
+    report(sender, InstallProgress::Postinstall);
+    postinstall::run(&mut runner, &config.username)?;
     Ok(())
 }
 

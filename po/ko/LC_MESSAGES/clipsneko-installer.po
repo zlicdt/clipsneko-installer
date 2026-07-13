@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: clipsneko-installer 0.1.0\n"
+"Project-Id-Version: clipsneko-installer 0.1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-11 14:44+0800\n"
 "PO-Revision-Date: 2026-07-11 00:00+0800\n"
@@ -348,6 +348,10 @@ msgstr "서브볼륨 생성 및 마운트 중"
 #: src/steps/install.rs:134
 msgid "install_step.progress.packages"
 msgstr "시스템 패키지 설치 중"
+
+#: src/steps/install.rs:139
+msgid "install_step.progress.postinstall"
+msgstr "사용자 설정 파일 설치 중"
 
 #: src/steps/install.rs:144
 msgid "install_step.progress.rebooting"

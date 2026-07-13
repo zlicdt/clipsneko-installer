@@ -249,7 +249,13 @@ the generated level; do not rewrite it or specify a level in mount commands.
   --bootloader-id=clipsneko`
 - `grub-mkconfig -o /boot/grub/grub.cfg`
 - `systemctl enable NetworkManager`
-- **postinstall hook (deferred)** — see §7
+- as the final installation command, run
+  `runuser --login --command "clipsneko-install-dotfiles -y" <user>` inside
+  the chroot. The login environment sets the new user's HOME and working
+  directory without inheriting the Live ISO's XDG paths. The command is
+  supplied by the normal target package set, so the installer does not probe
+  for it or provide a fallback; a non-zero exit stops installation like any
+  other failed target command.
 
 12.6 Prompt "Reboot now?" with Reboot focused by default. Reboot runs
 `umount -R /mnt` and `reboot` through the normal privileged-command path.
@@ -297,9 +303,6 @@ the focused button, and Esc cancels.
 
 ## 7. Deferred items (pending user direction)
 
-- The "postinstall script run as the new user" inside chroot: location on disk,
-  package that installs it, invocation (`runuser -u <user> --`? systemd user
-  unit?), HOME/XDG env injection.
 - Desktop environment / display manager selection (out of scope for v0.1).
 - Password-strength algorithm tune-up (initial: lightweight heuristic).
 - Install-failure rollback.

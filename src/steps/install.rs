@@ -136,6 +136,7 @@ impl InstallStep {
             InstallProgress::TargetConfig => t!("install_step.progress.target_config"),
             InstallProgress::Initramfs => t!("install_step.progress.initramfs"),
             InstallProgress::Bootloader => t!("install_step.progress.bootloader"),
+            InstallProgress::Postinstall => t!("install_step.progress.postinstall"),
         }
     }
 
