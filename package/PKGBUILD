@@ -1,7 +1,7 @@
 # Maintainer: zlicdt <zlicdt@clipsneko.cc>
 
 pkgname=clipsneko-installer
-pkgver=0.1.1
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="TUI installer for ClipsNeko Linux"
 arch=('x86_64')

@@ -67,6 +67,7 @@ pub struct DiskStep {
     phase: Phase,
     disks: Vec<BlockDevice>,
     parts: Vec<BlockDevice>,
+    pending_cfdisk_disk: Option<String>,
     table_state: TableState,
     role_dialog: RoleDialog,
     raid_dialog: RaidDialog,
@@ -82,6 +83,7 @@ impl DiskStep {
             phase: Phase::DiskPicker,
             disks: Vec::new(),
             parts: Vec::new(),
+            pending_cfdisk_disk: None,
             table_state,
             role_dialog: RoleDialog {
                 visible: false,
@@ -111,15 +113,16 @@ impl DiskStep {
         Ok(())
     }
 
-    fn partprobe(&mut self) -> Result<bool> {
-        let output = privileged_command("partprobe")
+    fn partprobe(&mut self, disk: &str) -> Result<bool> {
+        let output = partprobe_command(disk)
             .output()
-            .context("running partprobe")?;
+            .with_context(|| format!("running partprobe for /dev/{disk}"))?;
         if output.status.success() {
             return Ok(true);
         }
         tracing::warn!(
-            "partprobe failed: {}",
+            "partprobe failed for /dev/{}: {}",
+            disk,
             String::from_utf8_lossy(&output.stderr).trim()
         );
         self.show_error(t!("disk_step.error_partprobe"));
@@ -731,6 +734,12 @@ pub(crate) fn cfdisk_command(disk: &str) -> (String, Vec<String>) {
     }
 }
 
+fn partprobe_command(disk: &str) -> std::process::Command {
+    let mut command = privileged_command("partprobe");
+    command.arg(format!("/dev/{disk}"));
+    command
+}
+
 impl Step for DiskStep {
     fn id(&self) -> StepId {
         StepId::Disk
@@ -738,6 +747,7 @@ impl Step for DiskStep {
 
     fn activate(&mut self, state: &mut InstallerState) -> Result<()> {
         self.reset_dialogs();
+        self.pending_cfdisk_disk = None;
         let has_assignments =
             state.disk.esp_partition.is_some() || !state.disk.target_partitions.is_empty();
         self.phase = if has_assignments {
@@ -773,7 +783,11 @@ impl Step for DiskStep {
         // Never expose the pre-cfdisk partition snapshot after partprobe has
         // reported that the kernel could not refresh the partition table.
         self.parts.clear();
-        if self.partprobe()? {
+        let disk = self
+            .pending_cfdisk_disk
+            .take()
+            .context("cfdisk completed without a recorded target disk")?;
+        if self.partprobe(&disk)? {
             self.refresh_devices(state)?;
         }
         Ok(())
@@ -913,6 +927,7 @@ impl Step for DiskStep {
                 KeyCode::Enter => {
                     if let Some(disk) = self.highlighted_disk_name() {
                         let (program, args) = cfdisk_command(&disk);
+                        self.pending_cfdisk_disk = Some(disk);
                         StepAction::SuspendRun(program, args)
                     } else {
                         StepAction::None

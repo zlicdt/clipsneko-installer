@@ -101,8 +101,10 @@ informational containers, uses rounded corners.
      disabled. Other removable disks remain selectable.
    - Enter opens `cfdisk /dev/<disk>` full-screen (via `sudo` when not root);
      on return all prior role assignments are cleared, then the installer runs
-     `partprobe` and re-reads lsblk. A non-zero partprobe result is a blocking,
-     retryable disk error; spawn failure is fatal.
+     `partprobe /dev/<disk>` only for the disk that cfdisk edited, then re-reads
+     lsblk globally. This avoids probing unrelated devices such as `/dev/sr0`.
+     A non-zero partprobe result is a blocking, retryable disk error; spawn
+     failure is fatal.
    - The user may run cfdisk against multiple disks before leaving the page.
    - The on-screen Next button advances to sub-page B.
 

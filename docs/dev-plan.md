@@ -138,8 +138,8 @@ RAID at format time; unified wipe-warning dialog on Next).
     device/model/transport/size/status table; exclude zram, disable the Live ISO
     backing disk and read-only disks, but allow other removable disks. Enter
     opens `cfdisk /dev/<disk>` full-screen. Returning clears all assignments,
-    runs `partprobe`, and refreshes lsblk; the on-screen Next button advances to
-    sub-page B.
+    runs `partprobe /dev/<disk>` only for the edited disk, and refreshes lsblk;
+    the on-screen Next button advances to sub-page B.
   - *Sub-page B (partition role picker):* list every partition of type
     `part` on every disk from the latest `lsblk` (name / size / current
     FSTYPE / label / role); protected Live-media partitions cannot be assigned.
@@ -157,7 +157,8 @@ RAID at format time; unified wipe-warning dialog on Next).
 - Sub-page A excludes zram, visibly disables Live/read-only disks, and shows
   model/transport/size/status for every remaining disk candidate.
 - Enter opens `cfdisk` only on an enabled disk; returning clears assignments
-  before partprobe + lsblk refresh. Non-zero partprobe is a retryable modal.
+  before a targeted partprobe + global lsblk refresh. Unrelated devices such as
+  `/dev/sr0` are not probed. Non-zero partprobe is a retryable modal.
 - Sub-page B lists all partitions on every disk after the latest re-read.
 - Enter pops the explicit ESP/Target/Unassigned dialog; protected partitions
   are rejected, ESP type is validated, and assigned state is visible.

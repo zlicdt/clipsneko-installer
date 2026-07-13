@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: clipsneko-installer 0.1.1\n"
+"Project-Id-Version: clipsneko-installer 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-11 14:44+0800\n"
 "PO-Revision-Date: 2026-07-11 00:00+0800\n"

@@ -243,6 +243,41 @@ fn cfdisk_command_paths_to_dev_disk() {
 }
 
 #[test]
+fn partprobe_targets_only_the_edited_disk() {
+    let command = partprobe_command("sda");
+    let program = command.get_program().to_string_lossy();
+    let args: Vec<_> = command
+        .get_args()
+        .map(|arg| arg.to_string_lossy().into_owned())
+        .collect();
+
+    if is_root() {
+        assert_eq!(program, "partprobe");
+        assert_eq!(args, ["/dev/sda"]);
+    } else {
+        assert_eq!(program, "sudo");
+        assert_eq!(args, ["--", "partprobe", "/dev/sda"]);
+    }
+}
+
+#[test]
+fn opening_cfdisk_records_the_disk_for_the_return_refresh() {
+    let mut step = DiskStep::new();
+    step.disks = vec![disk("nvme0n1", Vec::new())];
+    let mut state = InstallerState::default();
+
+    let action = step
+        .handle_key(
+            KeyEvent::new(KeyCode::Enter, crossterm::event::KeyModifiers::NONE),
+            &mut state,
+        )
+        .unwrap();
+
+    assert!(matches!(action, StepAction::SuspendRun(_, _)));
+    assert_eq!(step.pending_cfdisk_disk.as_deref(), Some("nvme0n1"));
+}
+
+#[test]
 fn disk_table_renders_device_model_and_size_at_minimum_width() {
     let mut step = DiskStep::new();
     step.disks = vec![disk("nvme0n1", Vec::new())];

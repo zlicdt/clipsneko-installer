@@ -113,8 +113,10 @@ it moves from "Not done" to "Done" and stays there.
 - **Disk picker:** a responsive device/model/transport/size/status table is in
   place. The Live ISO disk and read-only disks remain visible but disabled;
   other removable disks are usable. Returning from cfdisk clears all roles,
-  runs partprobe, and refreshes lsblk. A non-zero partprobe result is retryable
-  and discards the stale pre-cfdisk partition snapshot.
+  runs partprobe only for the disk that cfdisk edited, and refreshes lsblk
+  globally. Unrelated devices such as `/dev/sr0` are not probed. A non-zero
+  partprobe result is retryable and discards the stale pre-cfdisk partition
+  snapshot.
 - **Partition roles:** a responsive device/size/label/role/filesystem table and
   explicit ESP/Target/Unassigned dialog are implemented. Role follows Label,
   uses the width of the longest current translation, and leaves the trailing
@@ -213,7 +215,7 @@ it moves from "Not done" to "Done" and stays there.
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (152 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (154 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -228,10 +230,11 @@ it moves from "Not done" to "Done" and stays there.
 - **Full-screen restoration test seam:** the helper's actual terminal-state
   bookkeeping on subprocess spawn failure has not been automated; current
   coverage tests privilege command construction only.
-- **M2 runtime acceptance:** cfdisk suspension, partprobe recovery, real lsblk
-  output, protected Live media, responsive tables in all supported languages, role
-  assignment, RAID profiles, and wipe dialogs still need an interactive
-  multi-disk Live ISO/VM check.
+- **M2 runtime acceptance:** cfdisk suspension, targeted partprobe with an
+  unrelated `/dev/sr0`, partprobe recovery, real lsblk output, protected Live
+  media, responsive tables in all supported languages, role assignment, RAID
+  profiles, and wipe dialogs still need an interactive multi-disk Live ISO/VM
+  check.
 - **M3 selection and identity:** the kernel, NVIDIA, timezone, user-account,
   hostname, and confirmation steps still need an interactive multilingual Live
   ISO/VM check, including real GeoIP, `timedatectl` data, centered-form
