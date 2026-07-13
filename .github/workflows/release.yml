@@ -19,7 +19,7 @@ jobs:
 
       - name: Prepare Arch build environment
         run: |
-          pacman -Syu --needed --noconfirm git rust gettext
+          pacman -Syu --needed --noconfirm git rust gettext inetutils
           sed -i 's/^#\?PACKAGER=.*/PACKAGER="zlicdt <zlicdt@clipsneko.cc>"/' /etc/makepkg.conf
           grep -Fx 'PACKAGER="zlicdt <zlicdt@clipsneko.cc>"' /etc/makepkg.conf
           printf '%s\n' \
