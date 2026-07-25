@@ -3,10 +3,13 @@ base-devel
 git
 zsh
 zsh-completions
+grml-zsh-config
 bash-completion
 btrfs-progs
+ntfs-3g
 grub
 grub-btrfs
+os-prober
 efibootmgr
 networkmanager
 openssh
@@ -22,3 +25,9 @@ clipsneko-hooks
 clipsneko-wallpapers
 clipsneko-icons
 clipsneko-dotfiles
+firefox
+nautilus
+ttf-ubuntu-mono-nerd
+noto-fonts-cjk
+noto-fonts-emoji
+noto-fonts-extra
