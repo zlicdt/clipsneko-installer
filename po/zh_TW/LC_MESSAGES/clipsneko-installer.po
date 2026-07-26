@@ -493,6 +493,14 @@ msgstr "手動鏡像來源"
 msgid "mirror_step.list_title"
 msgstr "選擇地區"
 
+#: src/steps/mirror.rs:328
+msgid "mirror_step.validating"
+msgstr "正在驗證鏡像源…"
+
+#: src/steps/network.rs:222
+msgid "network_step.checking"
+msgstr "正在檢查網路連線…"
+
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
 msgstr "Enter=下一步  N=nmtui  R=重新檢查"

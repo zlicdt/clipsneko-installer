@@ -77,7 +77,9 @@ informational containers, uses rounded corners.
 2. **Keyboard** — list from `localectl list-keymaps`; `loadkeys` immediately;
    persisted to target `/etc/vconsole.conf`.
 3. **Network** — suspend ratatui, run `nmtui`; on return verify with
-   `curl -sI http://ip-api.com/json`. Required to proceed.
+   `curl -sI http://ip-api.com/json`. Every check (entry, `R`, post-`nmtui`)
+   runs on a background worker behind a centered modal spinner dialog so the
+   TUI never freezes. Required to proceed.
 4. **Mirror**
    - Parse `/etc/pacman.d/mirrorlist` (assumed present and well-formed on
      the ISO) into region blocks (`## <Region>` header + `Server =` lines).
@@ -89,7 +91,9 @@ informational containers, uses rounded corners.
      silently falling back to a region server.
    - Tab toggles focus between the list and the input field.
    - On Next: rewrite the mirrorlist, validate with `pacman -Sy` (exit 0 =
-     ok). On failure, show a modal error dialog; dismiss and retry.
+     ok) on a background worker behind a centered modal spinner dialog so
+     the TUI never freezes. On failure, show a modal error dialog; dismiss
+     and retry.
 5. **Disk** — two sub-pages within the same step. There is **no** auto-suggested
    role assignment; every role is chosen by the user by hand.
 

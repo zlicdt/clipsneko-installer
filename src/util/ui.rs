@@ -1,8 +1,35 @@
 //! Small reusable layout helpers for the TUI.
 
-use ratatui::layout::{Constraint, Direction, Layout, Rect};
+use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
-use ratatui::widgets::{Block, BorderType, Borders};
+use ratatui::text::Line;
+use ratatui::widgets::{Block, BorderType, Borders, Clear, Paragraph};
+use ratatui::Frame;
+
+/// Spinner frames for indeterminate-progress dialogs, cycled by `Step::tick`.
+pub const SPINNER: [char; 4] = ['|', '/', '-', '\\'];
+
+/// Render a centered modal "working" dialog: a rounded box holding one line
+/// of bold text prefixed by the spinner frame at `spinner_idx` (e.g.
+/// `"/ Checking network connectivity…"`). It is drawn last so it overlays the
+/// step body; while it is visible the owning step must report
+/// `has_modal() == true` so keys cannot reach the body behind the overlay.
+pub fn render_loading_dialog(frame: &mut Frame, text: &str, spinner_idx: usize) {
+    let area = centered_rect(60, 5, frame.area());
+    let spinner = SPINNER[spinner_idx % SPINNER.len()];
+    let body = Paragraph::new(vec![
+        Line::from(""),
+        Line::from(ratatui::text::Span::styled(
+            format!("{spinner} {text}"),
+            Style::default().add_modifier(Modifier::BOLD),
+        )),
+        Line::from(""),
+    ])
+    .alignment(Alignment::Center)
+    .block(rounded_block());
+    frame.render_widget(Clear, area);
+    frame.render_widget(body, area);
+}
 
 /// Return the shared block with all four borders rendered using rounded corners.
 pub fn rounded_block() -> Block<'static> {

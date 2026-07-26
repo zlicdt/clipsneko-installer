@@ -500,6 +500,14 @@ msgstr "수동 미러 소스"
 msgid "mirror_step.list_title"
 msgstr "지역 선택"
 
+#: src/steps/mirror.rs:328
+msgid "mirror_step.validating"
+msgstr "미러를 검증하는 중…"
+
+#: src/steps/network.rs:222
+msgid "network_step.checking"
+msgstr "네트워크 연결을 확인하는 중…"
+
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
 msgstr "Enter=다음  N=nmtui  R=다시 확인"

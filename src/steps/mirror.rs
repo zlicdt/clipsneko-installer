@@ -14,24 +14,30 @@
 //! - Otherwise the selected region's `Server =` lines are moved to the top
 //!   of `/etc/pacman.d/mirrorlist`, ahead of all other regions. The file
 //!   header comments are preserved.
-//! - The rewritten mirrorlist is written back, then `pacman -Sy` is run
-//!   (`.output()` so its output never reaches the ratatui terminal). Exit
-//!   0 → `state.mirror_lines` recorded, advance. Non-zero → a modal error
-//!   dialog shows the failure; the user dismisses it and retries.
+//! - The rewritten mirrorlist is written back and `pacman -Sy` is run on a
+//!   background worker thread (`.output()` so its output never reaches the
+//!   ratatui terminal) — syncing databases can take many seconds and must
+//!   not freeze the TUI. While the worker runs, a centered modal loading
+//!   dialog with a spinner overlays the step and swallows all keys;
+//!   `Step::tick()` collects the outcome. Exit 0 → `state.mirror_lines`
+//!   recorded, advance. Non-zero → a modal error dialog shows the failure;
+//!   the user dismisses it and retries.
 //!
-//! Esc is handled by `app.rs` as Back unless the step's error modal is open.
+//! Esc is handled by `app.rs` as Back unless the step's error modal is open
+//! or a validation is in flight.
 
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
-use crate::util::ui::{centered_rect, focusable_block, rounded_block};
+use crate::util::ui::{centered_rect, focusable_block, render_loading_dialog, rounded_block};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::widgets::{Clear, List, ListItem, ListState, Paragraph, Wrap};
 use ratatui::Frame;
+use std::sync::mpsc::{self, Receiver, TryRecvError};
 
 /// Path to the pacman mirrorlist. On the ClipsNeko ISO this is always
 /// present and well-formed (the ISO build ships a full mirrorlist); the
@@ -71,6 +77,18 @@ pub struct MirrorStep {
     focus: MirrorFocus,
     /// Error dialog state.
     error: ErrorDialog,
+    /// Whether a background `pacman -Sy` validation is in flight.
+    validating: bool,
+    /// Spinner frame counter, advanced by `tick` while validating.
+    spinner: usize,
+    /// Receives the validation worker's outcome; `Some` only while
+    /// `validating`. `Ok(true)` = `pacman -Sy` exit 0, `Ok(false)` =
+    /// non-zero exit (recoverable), `Err` = fatal write/spawn failure.
+    receiver: Option<Receiver<Result<bool, String>>>,
+    /// Mirror lines recorded into shared state on validation success.
+    pending_lines: Vec<String>,
+    /// Label applied to the list highlight on validation success.
+    pending_selected: String,
 }
 
 impl MirrorStep {
@@ -91,6 +109,11 @@ impl MirrorStep {
             input: String::new(),
             focus: MirrorFocus::List,
             error: ErrorDialog::default(),
+            validating: false,
+            spinner: 0,
+            receiver: None,
+            pending_lines: Vec::new(),
+            pending_selected: String::new(),
         })
     }
 
@@ -111,11 +134,13 @@ impl MirrorStep {
         self.list_state.select(Some(next));
     }
 
-    /// Run the validation flow: rewrite the mirrorlist for the given
-    /// selection, run `pacman -Sy`, and on success record the choice and
-    /// mark the step validated. On failure, surface a modal error. Returns
-    /// `Next` if the caller should advance, `None` otherwise.
-    fn validate_and_advance(&mut self, state: &mut InstallerState) -> Result<StepAction> {
+    /// Start the validation flow: rewrite the mirrorlist for the given
+    /// selection and run `pacman -Sy` on a background worker thread so the
+    /// TUI stays responsive. The modal loading dialog is shown until
+    /// `tick()` collects the outcome: success records the choice and
+    /// advances, a non-zero exit surfaces a modal error. Always returns
+    /// `None` — the actual advance happens in `tick()`.
+    fn validate_and_advance(&mut self, _state: &mut InstallerState) -> Result<StepAction> {
         let input_trimmed = self.input.trim().to_string();
         let selection = if !input_trimmed.is_empty() {
             match normalize_server_line(&input_trimmed) {
@@ -137,34 +162,26 @@ impl MirrorStep {
             Selection::Manual(line) => manual_mirrorlist(&self.raw, line),
         };
 
-        write_mirrorlist(MIRRORLIST_PATH, &new_text)
-            .with_context(|| format!("writing {MIRRORLIST_PATH}"))?;
+        self.pending_lines = match &selection {
+            Selection::Region(region) => extract_region_servers(&self.raw, region),
+            Selection::Manual(line) => vec![line.clone()],
+        };
+        self.pending_selected = match &selection {
+            Selection::Region(r) => r.clone(),
+            Selection::Manual(l) => l.clone(),
+        };
 
-        let output = privileged_command("pacman")
-            .arg("-Sy")
-            .output()
-            .context("running pacman -Sy")?;
-        let ok = output.status.success();
-
-        if ok {
-            state.mirror_lines = match &selection {
-                Selection::Region(region) => extract_region_servers(&self.raw, region),
-                Selection::Manual(line) => vec![line.clone()],
-            };
-            self.selected = match &selection {
-                Selection::Region(r) => r.clone(),
-                Selection::Manual(l) => l.clone(),
-            };
-            Ok(StepAction::Next)
-        } else {
-            let stderr_msg = String::from_utf8_lossy(&output.stderr).trim().to_string();
-            tracing::warn!("pacman -Sy failed: {stderr_msg}");
-            self.error = ErrorDialog {
-                visible: true,
-                message: t!("mirror_step.error_pacman"),
-            };
-            Ok(StepAction::None)
-        }
+        let (sender, receiver) = mpsc::channel();
+        std::thread::Builder::new()
+            .name("clipsneko-mirror-validate".to_string())
+            .spawn(move || {
+                let result = run_validation(&new_text).map_err(|e| format!("{e:#}"));
+                let _ = sender.send(result);
+            })
+            .context("spawning mirror validation worker")?;
+        self.receiver = Some(receiver);
+        self.validating = true;
+        Ok(StepAction::None)
     }
 }
 
@@ -180,7 +197,46 @@ impl Step for MirrorStep {
     }
 
     fn has_modal(&self) -> bool {
-        self.error.visible
+        self.error.visible || self.validating
+    }
+
+    fn tick(&mut self, state: &mut InstallerState) -> Result<StepAction> {
+        if !self.validating {
+            return Ok(StepAction::None);
+        }
+        self.spinner = self.spinner.wrapping_add(1);
+        let received = self.receiver.as_ref().map(|r| r.try_recv());
+        match received {
+            Some(Ok(Ok(true))) => {
+                self.validating = false;
+                self.receiver = None;
+                state.mirror_lines = std::mem::take(&mut self.pending_lines);
+                self.selected = std::mem::take(&mut self.pending_selected);
+                Ok(StepAction::Next)
+            }
+            Some(Ok(Ok(false))) => {
+                self.validating = false;
+                self.receiver = None;
+                self.error = ErrorDialog {
+                    visible: true,
+                    message: t!("mirror_step.error_pacman"),
+                };
+                Ok(StepAction::None)
+            }
+            Some(Ok(Err(msg))) => {
+                self.validating = false;
+                self.receiver = None;
+                Err(anyhow::anyhow!(msg))
+            }
+            Some(Err(TryRecvError::Empty)) => Ok(StepAction::None),
+            Some(Err(TryRecvError::Disconnected)) | None => {
+                self.validating = false;
+                self.receiver = None;
+                Err(anyhow::anyhow!(
+                    "mirror validation worker terminated unexpectedly"
+                ))
+            }
+        }
     }
 
     fn render(
@@ -267,10 +323,20 @@ impl Step for MirrorStep {
         if self.error.visible {
             self.render_error_dialog(frame);
         }
+
+        if self.validating {
+            render_loading_dialog(frame, &t!("mirror_step.validating"), self.spinner);
+        }
     }
 
     fn handle_key(&mut self, key: KeyEvent, state: &mut InstallerState) -> Result<StepAction> {
         if key.kind != KeyEventKind::Press {
+            return Ok(StepAction::None);
+        }
+
+        // The loading dialog is modal: swallow every key while a
+        // validation worker is running.
+        if self.validating {
             return Ok(StepAction::None);
         }
 
@@ -534,6 +600,24 @@ fn normalize_server_line(input: &str) -> Option<String> {
         return None;
     }
     Some(format!("Server = {line}"))
+}
+
+/// Run the mirrorlist rewrite + `pacman -Sy` validation on the background
+/// worker thread. Returns `Ok(true)` when `pacman -Sy` exits 0, `Ok(false)`
+/// on a non-zero exit (recoverable: the user retries), and `Err` on fatal
+/// write/spawn failures.
+fn run_validation(new_text: &str) -> Result<bool> {
+    write_mirrorlist(MIRRORLIST_PATH, new_text)
+        .with_context(|| format!("writing {MIRRORLIST_PATH}"))?;
+    let output = privileged_command("pacman")
+        .arg("-Sy")
+        .output()
+        .context("running pacman -Sy")?;
+    if !output.status.success() {
+        let stderr_msg = String::from_utf8_lossy(&output.stderr).trim().to_string();
+        tracing::warn!("pacman -Sy failed: {stderr_msg}");
+    }
+    Ok(output.status.success())
 }
 
 /// Write `text` to `path`, replacing the file. Uses `privileged_command`

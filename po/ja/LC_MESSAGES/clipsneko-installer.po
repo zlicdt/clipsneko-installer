@@ -507,6 +507,14 @@ msgstr "手動ミラーソース"
 msgid "mirror_step.list_title"
 msgstr "地域を選択"
 
+#: src/steps/mirror.rs:328
+msgid "mirror_step.validating"
+msgstr "ミラーを検証しています…"
+
+#: src/steps/network.rs:222
+msgid "network_step.checking"
+msgstr "ネットワーク接続を確認しています…"
+
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
 msgstr "Enter=次へ  N=nmtui  R=再確認"

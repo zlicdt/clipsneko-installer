@@ -498,6 +498,14 @@ msgstr "Manual mirror source"
 msgid "mirror_step.list_title"
 msgstr "Select a region"
 
+#: src/steps/mirror.rs:328
+msgid "mirror_step.validating"
+msgstr "Validating mirror…"
+
+#: src/steps/network.rs:222
+msgid "network_step.checking"
+msgstr "Checking network connectivity…"
+
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
 msgstr "Enter=Next  N=nmtui  R=Recheck"

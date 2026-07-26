@@ -34,7 +34,7 @@ it moves from "Not done" to "Done" and stays there.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. English,
   Simplified Chinese, Traditional Chinese, Japanese, German, Korean, and
   Russian are available in the language picker. The POT and all seven catalogs
-  contain the same 168 message IDs with no untranslated, fuzzy, or obsolete
+  contain the same 170 message IDs with no untranslated, fuzzy, or obsolete
   entries. CI and build-time MO generation cover every supported catalog.
 - UI language changes only the process's `LC_MESSAGES`; applying it also adds
   the matching target locale to the generation set without replacing the
@@ -101,12 +101,16 @@ it moves from "Not done" to "Done" and stays there.
   data is fatal; shared state and re-entry synchronization are implemented.
 - **Network step:** entry/retry connectivity checks, nmtui suspension/resume,
   connected/offline completion gating, and translated interface/address/gateway
-  display are implemented. Command spawn/output invariants are fatal while a
-  failed connectivity probe remains a normal offline state.
+  display are implemented. Every check runs on a background worker behind a
+  centered modal spinner dialog, so the `curl` timeout never freezes the TUI.
+  Command spawn/output invariants are fatal while a failed connectivity probe
+  remains a normal offline state.
 - **Mirror step:** region parsing/reordering, manual URL normalization, list and
-  input focus, privileged replacement, captured `pacman -Sy` validation, error
-  dialog, and state persistence are implemented. Manual mode activates only the
-  manual server, preventing fallback mirrors from hiding invalid input.
+  input focus, privileged replacement, and state persistence are implemented.
+  The `pacman -Sy` validation runs on a background worker behind a centered
+  modal spinner dialog; a non-zero exit keeps the recoverable error dialog.
+  Manual mode activates only the manual server, preventing fallback mirrors
+  from hiding invalid input.
 - **Disk device model:** fixed-column typed lsblk JSON parsing, tree flattening,
   size formatting, GPT ESP validation, zram exclusion, Live-media detection,
   and the strict `> 20 GiB` capacity threshold are implemented.
@@ -215,7 +219,7 @@ it moves from "Not done" to "Done" and stays there.
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (154 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (164 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done

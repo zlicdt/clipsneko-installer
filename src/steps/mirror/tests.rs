@@ -110,6 +110,11 @@ fn tab_cycle_prepares_correct_internal_endpoint() {
         input: String::new(),
         focus: MirrorFocus::List,
         error: ErrorDialog::default(),
+        validating: false,
+        spinner: 0,
+        receiver: None,
+        pending_lines: Vec::new(),
+        pending_selected: String::new(),
     };
 
     assert!(step.consume_tab(false));
@@ -135,6 +140,11 @@ fn long_manual_url_keeps_tail_and_cursor_visible() {
         input: "https://example.com/a/very/long/path/to/archlinux/$repo/os/$arch".to_string(),
         focus: MirrorFocus::Input,
         error: ErrorDialog::default(),
+        validating: false,
+        spinner: 0,
+        receiver: None,
+        pending_lines: Vec::new(),
+        pending_selected: String::new(),
     };
     let state = InstallerState::default();
     let backend = ratatui::backend::TestBackend::new(60, 12);
@@ -225,4 +235,108 @@ fn split_header_separates_correctly() {
     assert!(header.contains("Arch Linux repository mirrorlist"));
     assert!(header.contains("Generated on"));
     assert!(body.starts_with("## Worldwide"));
+}
+
+// --- background validation / loading-dialog state machine ---
+
+use crossterm::event::KeyModifiers;
+use std::sync::mpsc;
+
+fn key(code: KeyCode) -> KeyEvent {
+    KeyEvent::new(code, KeyModifiers::NONE)
+}
+
+/// A bare step that never touches the real mirrorlist, with a fake worker
+/// channel pre-loaded with the given messages installed as the in-flight
+/// validation. The sender is returned so tests can keep the channel open
+/// (dropping it would look like a dead worker to `tick`).
+fn validating_step(
+    messages: Vec<Result<bool, String>>,
+) -> (MirrorStep, mpsc::Sender<Result<bool, String>>) {
+    let (sender, receiver) = mpsc::channel();
+    for msg in messages {
+        sender.send(msg).unwrap();
+    }
+    let step = MirrorStep {
+        regions: vec!["Worldwide".to_string()],
+        raw: String::new(),
+        list_state: ListState::default(),
+        selected: String::new(),
+        input: String::new(),
+        focus: MirrorFocus::List,
+        error: ErrorDialog::default(),
+        validating: true,
+        spinner: 0,
+        receiver: Some(receiver),
+        pending_lines: vec!["Server = https://example.com/$repo/os/$arch".to_string()],
+        pending_selected: "Worldwide".to_string(),
+    };
+    (step, sender)
+}
+
+#[test]
+fn validating_is_modal_and_swallows_all_keys() {
+    let (mut step, _sender) = validating_step(Vec::new());
+    let mut state = InstallerState::default();
+    assert!(step.has_modal());
+    for code in [
+        KeyCode::Enter,
+        KeyCode::Esc,
+        KeyCode::Char('j'),
+        KeyCode::Tab,
+    ] {
+        assert!(matches!(
+            step.handle_key(key(code), &mut state).unwrap(),
+            StepAction::None
+        ));
+    }
+    // The swallowed keys must not have changed the in-flight validation.
+    assert!(step.validating);
+    assert!(state.mirror_lines.is_empty());
+}
+
+#[test]
+fn tick_waits_quietly_while_worker_runs() {
+    let (mut step, _sender) = validating_step(Vec::new());
+    let mut state = InstallerState::default();
+    assert!(matches!(step.tick(&mut state).unwrap(), StepAction::None));
+    assert!(step.validating);
+    assert_eq!(step.spinner, 1);
+}
+
+#[test]
+fn tick_success_records_choice_and_advances() {
+    let (mut step, _sender) = validating_step(vec![Ok(true)]);
+    let mut state = InstallerState::default();
+    assert!(matches!(step.tick(&mut state).unwrap(), StepAction::Next));
+    assert!(!step.validating);
+    assert!(step.receiver.is_none());
+    assert_eq!(
+        state.mirror_lines,
+        vec!["Server = https://example.com/$repo/os/$arch".to_string()]
+    );
+    assert_eq!(step.selected, "Worldwide");
+    assert!(!step.has_modal());
+}
+
+#[test]
+fn tick_pacman_failure_shows_error_dialog_without_advancing() {
+    let (mut step, _sender) = validating_step(vec![Ok(false)]);
+    let mut state = InstallerState::default();
+    assert!(matches!(step.tick(&mut state).unwrap(), StepAction::None));
+    assert!(!step.validating);
+    assert!(step.error.visible);
+    assert!(step.has_modal());
+    assert!(state.mirror_lines.is_empty());
+    assert!(step.selected.is_empty());
+}
+
+#[test]
+fn tick_propagates_fatal_worker_failure() {
+    let (mut step, _sender) = validating_step(vec![Err("boom".to_string())]);
+    let mut state = InstallerState::default();
+    let err = step.tick(&mut state).err().unwrap();
+    assert!(err.to_string().contains("boom"));
+    assert!(!step.validating);
+    assert!(step.receiver.is_none());
 }

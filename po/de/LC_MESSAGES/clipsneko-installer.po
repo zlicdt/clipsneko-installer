@@ -513,6 +513,14 @@ msgstr "Manuelle Mirror-Quelle"
 msgid "mirror_step.list_title"
 msgstr "Region auswählen"
 
+#: src/steps/mirror.rs:328
+msgid "mirror_step.validating"
+msgstr "Spiegelserver wird überprüft…"
+
+#: src/steps/network.rs:222
+msgid "network_step.checking"
+msgstr "Netzwerkverbindung wird geprüft…"
+
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
 msgstr "Enter=Weiter  N=nmtui  R=Erneut prüfen"

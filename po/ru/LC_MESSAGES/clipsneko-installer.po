@@ -502,6 +502,14 @@ msgstr "Зеркало, заданное вручную"
 msgid "mirror_step.list_title"
 msgstr "Выбор региона"
 
+#: src/steps/mirror.rs:328
+msgid "mirror_step.validating"
+msgstr "Проверка зеркала…"
+
+#: src/steps/network.rs:222
+msgid "network_step.checking"
+msgstr "Проверка сетевого подключения…"
+
 #: src/steps/network.rs:104
 msgid "network_step.hint_connected"
 msgstr "Enter=Далее  N=nmtui  R=Повторная проверка"
