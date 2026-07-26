@@ -10,10 +10,10 @@ use crate::t;
 use crate::util::ui::{centered_rect, rounded_block};
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
-use ratatui::layout::{Alignment, Rect};
-use ratatui::style::{Modifier, Style};
+use ratatui::layout::{Alignment, Constraint, Layout, Rect};
+use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Clear, Paragraph, Wrap};
+use ratatui::widgets::{Clear, Gauge, Paragraph, Wrap};
 use ratatui::Frame;
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 
@@ -141,23 +141,40 @@ impl InstallStep {
     }
 
     fn render_status(&self, frame: &mut Frame, area: Rect) {
-        let text = match self.phase {
-            Phase::Rebooting => t!("install_step.progress.rebooting"),
-            _ => self.progress_text(),
+        let (text, percent) = match self.phase {
+            Phase::Rebooting => (t!("install_step.progress.rebooting"), 100),
+            _ => (self.progress_text(), self.progress.percent()),
         };
         let spinner = SPINNER[self.spinner % SPINNER.len()];
-        let body = Paragraph::new(vec![
+        let dialog_area = centered_rect(76, 8, area);
+        let block = rounded_block();
+        let inner = block.inner(dialog_area);
+        frame.render_widget(block, dialog_area);
+        let rows = Layout::vertical([
+            Constraint::Length(2),
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(1),
+            Constraint::Length(1),
+        ])
+        .split(inner);
+        let heading = Paragraph::new(vec![
             Line::from(""),
             Line::from(Span::styled(
                 format!("{spinner} {text}"),
                 Style::default().add_modifier(Modifier::BOLD),
             )),
-            Line::from(""),
-            Line::from(t!("install_step.progress.wait")),
         ])
-        .alignment(Alignment::Center)
-        .block(rounded_block());
-        frame.render_widget(body, centered_rect(76, 8, area));
+        .alignment(Alignment::Center);
+        frame.render_widget(heading, rows[0]);
+        let gauge = Gauge::default()
+            .gauge_style(Style::default().fg(Color::White).bg(Color::Black))
+            .percent(percent)
+            .label(format!("{percent}%"));
+        frame.render_widget(gauge, rows[2]);
+        let wait = Paragraph::new(Line::from(t!("install_step.progress.wait")))
+            .alignment(Alignment::Center);
+        frame.render_widget(wait, rows[4]);
     }
 
     fn render_failure(&self, frame: &mut Frame, area: Rect) {

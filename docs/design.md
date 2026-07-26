@@ -268,8 +268,10 @@ the generated level; do not rewrite it or specify a level in mount commands.
 Choosing not to reboot exits to the shell that launched the installer and
 intentionally leaves the target mounted for inspection.
 
-The install work runs in a background thread so the TUI spinner and progress
-text continue to refresh. Back, Esc, and the global Ctrl+C quit path are locked
+The install work runs in a background thread so the TUI spinner, progress
+text, and progress bar continue to refresh. The bar advances once per
+pipeline stage using fixed weights that reflect typical durations (package
+installation alone carries 60%) and is labeled with the plain percentage. Back, Esc, and the global Ctrl+C quit path are locked
 for the install step. A failed command stops the pipeline without rollback and
 leaves current mounts intact. The blocking failure dialog offers Return (exit
 to the launching shell) and View Log; the latter opens the installer log and
@@ -291,8 +293,9 @@ returns to the failure dialog without retrying commands.
 - **Back button**: go to the previous step (disabled on the first step).
 - **Next button**: go to the next step (disabled on the last step).
 - **F1**: help (not implemented or advertised in the footer yet).
-- Install phase: **Spinner + progress text** on screen, command output only in
-  the log file. A failure dialog provides explicit Return and View Log buttons.
+- Install phase: **Spinner + progress text + stage-weighted progress bar** on
+  screen, command output only in the log file. A failure dialog provides
+  explicit Return and View Log buttons.
 
 The quit-confirmation dialog shows `[ Cancel ]` and `[ Quit ]`, initially
 focused on Cancel. Left/Right or Tab changes focus, Enter activates the focused

@@ -191,6 +191,25 @@ pub enum InstallProgress {
     Postinstall,
 }
 
+impl InstallProgress {
+    /// Cumulative completion percentage reached when this stage begins. The
+    /// fixed weights (5/2/60/2/10/10/6/5) reflect typical stage durations:
+    /// package installation dominates at 60% and the remaining stages share
+    /// the rest. The final stage begins at a full 100%.
+    pub fn percent(self) -> u16 {
+        match self {
+            Self::Formatting => 5,
+            Self::Mounting => 7,
+            Self::Packages => 67,
+            Self::Fstab => 69,
+            Self::TargetConfig => 79,
+            Self::Initramfs => 89,
+            Self::Bootloader => 95,
+            Self::Postinstall => 100,
+        }
+    }
+}
+
 /// Messages sent from the worker to the TUI.
 pub enum WorkerMessage {
     Progress(InstallProgress),
@@ -239,4 +258,30 @@ pub fn unmount_and_reboot() -> Result<()> {
 /// tools. No shell is involved, so the name remains a single argument.
 pub fn device_path(name: &str) -> String {
     format!("/dev/{name}")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn progress_percentages_are_cumulative_and_end_at_100() {
+        let ordered = [
+            InstallProgress::Formatting,
+            InstallProgress::Mounting,
+            InstallProgress::Packages,
+            InstallProgress::Fstab,
+            InstallProgress::TargetConfig,
+            InstallProgress::Initramfs,
+            InstallProgress::Bootloader,
+            InstallProgress::Postinstall,
+        ];
+        let mut previous = 0;
+        for stage in ordered {
+            let percent = stage.percent();
+            assert!(percent > previous);
+            previous = percent;
+        }
+        assert_eq!(previous, 100);
+    }
 }

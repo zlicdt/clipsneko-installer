@@ -200,8 +200,9 @@ it moves from "Not done" to "Done" and stays there.
   specific `kms` HOOK removal before `mkinitcpio -P`.
 - **M4c boot and finalization:** GRUB UEFI installation and configuration plus
   NetworkManager enablement are implemented. The install pipeline runs in a
-  background worker with a responsive spinner; Back, Esc, Ctrl+C, and the
-  normal footer are locked. Failure stops without rollback and offers Return
+  background worker with a responsive spinner and a stage-weighted progress
+  bar (fixed 5/2/60/2/10/10/6/5 weights, numeric percentage label); Back,
+  Esc, Ctrl+C, and the normal footer are locked. Failure stops without rollback and offers Return
   or a scrollable log view. Success defaults to Reboot; reboot runs privileged
   recursive unmount then reboot, while Not now exits with `/mnt` preserved.
 - **M5 target-user dotfiles hook:** after all root-level target configuration,
@@ -219,7 +220,7 @@ it moves from "Not done" to "Done" and stays there.
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (164 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (165 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -244,11 +245,11 @@ it moves from "Not done" to "Done" and stays there.
   ISO/VM check, including real GeoIP, `timedatectl` data, centered-form
   layouts, input focus, masking, strength colors, hostname validation, and the
   final summary/destructive-dialog review before install.
-- **M4 runtime acceptance:** the full destructive pipeline, spinner/navigation
-  lock, failure/log dialog, generated fstab, target configuration, GRUB output,
-  target-user dotfiles result, preserved-mount Not now path, and unmount/reboot
-  path still need an interactive multi-disk test on the actual ClipsNeko Live
-  ISO or a disposable matching VM.
+- **M4 runtime acceptance:** the full destructive pipeline, spinner, progress
+  bar, navigation lock, failure/log dialog, generated fstab, target
+  configuration, GRUB output, target-user dotfiles result, preserved-mount
+  Not now path, and unmount/reboot path still need an interactive multi-disk
+  test on the actual ClipsNeko Live ISO or a disposable matching VM.
 - **F1 help:** content and rendering still need the user's decision; F1 is not
   advertised in the UI meanwhile.
 - **End-to-end acceptance:** no complete VM/Live ISO installation has yet
