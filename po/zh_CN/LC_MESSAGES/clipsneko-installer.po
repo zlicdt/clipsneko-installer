@@ -303,7 +303,7 @@ msgstr "主机名有效。"
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
-msgstr "安装已停止，当前挂载将保持不变。"
+msgstr "安装已停止。"
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
@@ -363,7 +363,7 @@ msgstr "安装正在进行，请勿关闭或重启计算机。"
 
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
-msgstr "安装已完成。现在重启吗？暂不重启将保留 /mnt 挂载。"
+msgstr "安装已完成。现在重启吗？"
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"

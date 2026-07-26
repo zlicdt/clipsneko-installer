@@ -307,7 +307,7 @@ msgstr "호스트 이름이 유효합니다."
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
-msgstr "설치가 중지되었습니다. 현재 마운트 상태는 변경하지 않습니다."
+msgstr "설치가 중지되었습니다."
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
@@ -367,9 +367,7 @@ msgstr "설치가 진행 중입니다. 컴퓨터를 끄거나 다시 시작하�
 
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
-msgstr ""
-"설치가 완료되었습니다. 지금 다시 시작하시겠습니까? '나중에'를 선택하면 /mnt"
-"가 마운트된 채로 유지됩니다."
+msgstr "설치가 완료되었습니다. 지금 다시 시작하시겠습니까?"
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"

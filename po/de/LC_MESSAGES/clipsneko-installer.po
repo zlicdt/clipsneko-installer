@@ -315,7 +315,7 @@ msgstr "Der Hostname ist gültig."
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
 msgstr ""
-"Die Installation wurde angehalten. Vorhandene Einhängungen bleiben "
+"Die Installation wurde angehalten."
 "unverändert."
 
 #: src/steps/install.rs:184
@@ -379,8 +379,7 @@ msgstr ""
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
 msgstr ""
-"Die Installation ist abgeschlossen. Jetzt neu starten? „Später“ lässt /mnt "
-"eingehängt."
+"Die Installation ist abgeschlossen. Jetzt neu starten?"
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"

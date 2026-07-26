@@ -307,7 +307,7 @@ msgstr "Hostname is valid."
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
-msgstr "Installation has stopped. Current mounts will be left unchanged."
+msgstr "Installation has stopped."
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
@@ -367,7 +367,7 @@ msgstr "Installation is in progress. Do not power off or restart the computer."
 
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
-msgstr "Installation is complete. Reboot now? Not now leaves /mnt mounted."
+msgstr "Installation is complete. Reboot now?"
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"

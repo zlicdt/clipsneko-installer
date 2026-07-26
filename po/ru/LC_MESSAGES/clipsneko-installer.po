@@ -310,7 +310,7 @@ msgstr "Имя хоста допустимо."
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
 msgstr ""
-"Установка остановлена. Текущие точки монтирования останутся без изменений."
+"Установка остановлена."
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
@@ -370,9 +370,7 @@ msgstr "Идёт установка. Не выключайте и не пере�
 
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
-msgstr ""
-"Установка завершена. Перезагрузить сейчас? Вариант «Не сейчас» оставит /mnt "
-"смонтированным."
+msgstr "Установка завершена. Перезагрузить сейчас?"
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"

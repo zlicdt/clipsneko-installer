@@ -310,7 +310,7 @@ msgstr "ホスト名は有効です。"
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
-msgstr "インストールが停止しました。現在のマウント状態は変更されません。"
+msgstr "インストールが停止しました。"
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
@@ -373,8 +373,7 @@ msgstr ""
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
 msgstr ""
-"インストールが完了しました。今すぐ再起動しますか？「後で」を選ぶと /mnt はマ"
-"ウントされたままになります。"
+"インストールが完了しました。今すぐ再起動しますか？"
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"

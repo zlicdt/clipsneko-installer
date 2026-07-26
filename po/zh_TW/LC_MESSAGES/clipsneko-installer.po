@@ -303,7 +303,7 @@ msgstr "主機名稱有效。"
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
-msgstr "安裝已停止，目前掛載將保持不變。"
+msgstr "安裝已停止。"
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
@@ -363,7 +363,7 @@ msgstr "安裝正在進行，請勿關閉或重新啟動電腦。"
 
 #: src/steps/install.rs:220
 msgid "install_step.success.body"
-msgstr "安裝已完成。現在重新啟動嗎？暫不重新啟動將保留 /mnt 掛載。"
+msgstr "安裝已完成。現在重新啟動嗎？"
 
 #: src/steps/install.rs:229
 msgid "install_step.success.not_now"
