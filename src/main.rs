@@ -20,6 +20,17 @@ use crate::i18n::{set_language, UiLang};
 
 const REQUIRED_CONFIG_FILES: [&str; 1] = ["/etc/clipsneko-installer/packages.list"];
 
+/// Byte offset of this session's first log line. The log file is opened in
+/// append mode so earlier runs stay on disk for postmortems, while the in-app
+/// log viewer starts reading here and only shows the current run.
+static LOG_SESSION_START: std::sync::OnceLock<u64> = std::sync::OnceLock::new();
+
+/// Offset recorded by `init_tracing` before the first line of this session
+/// was written. Zero when initialization never ran.
+pub(crate) fn log_session_start() -> u64 {
+    LOG_SESSION_START.get().copied().unwrap_or(0)
+}
+
 /// Verify that the runtime files promised by the Live ISO are present before
 /// entering the alternate screen. A broken ISO therefore exits with a normal,
 /// visible error instead of failing later in the installation stage.
@@ -58,8 +69,13 @@ fn init_tracing() -> Result<()> {
         .append(true)
         .open(&path)
         .with_context(|| format!("opening log file {}", path.display()))?;
+    let session_start = file.metadata().map(|meta| meta.len()).unwrap_or(0);
+    let _ = LOG_SESSION_START.set(session_start);
+    // The only reader is the in-app log viewer, which renders the file
+    // verbatim in a ratatui paragraph — ANSI escapes would show as garbage.
     tracing_subscriber::fmt()
         .with_writer(file)
+        .with_ansi(false)
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
@@ -103,12 +119,13 @@ fn finish_terminal_session(app_result: Result<()>, restore_result: Result<()>) -
     }
 }
 
-/// Minimum terminal size the wizard can render in. Below this the quit
-/// dialog (80% width, 8 rows), the header, the 1-row footer, and the
-/// per-step body no longer fit, so we refuse to start rather than render a
-/// garbled UI.
-const MIN_COLS: u16 = 60;
-const MIN_ROWS: u16 = 16;
+/// Minimum terminal size the wizard can render in. The tightest layout is
+/// the user-account form (16 rows of body plus header and footer); several
+/// hints and dialogs also assume ~78 usable columns for their longest
+/// translations. The startup check refuses to launch below this size, and
+/// `App::render` shows a resize notice if the window later shrinks under it.
+pub(crate) const MIN_COLS: u16 = 80;
+pub(crate) const MIN_ROWS: u16 = 24;
 
 fn main() -> Result<()> {
     install_panic_hook();

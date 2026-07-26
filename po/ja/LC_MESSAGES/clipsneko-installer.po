@@ -718,3 +718,11 @@ msgstr "弱い"
 #: src/steps/user.rs:199
 msgid "user_step.username"
 msgstr "ユーザー名"
+
+#: src/app.rs:196
+msgid "app.too_small"
+msgstr "ターミナルウィンドウが小さすぎます — 最小サイズ:"
+
+#: src/steps/install.rs:293
+msgid "install_step.log.read_error"
+msgstr "インストールログを読み込めませんでした:"

@@ -33,7 +33,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::Line;
-use ratatui::widgets::Paragraph;
+use ratatui::widgets::{Paragraph, Wrap};
 use ratatui::Frame;
 use std::process::Command;
 use std::sync::mpsc::{self, Receiver, TryRecvError};
@@ -209,7 +209,14 @@ impl Step for NetworkStep {
             rounded_block().title(t!("network_step.title")),
             body_focused,
         );
-        frame.render_widget(Paragraph::new(lines).block(block), chunks[0]);
+        // The address line joins every IP on the interface and can exceed
+        // the terminal width.
+        frame.render_widget(
+            Paragraph::new(lines)
+                .wrap(Wrap { trim: false })
+                .block(block),
+            chunks[0],
+        );
 
         frame.render_widget(
             Paragraph::new(hint)

@@ -700,3 +700,11 @@ msgstr ""
 #: src/steps/user.rs:199
 msgid "user_step.username"
 msgstr ""
+
+#: src/app.rs:196
+msgid "app.too_small"
+msgstr ""
+
+#: src/steps/install.rs:293
+msgid "install_step.log.read_error"
+msgstr ""

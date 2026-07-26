@@ -115,6 +115,62 @@ pub struct CommandOutput {
     pub stdout: Vec<u8>,
 }
 
+/// Remove one ANSI escape sequence class at a time: CSI (`ESC [ … final`),
+/// OSC (`ESC ] … BEL` or `ESC ] … ESC \`), and two-byte escapes. Tabs become
+/// spaces and remaining control characters are dropped, so the result renders
+/// cleanly in the log viewer's paragraph.
+fn strip_ansi(input: &str) -> String {
+    let mut out = String::with_capacity(input.len());
+    let mut chars = input.chars();
+    while let Some(c) = chars.next() {
+        match c {
+            '\u{1b}' => match chars.next() {
+                Some('[') => {
+                    for c in chars.by_ref() {
+                        if ('\u{40}'..='\u{7e}').contains(&c) {
+                            break;
+                        }
+                    }
+                }
+                Some(']') => {
+                    while let Some(c) = chars.next() {
+                        if c == '\u{07}' {
+                            break;
+                        }
+                        if c == '\u{1b}' {
+                            chars.next();
+                            break;
+                        }
+                    }
+                }
+                _ => {}
+            },
+            '\t' => out.push_str("    "),
+            c if c.is_control() => {}
+            c => out.push(c),
+        }
+    }
+    out
+}
+
+/// Reduce raw subprocess output to plain text fit for the log file and the
+/// in-app log viewer: on every line only the final `\r`-redrawn frame
+/// survives (pacman repaints download bars this way), ANSI sequences are
+/// stripped, and blank lines are dropped.
+fn sanitize_output(raw: &[u8]) -> String {
+    let text = String::from_utf8_lossy(raw);
+    let mut lines = Vec::new();
+    for line in text.lines() {
+        let last_frame = line.rsplit('\r').next().unwrap_or(line);
+        let stripped = strip_ansi(last_frame);
+        let trimmed = stripped.trim_end();
+        if !trimmed.is_empty() {
+            lines.push(trimmed.to_string());
+        }
+    }
+    lines.join("\n")
+}
+
 /// Minimal command seam for destructive operations. Implementations must not
 /// log stdin because it may contain the account password.
 pub trait CommandRunner {
@@ -160,16 +216,16 @@ impl CommandRunner for SystemRunner {
             .wait_with_output()
             .with_context(|| format!("waiting for {program}"))?;
         if !output.stdout.is_empty() {
-            tracing::info!(program, output = %String::from_utf8_lossy(&output.stdout));
+            tracing::info!(program, output = %sanitize_output(&output.stdout));
         }
         if !output.stderr.is_empty() {
-            tracing::info!(program, output = %String::from_utf8_lossy(&output.stderr));
+            tracing::info!(program, output = %sanitize_output(&output.stderr));
         }
         if !output.status.success() {
             bail!(
                 "{program} exited with {}: {}",
                 output.status,
-                String::from_utf8_lossy(&output.stderr).trim()
+                sanitize_output(&output.stderr)
             );
         }
         Ok(CommandOutput {
@@ -263,6 +319,21 @@ pub fn device_path(name: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn sanitize_output_strips_ansi_and_resolves_progress_frames() {
+        let raw = b"\x1b[1;33mwarning:\x1b[0m something\n 10%\r 50%\r100% done\r\ncol1\tcol2\n\n";
+        assert_eq!(
+            sanitize_output(raw),
+            "warning: something\n100% done\ncol1    col2"
+        );
+    }
+
+    #[test]
+    fn sanitize_output_drops_osc_sequences_and_lone_controls() {
+        let raw = b"\x1b]0;window title\x07kept\x08 text\n";
+        assert_eq!(sanitize_output(raw), "kept text");
+    }
 
     #[test]
     fn progress_percentages_are_cumulative_and_end_at_100() {

@@ -30,12 +30,14 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
-use crate::util::ui::{centered_rect, focusable_block, render_loading_dialog, rounded_block};
+use crate::util::ui::{
+    focusable_block, render_autosized_dialog, render_loading_dialog, rounded_block,
+};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
-use ratatui::widgets::{Clear, List, ListItem, ListState, Paragraph, Wrap};
+use ratatui::widgets::{List, ListItem, ListState, Paragraph, Wrap};
 use ratatui::Frame;
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 
@@ -419,7 +421,6 @@ impl Step for MirrorStep {
 
 impl MirrorStep {
     fn render_error_dialog(&self, frame: &mut Frame) {
-        let area = centered_rect(80, 8, frame.area());
         let text = vec![
             ratatui::text::Line::from(""),
             ratatui::text::Line::from(self.error.message.clone()),
@@ -430,8 +431,7 @@ impl MirrorStep {
             .block(rounded_block().title(t!("mirror_step.error_title")))
             .alignment(Alignment::Center)
             .wrap(Wrap { trim: true });
-        frame.render_widget(Clear, area);
-        frame.render_widget(dialog, area);
+        render_autosized_dialog(frame, frame.area(), 80, dialog);
     }
 }
 

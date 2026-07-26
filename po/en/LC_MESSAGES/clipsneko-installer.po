@@ -707,3 +707,11 @@ msgstr "Weak"
 #: src/steps/user.rs:199
 msgid "user_step.username"
 msgstr "Username"
+
+#: src/app.rs:196
+msgid "app.too_small"
+msgstr "Terminal window is too small — minimum size:"
+
+#: src/steps/install.rs:293
+msgid "install_step.log.read_error"
+msgstr "Could not read the installer log:"

@@ -707,3 +707,11 @@ msgstr "약함"
 #: src/steps/user.rs:199
 msgid "user_step.username"
 msgstr "사용자 이름"
+
+#: src/app.rs:196
+msgid "app.too_small"
+msgstr "터미널 창이 너무 작습니다 — 최소 크기:"
+
+#: src/steps/install.rs:293
+msgid "install_step.log.read_error"
+msgstr "설치 로그를 읽을 수 없습니다:"

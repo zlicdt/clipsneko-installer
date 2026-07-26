@@ -700,3 +700,11 @@ msgstr "弱"
 #: src/steps/user.rs:199
 msgid "user_step.username"
 msgstr "使用者名稱"
+
+#: src/app.rs:196
+msgid "app.too_small"
+msgstr "終端視窗過小——最小尺寸："
+
+#: src/steps/install.rs:293
+msgid "install_step.log.read_error"
+msgstr "無法讀取安裝日誌："

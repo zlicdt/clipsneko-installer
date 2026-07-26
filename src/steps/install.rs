@@ -7,13 +7,13 @@ use crate::installer::{
 use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::{centered_rect, rounded_block};
+use crate::util::ui::{centered_rect, render_autosized_dialog, rounded_block};
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Clear, Gauge, Paragraph, Wrap};
+use ratatui::widgets::{Gauge, Paragraph, Wrap};
 use ratatui::Frame;
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 
@@ -68,9 +68,13 @@ pub struct InstallStep {
     receiver: Option<Receiver<WorkerMessage>>,
     failure_focus: FailureFocus,
     reboot_focus: RebootFocus,
+    failure_message: String,
     log_text: String,
     log_scroll: u16,
     log_max_scroll: u16,
+    /// Viewer size the current `log_max_scroll` was computed for. Wrapped
+    /// line counting walks the whole log, so it only reruns on resize.
+    log_layout_size: Option<(u16, u16)>,
 }
 
 impl InstallStep {
@@ -82,9 +86,11 @@ impl InstallStep {
             receiver: None,
             failure_focus: FailureFocus::Return,
             reboot_focus: RebootFocus::Reboot,
+            failure_message: String::new(),
             log_text: String::new(),
             log_scroll: 0,
             log_max_scroll: 0,
+            log_layout_size: None,
         }
     }
 
@@ -98,8 +104,10 @@ impl InstallStep {
                     let _ = sender.send(WorkerMessage::Complete);
                 }
                 Err(error) => {
-                    tracing::error!(error = %error, "installation failed");
-                    let _ = sender.send(WorkerMessage::Failed(error.to_string()));
+                    tracing::error!(error = %format!("{error:#}"), "installation failed");
+                    // `:#` includes the whole context chain, not just the
+                    // outermost context, so the dialog names the root cause.
+                    let _ = sender.send(WorkerMessage::Failed(format!("{error:#}")));
                 }
             })
             .context("spawning installation worker")?;
@@ -188,33 +196,53 @@ impl InstallStep {
         } else {
             Style::default()
         };
-        let dialog = Paragraph::new(vec![
+        let mut lines = vec![
             Line::from(""),
             Line::from(Span::styled(
                 t!("install_step.failure.title"),
                 Style::default().add_modifier(Modifier::BOLD),
             )),
             Line::from(""),
-            Line::from(t!("install_step.failure.body")),
-            Line::from(""),
-            Line::from(vec![
-                Span::styled(
-                    format!("[ {} ]", t!("install_step.failure.return")),
-                    return_style,
-                ),
-                Span::raw("    "),
-                Span::styled(
-                    format!("[ {} ]", t!("install_step.failure.view_log")),
-                    log_style,
-                ),
-            ]),
-        ])
-        .alignment(Alignment::Center)
-        .wrap(Wrap { trim: true })
-        .block(rounded_block());
-        let dialog_area = centered_rect(82, 10, area);
-        frame.render_widget(Clear, dialog_area);
-        frame.render_widget(dialog, dialog_area);
+        ];
+        // The worker error can carry many lines of command stderr; the dialog
+        // shows only the head as a summary and defers the rest to the log.
+        const MAX_ERROR_LINES: usize = 4;
+        let mut error_lines = self
+            .failure_message
+            .lines()
+            .filter(|line| !line.trim().is_empty());
+        let mut shown_any = false;
+        for line in error_lines.by_ref().take(MAX_ERROR_LINES) {
+            shown_any = true;
+            lines.push(Line::from(Span::styled(
+                line.to_string(),
+                Style::default().fg(Color::Red),
+            )));
+        }
+        if error_lines.next().is_some() {
+            lines.push(Line::from("…"));
+        }
+        if shown_any {
+            lines.push(Line::from(""));
+        }
+        lines.push(Line::from(t!("install_step.failure.body")));
+        lines.push(Line::from(""));
+        lines.push(Line::from(vec![
+            Span::styled(
+                format!("[ {} ]", t!("install_step.failure.return")),
+                return_style,
+            ),
+            Span::raw("    "),
+            Span::styled(
+                format!("[ {} ]", t!("install_step.failure.view_log")),
+                log_style,
+            ),
+        ]));
+        let dialog = Paragraph::new(lines)
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: true })
+            .block(rounded_block());
+        render_autosized_dialog(frame, area, 82, dialog);
     }
 
     fn render_reboot_prompt(&self, frame: &mut Frame, area: Rect) {
@@ -252,17 +280,33 @@ impl InstallStep {
         .alignment(Alignment::Center)
         .wrap(Wrap { trim: true })
         .block(rounded_block());
-        let dialog_area = centered_rect(82, 10, area);
-        frame.render_widget(Clear, dialog_area);
-        frame.render_widget(dialog, dialog_area);
+        render_autosized_dialog(frame, area, 82, dialog);
     }
 
-    fn open_log(&mut self) -> Result<()> {
-        self.log_text =
-            std::fs::read_to_string(crate::log_path()?).context("reading installer log")?;
+    /// Load this session's slice of the log file for the viewer. A read
+    /// failure becomes viewer content instead of an error so the failure
+    /// dialog (the only way out of this phase) is never lost to a crash.
+    fn open_log(&mut self) {
+        self.log_text = match Self::read_session_log() {
+            Ok(text) => text,
+            Err(error) => format!("{}\n{error:#}", t!("install_step.log.read_error")),
+        };
         self.log_scroll = u16::MAX;
+        self.log_layout_size = None;
         self.phase = Phase::LogView;
-        Ok(())
+    }
+
+    fn read_session_log() -> Result<String> {
+        use std::io::{Read, Seek, SeekFrom};
+        let path = crate::log_path()?;
+        let mut file = std::fs::File::open(&path)
+            .with_context(|| format!("opening installer log {}", path.display()))?;
+        file.seek(SeekFrom::Start(crate::log_session_start()))
+            .context("seeking installer log")?;
+        let mut text = String::new();
+        file.read_to_string(&mut text)
+            .context("reading installer log")?;
+        Ok(text)
     }
 
     fn receive_worker_messages(&mut self) -> StepAction {
@@ -290,6 +334,7 @@ impl InstallStep {
                     tracing::error!(error = %error, "installation worker reported failure");
                     self.receiver = None;
                     self.failure_focus = FailureFocus::Return;
+                    self.failure_message = error;
                     self.phase = Phase::Failed;
                 }
                 WorkerMessage::RebootIssued => {
@@ -326,17 +371,23 @@ impl Step for InstallStep {
             Phase::Failed => self.render_failure(frame, area),
             Phase::RebootPrompt => self.render_reboot_prompt(frame, area),
             Phase::LogView => {
-                let visible_height = area.height.saturating_sub(2) as usize;
-                let line_count = self.log_text.lines().count();
-                self.log_max_scroll = line_count
-                    .saturating_sub(visible_height)
-                    .min(u16::MAX as usize) as u16;
-                self.log_scroll = self.log_scroll.min(self.log_max_scroll);
                 let log = Paragraph::new(self.log_text.as_str())
-                    .scroll((self.log_scroll, 0))
                     .wrap(Wrap { trim: false })
                     .block(rounded_block().title(t!("install_step.log.title")));
-                frame.render_widget(log, area);
+                // With wrap enabled the paragraph scrolls in *wrapped* lines,
+                // so the limit must count wrapped lines too — `line_count`
+                // wraps at the inner width and includes both border rows,
+                // matching `area.height`.
+                let inner_width = area.width.saturating_sub(2).max(1);
+                if self.log_layout_size != Some((inner_width, area.height)) {
+                    self.log_max_scroll =
+                        log.line_count(inner_width)
+                            .saturating_sub(usize::from(area.height))
+                            .min(usize::from(u16::MAX)) as u16;
+                    self.log_layout_size = Some((inner_width, area.height));
+                }
+                self.log_scroll = self.log_scroll.min(self.log_max_scroll);
+                frame.render_widget(log.scroll((self.log_scroll, 0)), area);
             }
         }
     }
@@ -355,7 +406,7 @@ impl Step for InstallStep {
                     Ok(StepAction::Quit)
                 }
                 KeyCode::Enter => {
-                    self.open_log()?;
+                    self.open_log();
                     Ok(StepAction::None)
                 }
                 _ => Ok(StepAction::None),

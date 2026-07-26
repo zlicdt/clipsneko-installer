@@ -8,7 +8,7 @@
 use crate::state::{InstallerState, KernelChoice};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::{focusable_block, rounded_block};
+use crate::util::ui::{focusable_block, rounded_block, wrap_plain};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -79,13 +79,20 @@ impl Step for KernelStep {
             .constraints([Constraint::Min(0), Constraint::Length(2)])
             .split(area);
 
+        // List items cannot wrap on their own and some translated labels are
+        // wider than the terminal, so wrap them by hand.
+        let item_width = chunks[0].width.saturating_sub(2);
         let items = KernelChoice::ALL.map(|choice| {
             let style = if state.kernel == Some(choice) {
                 Style::default().add_modifier(Modifier::BOLD)
             } else {
                 Style::default()
             };
-            ListItem::new(choice_label(choice)).style(style)
+            let lines: Vec<ratatui::text::Line> = wrap_plain(&choice_label(choice), item_width)
+                .into_iter()
+                .map(ratatui::text::Line::from)
+                .collect();
+            ListItem::new(lines).style(style)
         });
         let highlight_style = if body_focused {
             Style::default().add_modifier(Modifier::REVERSED)

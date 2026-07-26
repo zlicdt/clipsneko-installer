@@ -711,3 +711,11 @@ msgstr "Слабый"
 #: src/steps/user.rs:199
 msgid "user_step.username"
 msgstr "Имя пользователя"
+
+#: src/app.rs:196
+msgid "app.too_small"
+msgstr "Окно терминала слишком маленькое — минимальный размер:"
+
+#: src/steps/install.rs:293
+msgid "install_step.log.read_error"
+msgstr "Не удалось прочитать журнал установки:"

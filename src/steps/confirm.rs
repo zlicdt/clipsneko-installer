@@ -6,13 +6,13 @@
 use crate::state::{BtrfsRaidMode, InstallerState, NvidiaChoice};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::{centered_rect, focusable_block, rounded_block};
+use crate::util::ui::{focusable_block, render_autosized_dialog, rounded_block};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Clear, Paragraph, Wrap};
+use ratatui::widgets::{Paragraph, Wrap};
 use ratatui::Frame;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -59,7 +59,6 @@ impl ConfirmStep {
     }
 
     fn render_dialog(&self, frame: &mut Frame) {
-        let area = centered_rect(80, 9, frame.area());
         let focus = self.dialog_focus.unwrap_or(DialogFocus::Cancel);
         let cancel_style = if focus == DialogFocus::Cancel {
             Style::default().add_modifier(Modifier::REVERSED)
@@ -90,8 +89,7 @@ impl ConfirmStep {
             .block(rounded_block().title(t!("confirm_step.dialog.title")))
             .alignment(Alignment::Center)
             .wrap(Wrap { trim: true });
-        frame.render_widget(Clear, area);
-        frame.render_widget(dialog, area);
+        render_autosized_dialog(frame, frame.area(), 80, dialog);
     }
 }
 
@@ -123,21 +121,22 @@ impl Step for ConfirmStep {
             .direction(Direction::Vertical)
             .constraints([Constraint::Min(0), Constraint::Length(1)])
             .split(area);
-        let lines = summary_lines(state);
-        let visible_rows = chunks[0].height.saturating_sub(2) as usize;
-        self.max_scroll = lines
-            .len()
-            .saturating_sub(visible_rows)
-            .min(u16::MAX as usize) as u16;
-        self.scroll = self.scroll.min(self.max_scroll);
-
-        let summary = Paragraph::new(lines)
+        let summary = Paragraph::new(summary_lines(state))
             .block(focusable_block(
                 rounded_block().title(t!("confirm_step.summary_title")),
                 body_focused,
             ))
-            .scroll((self.scroll, 0));
-        frame.render_widget(summary, chunks[0]);
+            .wrap(Wrap { trim: false });
+        // With wrap enabled scrolling is in wrapped lines, so the limit must
+        // be too — `line_count` wraps at the inner width and includes both
+        // border rows, matching the chunk height (long locale lists wrap).
+        let inner_width = chunks[0].width.saturating_sub(2).max(1);
+        self.max_scroll = summary
+            .line_count(inner_width)
+            .saturating_sub(usize::from(chunks[0].height))
+            .min(usize::from(u16::MAX)) as u16;
+        self.scroll = self.scroll.min(self.max_scroll);
+        frame.render_widget(summary.scroll((self.scroll, 0)), chunks[0]);
         frame.render_widget(
             Paragraph::new(t!("confirm_step.hint"))
                 .alignment(Alignment::Center)

@@ -6,13 +6,13 @@ use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::lsblk::{self, BlockDevice};
 use crate::util::process::{is_root, privileged_command};
-use crate::util::ui::{centered_rect, focusable_block, rounded_block};
+use crate::util::ui::{focusable_block, render_autosized_dialog, rounded_block};
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Cell, Clear, Paragraph, Row, Table, TableState, Wrap};
+use ratatui::widgets::{Cell, Paragraph, Row, Table, TableState, Wrap};
 use ratatui::Frame;
 
 fn selected_style() -> Style {
@@ -350,7 +350,18 @@ impl DiskStep {
     }
 
     fn render_disk_picker(&mut self, frame: &mut Frame, area: Rect, body_focused: bool) {
-        let rows = lsblk::flat_disks(&self.disks).into_iter().map(|disk| {
+        let disks = lsblk::flat_disks(&self.disks);
+        // Transport and status columns hold translated text, so their widths
+        // are measured instead of hard-coded (compare `partition_role_width`).
+        let transport_width = column_width(
+            std::iter::once(t!("disk_step.column_transport"))
+                .chain(disks.iter().map(|disk| optional_text(&disk.tran))),
+        );
+        let status_width = column_width(
+            std::iter::once(t!("disk_step.column_status"))
+                .chain(disks.iter().map(|disk| disk_status(disk))),
+        );
+        let rows = disks.into_iter().map(|disk| {
             let style = if disk_is_selectable(disk) {
                 Style::default()
             } else {
@@ -383,9 +394,9 @@ impl DiskStep {
             [
                 Constraint::Length(13),
                 Constraint::Min(10),
+                Constraint::Length(transport_width),
                 Constraint::Length(9),
-                Constraint::Length(9),
-                Constraint::Length(11),
+                Constraint::Length(status_width),
             ],
         )
         .header(header)
@@ -474,7 +485,6 @@ impl DiskStep {
     }
 
     fn render_role_dialog(&self, frame: &mut Frame, state: &InstallerState) {
-        let area = centered_rect(80, 9, frame.area());
         let title = format!(
             "{}: {}",
             t!("disk_step.role_dialog.title"),
@@ -499,13 +509,12 @@ impl DiskStep {
         lines.push(Line::from(t!("disk_step.role_dialog.hint")));
         let dialog = Paragraph::new(lines)
             .block(rounded_block().title(title))
-            .alignment(Alignment::Center);
-        frame.render_widget(Clear, area);
-        frame.render_widget(dialog, area);
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: true });
+        render_autosized_dialog(frame, frame.area(), 80, dialog);
     }
 
     fn render_raid_dialog(&self, frame: &mut Frame) {
-        let area = centered_rect(70, 7, frame.area());
         let options = [
             t!("disk_step.raid_dialog.raid0"),
             t!("disk_step.raid_dialog.raid1"),
@@ -523,13 +532,12 @@ impl DiskStep {
         lines.push(Line::from(t!("disk_step.raid_dialog.hint")));
         let dialog = Paragraph::new(lines)
             .block(rounded_block().title(t!("disk_step.raid_dialog.title")))
-            .alignment(Alignment::Center);
-        frame.render_widget(Clear, area);
-        frame.render_widget(dialog, area);
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: true });
+        render_autosized_dialog(frame, frame.area(), 70, dialog);
     }
 
     fn render_error_dialog(&self, frame: &mut Frame) {
-        let area = centered_rect(80, 7, frame.area());
         let dialog = Paragraph::new(vec![
             Line::from(""),
             Line::from(self.error_dialog.message.clone()),
@@ -539,13 +547,10 @@ impl DiskStep {
         .block(rounded_block().title(t!("disk_step.error_title")))
         .alignment(Alignment::Center)
         .wrap(Wrap { trim: true });
-        frame.render_widget(Clear, area);
-        frame.render_widget(dialog, area);
+        render_autosized_dialog(frame, frame.area(), 80, dialog);
     }
 
     fn render_wipe_dialog(&self, frame: &mut Frame) {
-        let height = (self.wipe_dialog.partitions.len() as u16 * 2 + 6).min(frame.area().height);
-        let area = centered_rect(80, height, frame.area());
         let mut lines = vec![
             Line::from(t!("disk_step.wipe_dialog.title")),
             Line::from(""),
@@ -559,8 +564,7 @@ impl DiskStep {
             .block(rounded_block().title(t!("disk_step.wipe_dialog.window_title")))
             .alignment(Alignment::Center)
             .wrap(Wrap { trim: true });
-        frame.render_widget(Clear, area);
-        frame.render_widget(dialog, area);
+        render_autosized_dialog(frame, frame.area(), 80, dialog);
     }
 }
 
@@ -597,20 +601,25 @@ fn role_label(option: RoleOption) -> String {
     }
 }
 
+/// Widest display width among a column's header and cell texts.
+fn column_width(texts: impl IntoIterator<Item = String>) -> u16 {
+    texts
+        .into_iter()
+        .map(|text| Line::from(text).width())
+        .max()
+        .unwrap_or(1)
+        .try_into()
+        .unwrap_or(u16::MAX)
+}
+
 fn partition_role_width() -> u16 {
-    [
+    column_width([
         t!("disk_step.column_role"),
         t!("disk_step.role_protected"),
         t!("disk_step.role_esp"),
         t!("disk_step.role_target"),
         t!("disk_step.role_unassigned"),
-    ]
-    .into_iter()
-    .map(|label| Line::from(label).width())
-    .max()
-    .unwrap_or(1)
-    .try_into()
-    .unwrap_or(u16::MAX)
+    ])
 }
 
 fn current_role(part: &str, state: &InstallerState) -> Option<RoleOption> {

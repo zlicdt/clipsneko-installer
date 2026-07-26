@@ -7,13 +7,13 @@ use crate::state::InstallerState;
 use crate::steps::{build_steps, Step, StepAction};
 use crate::t;
 use crate::util::process::run_fullscreen;
-use crate::util::ui::{centered_rect, rounded_block};
+use crate::util::ui::{render_autosized_dialog, rounded_block};
 use crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::backend::CrosstermBackend;
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Clear, Paragraph};
+use ratatui::widgets::{Paragraph, Wrap};
 use ratatui::Frame;
 use ratatui::Terminal;
 use std::io::Stdout;
@@ -186,6 +186,28 @@ impl App {
 
     pub fn render(&mut self, frame: &mut Frame) {
         let area = frame.area();
+        // The startup check only guards the initial size; if the window
+        // shrinks mid-run every layout below overflows, so show a resize
+        // notice instead of a garbled wizard.
+        if area.width < crate::MIN_COLS || area.height < crate::MIN_ROWS {
+            let notice = Paragraph::new(format!(
+                "{} {}x{}",
+                t!("app.too_small"),
+                crate::MIN_COLS,
+                crate::MIN_ROWS
+            ))
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: true });
+            let height = 3.min(area.height);
+            let notice_area = Rect::new(
+                area.x,
+                area.y + (area.height - height) / 2,
+                area.width,
+                height,
+            );
+            frame.render_widget(notice, notice_area);
+            return;
+        }
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
@@ -279,7 +301,6 @@ impl App {
     }
 
     fn render_quit_dialog(&self, frame: &mut Frame) {
-        let area = centered_rect(80, 8, frame.area());
         let focus = self.quit_confirm.unwrap_or(QuitFocus::Cancel);
         let cancel_style = if focus == QuitFocus::Cancel {
             Style::default().add_modifier(Modifier::REVERSED)
@@ -303,9 +324,9 @@ impl App {
         ];
         let dialog = Paragraph::new(text)
             .block(rounded_block())
-            .alignment(Alignment::Center);
-        frame.render_widget(Clear, area);
-        frame.render_widget(dialog, area);
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: true });
+        render_autosized_dialog(frame, frame.area(), 80, dialog);
     }
 
     fn handle_event(&mut self, event: Event) -> anyhow::Result<Action> {

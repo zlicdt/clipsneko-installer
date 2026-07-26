@@ -15,7 +15,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Style};
 use ratatui::text::Line;
-use ratatui::widgets::{Gauge, Paragraph};
+use ratatui::widgets::{Gauge, Paragraph, Wrap};
 use ratatui::Frame;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -233,6 +233,7 @@ impl Step for UserStep {
         frame.render_widget(
             Paragraph::new(message)
                 .alignment(Alignment::Center)
+                .wrap(Wrap { trim: true })
                 .style(Style::default().fg(color)),
             rows[4],
         );

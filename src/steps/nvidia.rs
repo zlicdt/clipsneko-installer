@@ -7,7 +7,7 @@
 use crate::state::{InstallerState, KernelChoice, NvidiaChoice};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::{focusable_block, rounded_block};
+use crate::util::ui::{focusable_block, rounded_block, wrap_plain};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -100,6 +100,9 @@ impl Step for NvidiaStep {
             .split(area);
         let kernel = Self::kernel(state);
 
+        // List items cannot wrap on their own; the kernel-compatibility text
+        // makes these rows wider than the terminal, so wrap them by hand.
+        let item_width = chunks[0].width.saturating_sub(2);
         let items = NvidiaChoice::ALL.map(|choice| {
             let compatible = choice.is_compatible_with(kernel);
             let label = if compatible {
@@ -117,7 +120,11 @@ impl Step for NvidiaStep {
             } else if state.nvidia == choice {
                 style = style.add_modifier(Modifier::BOLD);
             }
-            ListItem::new(label).style(style)
+            let lines: Vec<ratatui::text::Line> = wrap_plain(&label, item_width)
+                .into_iter()
+                .map(ratatui::text::Line::from)
+                .collect();
+            ListItem::new(lines).style(style)
         });
         let highlight_style = if body_focused {
             Style::default().add_modifier(Modifier::REVERSED)

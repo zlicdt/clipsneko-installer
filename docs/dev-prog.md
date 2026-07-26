@@ -34,7 +34,7 @@ it moves from "Not done" to "Done" and stays there.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. English,
   Simplified Chinese, Traditional Chinese, Japanese, German, Korean, and
   Russian are available in the language picker. The POT and all seven catalogs
-  contain the same 170 message IDs with no untranslated, fuzzy, or obsolete
+  contain the same 172 message IDs with no untranslated, fuzzy, or obsolete
   entries. CI and build-time MO generation cover every supported catalog.
 - UI language changes only the process's `LC_MESSAGES`; applying it also adds
   the matching target locale to the generation set without replacing the
@@ -219,8 +219,22 @@ it moves from "Not done" to "Done" and stays there.
   mount options, fstab validation, target-file transforms, stdin-only password
   handoff/clearing, navigation locking, failure/log behavior, and reboot focus
   without executing any real format, mount, pacstrap, chroot, or reboot command.
+- **Display-robustness pass (kitty-only target):** the file log is ANSI-free
+  and subprocess output is sanitized before logging (escapes stripped, only the
+  final `\r`-redrawn progress frame kept). The install-failure dialog shows the
+  worker's error chain; the log viewer shows only the current session, turns an
+  unreadable log into viewer content instead of exiting, and computes its
+  scroll limit from wrapped lines. All modal dialogs (quit, confirmation, disk
+  role/RAID/error/wipe, mirror error, loading, install failure/reboot) derive
+  their height from wrapped content via `Paragraph::line_count`, and
+  `centered_rect` centers exactly in cells. The account-form validation
+  message, network info panel, and confirmation summary wrap; kernel and
+  NVIDIA list rows wrap through a shared display-width helper; disk-picker
+  transport/status column widths are measured from translations. The minimum
+  terminal size is 80x24, enforced at startup and by an in-app resize notice;
+  the two new messages exist in the POT and all seven catalogs.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (165 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (169 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
