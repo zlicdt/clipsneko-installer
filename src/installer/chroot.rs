@@ -154,6 +154,7 @@ pub fn configure_target(runner: &mut dyn CommandRunner, config: &mut InstallConf
     let zoneinfo = format!("/usr/share/zoneinfo/{}", config.timezone);
     run_chroot(runner, "ln", &["-sf", &zoneinfo, "/etc/localtime"], None)?;
     run_chroot(runner, "hwclock", &["--systohc"], None)?;
+    run_chroot(runner, "pkgfile", &["-u"], None)?;
 
     let locale_gen = read_target_file(runner, "/etc/locale.gen")?;
     let locale_gen = enable_locales(&locale_gen, &config.target_locales)?;

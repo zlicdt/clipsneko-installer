@@ -30,3 +30,6 @@ nautilus
 ttf-ubuntu-mono-nerd
 noto-fonts-cjk
 noto-fonts-emoji
+zsh-syntax-highlighting
+zsh-autosuggestions
+pkgfile
