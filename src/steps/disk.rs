@@ -199,6 +199,15 @@ impl DiskStep {
         usable_capacity(&sizes, state.disk.raid_mode)
     }
 
+    /// RAID1 mirrors data between devices, so two Targets on one physical
+    /// disk would place both copies in the same failure domain. RAID0 has no
+    /// such requirement.
+    fn raid1_targets_share_disk(&self, state: &InstallerState) -> bool {
+        state.disk.raid_mode == Some(BtrfsRaidMode::Raid1)
+            && lsblk::parent_disks_for_partitions(&self.disks, &state.disk.target_partitions).len()
+                < state.disk.target_partitions.len()
+    }
+
     fn highlighted_disk(&self) -> Option<&BlockDevice> {
         let index = self.table_state.selected()?;
         lsblk::flat_disks(&self.disks).get(index).copied()
@@ -271,24 +280,10 @@ impl DiskStep {
                     .iter()
                     .any(|name| name == &part)
                 {
-                    // Btrfs RAID across partitions of one physical disk gives
-                    // no redundancy (RAID1) and no stripe benefit (RAID0), so
-                    // every Target must live on a different disk.
-                    let candidate_disks = lsblk::parent_disks_for_partitions(
-                        &self.disks,
-                        std::slice::from_ref(&part),
-                    );
-                    let target_disks = lsblk::parent_disks_for_partitions(
-                        &self.disks,
-                        &state.disk.target_partitions,
-                    );
-                    if candidate_disks
-                        .iter()
-                        .any(|disk| target_disks.contains(disk))
-                    {
-                        self.show_error(t!("disk_step.error_same_disk_target"));
-                        return;
-                    }
+                    // Same-disk Targets are allowed here: RAID0 legitimately
+                    // pools disjoint free regions of one disk. Only RAID1 is
+                    // rejected, and only once the profile is known — see
+                    // `try_advance`.
                     state.disk.target_partitions.push(part);
                 }
             }
@@ -325,6 +320,13 @@ impl DiskStep {
         }
         if state.disk.target_partitions.len() > 1 && state.disk.raid_mode.is_none() {
             self.open_raid_dialog(state);
+            return StepAction::None;
+        }
+        if self.raid1_targets_share_disk(state) {
+            // Reset the profile so the RAID dialog reopens and the user can
+            // switch to RAID0 instead of reassigning partitions.
+            state.disk.raid_mode = None;
+            self.show_error(t!("disk_step.error_same_disk_target"));
             return StepAction::None;
         }
         if self

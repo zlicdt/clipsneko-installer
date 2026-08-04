@@ -709,7 +709,8 @@ msgstr "终端窗口过小——最小尺寸："
 msgid "install_step.log.read_error"
 msgstr "无法读取安装日志："
 
-#: src/steps/disk.rs:289
+#: src/steps/disk.rs:330
 msgid "disk_step.error_same_disk_target"
 msgstr ""
-"此磁盘上已有一个安装目标分区。btrfs RAID 要求每个安装目标位于不同的物理磁盘。"
+"RAID1 要求每个安装目标位于不同的物理磁盘；在同一块磁盘内做镜像没有冗余意义。如需合并单块磁盘上的空"
+"间，请改用 RAID0。"

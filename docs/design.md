@@ -123,10 +123,12 @@ informational containers, uses rounded corners.
       ESP is single-select (assigning a new ESP clears the old one); Target is
       multi-select (choosing two or more Target partitions enables btrfs RAID
       at format time — see §5). The roles are mutually exclusive for a given
-      partition. The ESP must carry the GPT ESP type UUID. Every Target must
-      reside on a different physical disk — btrfs RAID across partitions of
-      one disk has no redundancy or stripe benefit, so assigning a Target on
-      a disk that already holds one is rejected with an error dialog.
+      partition. The ESP must carry the GPT ESP type UUID. Targets may share
+      a physical disk: pooling disjoint free regions of one disk is a
+      legitimate RAID0 use. Only RAID1 requires every Target on a different
+      physical disk — mirroring within one disk has no redundancy value — so
+      that combination is rejected with an error dialog when advancing, with
+      the profile reset so the RAID dialog reopens for a RAID0 retry.
    - With multiple Targets, Next asks for the btrfs data profile (`raid0` or
      `raid1`; metadata remains `raid1`). Usable capacity is checked against the
      strict `> 20 GiB` requirement: RAID0 is conservatively limited by the

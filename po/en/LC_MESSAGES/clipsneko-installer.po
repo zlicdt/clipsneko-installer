@@ -716,8 +716,9 @@ msgstr "Terminal window is too small — minimum size:"
 msgid "install_step.log.read_error"
 msgstr "Could not read the installer log:"
 
-#: src/steps/disk.rs:289
+#: src/steps/disk.rs:330
 msgid "disk_step.error_same_disk_target"
 msgstr ""
-"This disk already holds an Installation Target partition. Btrfs RAID "
-"requires every Target on a separate physical disk."
+"RAID1 requires every Target on a separate physical disk; mirroring within "
+"one disk provides no redundancy. To combine space on a single disk, choose "
+"RAID0 instead."

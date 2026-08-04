@@ -116,8 +116,7 @@ fn assigning_target_clears_same_partition_from_esp() {
     assert_eq!(state.disk.target_partitions, vec!["sda1"]);
 }
 
-#[test]
-fn assigning_target_on_another_targets_disk_is_rejected() {
+fn two_disk_step() -> DiskStep {
     let mut step = DiskStep::new();
     step.disks = vec![
         disk(
@@ -134,18 +133,47 @@ fn assigning_target_on_another_targets_disk_is_rejected() {
         .into_iter()
         .cloned()
         .collect();
+    step
+}
+
+#[test]
+fn assigning_targets_on_the_same_disk_is_allowed() {
+    let mut step = two_disk_step();
     let mut state = state_with(Some("sda1"), &["sda2"]);
 
     step.role_dialog.part = "sda3".to_string();
     step.apply_role(RoleOption::Target, &mut state);
-    assert_eq!(state.disk.target_partitions, vec!["sda2"]);
+    assert_eq!(state.disk.target_partitions, vec!["sda2", "sda3"]);
+    assert!(!step.error_dialog.visible);
+}
+
+#[test]
+fn raid1_with_same_disk_targets_is_rejected_at_advance() {
+    let mut step = two_disk_step();
+    let mut state = state_with(Some("sda1"), &["sda2", "sda3"]);
+    state.disk.raid_mode = Some(BtrfsRaidMode::Raid1);
+
+    assert!(matches!(step.try_advance(&mut state), StepAction::None));
     assert!(step.error_dialog.visible);
+    // The profile is reset so the RAID dialog reopens for the retry.
+    assert!(state.disk.raid_mode.is_none());
 
     step.error_dialog.visible = false;
-    step.role_dialog.part = "sdb1".to_string();
-    step.apply_role(RoleOption::Target, &mut state);
-    assert_eq!(state.disk.target_partitions, vec!["sda2", "sdb1"]);
+    state.disk.raid_mode = Some(BtrfsRaidMode::Raid0);
+    assert!(matches!(step.try_advance(&mut state), StepAction::None));
     assert!(!step.error_dialog.visible);
+    assert!(step.wipe_dialog.visible);
+}
+
+#[test]
+fn raid1_with_targets_on_distinct_disks_advances() {
+    let mut step = two_disk_step();
+    let mut state = state_with(Some("sda1"), &["sda2", "sdb1"]);
+    state.disk.raid_mode = Some(BtrfsRaidMode::Raid1);
+
+    assert!(matches!(step.try_advance(&mut state), StepAction::None));
+    assert!(!step.error_dialog.visible);
+    assert!(step.wipe_dialog.visible);
 }
 
 #[test]

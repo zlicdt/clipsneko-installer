@@ -730,9 +730,10 @@ msgstr "Terminalfenster ist zu klein — Mindestgröße:"
 msgid "install_step.log.read_error"
 msgstr "Installationsprotokoll konnte nicht gelesen werden:"
 
-#: src/steps/disk.rs:289
+#: src/steps/disk.rs:330
 msgid "disk_step.error_same_disk_target"
 msgstr ""
-"Dieses Laufwerk enthält bereits eine Installationsziel-Partition. Btrfs-RAID "
-"erfordert, dass jedes Installationsziel auf einem separaten physischen "
-"Laufwerk liegt."
+"RAID1 erfordert, dass jedes Installationsziel auf einem separaten "
+"physischen Laufwerk liegt; ein Spiegel innerhalb eines Laufwerks bietet "
+"keine Redundanz. Um Speicherplatz auf einem einzelnen Laufwerk "
+"zusammenzufassen, wählen Sie stattdessen RAID0."

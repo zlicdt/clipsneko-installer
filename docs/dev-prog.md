@@ -132,10 +132,10 @@ it moves from "Not done" to "Done" and stays there.
   requires the GPT ESP type, and refreshes reconcile stale assignments.
 - **Multi-target btrfs:** RAID0/RAID1 selection and conservative usable-capacity
   checks are implemented. Every Target appears in the destructive warning;
-  only an already-vfat ESP is reused without a format warning. Assigning a
-  Target on a disk that already holds another Target is rejected with a
-  translated error dialog, so every btrfs RAID leg lives on a different
-  physical disk.
+  only an already-vfat ESP is reused without a format warning. Targets may
+  share a physical disk for RAID0 (pooling disjoint free regions); only
+  RAID1 with same-disk Targets is rejected when advancing, with a translated
+  error dialog and the profile reset so the RAID dialog reopens.
 - **Kernel step:** the four supported kernels are available in a translated
   single-select list, with `linux-zen` selected by default. Space, Enter, and
   footer Next commit consistently; returning to the step restores the saved
@@ -280,8 +280,8 @@ it moves from "Not done" to "Done" and stays there.
   test on the actual ClipsNeko Live ISO or a disposable matching VM. This now
   includes the UEFI boot-mode gate (accepted in UEFI, refused under
   BIOS/CSM), microcode package selection on Intel and AMD hosts, os-prober
-  entries appearing in grub.cfg on a dual-OS disk, and the same-disk Target
-  rejection dialog.
+  entries appearing in grub.cfg on a dual-OS disk, and the same-disk RAID1
+  rejection dialog (with RAID0 left available for same-disk pooling).
 - **F1 help:** content and rendering still need the user's decision; F1 is not
   advertised in the UI meanwhile.
 - **End-to-end acceptance:** no complete VM/Live ISO installation has yet
