@@ -21,12 +21,19 @@ fn run_chroot(
     runner.run("arch-chroot", &chroot_args(program, args), stdin)
 }
 
-fn read_target_file(runner: &mut dyn CommandRunner, path: &str) -> Result<String> {
+/// Read a target-system file through the chroot. Shared with the bootloader
+/// module, which edits `/etc/default/grub` before running grub-mkconfig.
+pub(crate) fn read_target_file(runner: &mut dyn CommandRunner, path: &str) -> Result<String> {
     let output = run_chroot(runner, "cat", &[path], None)?;
     String::from_utf8(output.stdout).with_context(|| format!("{path} is not UTF-8"))
 }
 
-fn write_target_file(runner: &mut dyn CommandRunner, path: &str, contents: &[u8]) -> Result<()> {
+/// Write a target-system file through the chroot via privileged `tee`.
+pub(crate) fn write_target_file(
+    runner: &mut dyn CommandRunner,
+    path: &str,
+    contents: &[u8],
+) -> Result<()> {
     run_chroot(runner, "tee", &[path], Some(contents))?;
     Ok(())
 }

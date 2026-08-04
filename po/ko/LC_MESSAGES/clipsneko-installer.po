@@ -715,3 +715,9 @@ msgstr "터미널 창이 너무 작습니다 — 최소 크기:"
 #: src/steps/install.rs:293
 msgid "install_step.log.read_error"
 msgstr "설치 로그를 읽을 수 없습니다:"
+
+#: src/steps/disk.rs:289
+msgid "disk_step.error_same_disk_target"
+msgstr ""
+"이 디스크에 이미 설치 대상 파티션이 있습니다. btrfs RAID는 각 설치 대상이 서"
+"로 다른 물리 디스크에 있어야 합니다."

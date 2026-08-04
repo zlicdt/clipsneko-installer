@@ -43,6 +43,20 @@ fn validate_runtime_config() -> Result<()> {
     Ok(())
 }
 
+/// Refuse to start unless the Live ISO was booted in UEFI mode. The installer
+/// targets UEFI only; without the EFI variable interface the GRUB stage would
+/// fail late, after destructive partitioning, so this invariant is enforced
+/// before the TUI starts.
+fn validate_boot_mode() -> Result<()> {
+    if !std::path::Path::new("/sys/firmware/efi/efivars").is_dir() {
+        anyhow::bail!(
+            "UEFI boot mode is required; \
+             reboot the Live ISO in UEFI mode (disable BIOS/CSM)"
+        );
+    }
+    Ok(())
+}
+
 /// Resolve the log file path under the user's cache directory:
 /// `$XDG_CACHE_HOME/clipsneko-installer/log`, falling back to
 /// `$HOME/.cache/clipsneko-installer/log`. The path is fixed (no env-var
@@ -131,6 +145,7 @@ fn main() -> Result<()> {
     install_panic_hook();
     init_tracing()?;
     validate_runtime_config()?;
+    validate_boot_mode()?;
     set_language(UiLang::En)?;
 
     let (cols, rows) = crossterm::terminal::size().context("could not read terminal size")?;

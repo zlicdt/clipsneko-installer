@@ -2,6 +2,7 @@
 //!
 //! Currently houses subprocess helpers and parsers shared by wizard steps.
 
+pub mod cpuinfo;
 pub mod geoip;
 pub mod locale_list;
 pub mod lsblk;

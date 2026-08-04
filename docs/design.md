@@ -118,12 +118,15 @@ informational containers, uses rounded corners.
      width accommodates the longest translated role; the trailing filesystem
      column absorbs narrow-screen truncation. Partitions belonging to disabled
      disks are protected and cannot be assigned.
-   - Selecting a partition (Enter) pops a small dialog asking the user to
-     assign it the **ESP**, **Target**, or explicit **Unassigned** role.
-     ESP is single-select (assigning a new ESP clears the old one); Target is
-     multi-select (choosing two or more Target partitions enables btrfs RAID
-     at format time — see §5). The roles are mutually exclusive for a given
-     partition. The ESP must carry the GPT ESP type UUID.
+    - Selecting a partition (Enter) pops a small dialog asking the user to
+      assign it the **ESP**, **Target**, or explicit **Unassigned** role.
+      ESP is single-select (assigning a new ESP clears the old one); Target is
+      multi-select (choosing two or more Target partitions enables btrfs RAID
+      at format time — see §5). The roles are mutually exclusive for a given
+      partition. The ESP must carry the GPT ESP type UUID. Every Target must
+      reside on a different physical disk — btrfs RAID across partitions of
+      one disk has no redundancy or stripe benefit, so assigning a Target on
+      a disk that already holds one is rejected with an error dialog.
    - With multiple Targets, Next asks for the btrfs data profile (`raid0` or
      `raid1`; metadata remains `raid1`). Usable capacity is checked against the
      strict `> 20 GiB` requirement: RAID0 is conservatively limited by the
@@ -222,10 +225,15 @@ The static `base-devel` entry supplies `sudo`, so the later sudoers edit does
 not require the installer to add a separate dynamic package.
 
 12.3 `pacstrap -P /mnt <packages.list contents> <chosen kernel>
-<matching kernel headers> linux-firmware <chosen NVIDIA package>`.
+<matching kernel headers> linux-firmware <CPU microcode package>
+<chosen NVIDIA package>`.
 `packages.list` is the authoritative static package set; the installer only
-adds packages derived from wizard state. `-P` copies the Live ISO's
-`pacman.conf` and `pacman.d` configuration to the target.
+adds packages derived from wizard state and hardware detection. The microcode
+package comes from the live CPU's `vendor_id` in `/proc/cpuinfo`
+(`GenuineIntel` → `intel-ucode`, `AuthenticAMD` → `amd-ucode`); an unknown
+vendor contributes no package and is logged rather than treated as fatal.
+`-P` copies the Live ISO's `pacman.conf` and `pacman.d` configuration to the
+target.
 
 12.4 `genfstab -U /mnt >> /mnt/etc/fstab` — verify btrfs entries carry like
 `rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@` and
@@ -251,6 +259,9 @@ the generated level; do not rewrite it or specify a level in mount commands.
   `/etc/mkinitcpio.conf`**; then `mkinitcpio -P`. (No MODULES additions needed:
   the default `filesystems` HOOK + btrfs-progs already cover btrfs, and current
   NVIDIA packages need no MODULES entries.)
+- uncomment `GRUB_DISABLE_OS_PROBER=false` in `/etc/default/grub` (Arch ships
+  the line commented out) so `grub-mkconfig` adds boot entries for other
+  installed operating systems
 - `grub-install --target=x86_64-efi --efi-directory=/boot/efi
   --bootloader-id=clipsneko`
 - `grub-mkconfig -o /boot/grub/grub.cfg`
@@ -386,4 +397,7 @@ This is the required pattern for all future modules that shell out — see
   alternate screen) so a crash never leaves the user stuck in a dead
   terminal.
 - Before entering the alternate screen, startup verifies that the required
-  `/etc/clipsneko-installer/packages.list` runtime file exists.
+  `/etc/clipsneko-installer/packages.list` runtime file exists and that the
+  Live ISO was booted in UEFI mode (`/sys/firmware/efi/efivars` is present).
+  A BIOS/CSM boot exits with a clear error instead of failing at the GRUB
+  stage after destructive partitioning.

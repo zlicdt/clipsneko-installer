@@ -719,3 +719,9 @@ msgstr "Окно терминала слишком маленькое — мин
 #: src/steps/install.rs:293
 msgid "install_step.log.read_error"
 msgstr "Не удалось прочитать журнал установки:"
+
+#: src/steps/disk.rs:289
+msgid "disk_step.error_same_disk_target"
+msgstr ""
+"На этом диске уже есть целевой раздел установки. btrfs RAID требует, чтобы "
+"каждый целевой раздел находился на отдельном физическом диске."

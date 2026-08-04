@@ -271,6 +271,24 @@ impl DiskStep {
                     .iter()
                     .any(|name| name == &part)
                 {
+                    // Btrfs RAID across partitions of one physical disk gives
+                    // no redundancy (RAID1) and no stripe benefit (RAID0), so
+                    // every Target must live on a different disk.
+                    let candidate_disks = lsblk::parent_disks_for_partitions(
+                        &self.disks,
+                        std::slice::from_ref(&part),
+                    );
+                    let target_disks = lsblk::parent_disks_for_partitions(
+                        &self.disks,
+                        &state.disk.target_partitions,
+                    );
+                    if candidate_disks
+                        .iter()
+                        .any(|disk| target_disks.contains(disk))
+                    {
+                        self.show_error(t!("disk_step.error_same_disk_target"));
+                        return;
+                    }
                     state.disk.target_partitions.push(part);
                 }
             }

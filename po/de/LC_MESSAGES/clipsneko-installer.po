@@ -314,9 +314,7 @@ msgstr "Der Hostname ist gültig."
 
 #: src/steps/install.rs:180
 msgid "install_step.failure.body"
-msgstr ""
-"Die Installation wurde angehalten."
-"unverändert."
+msgstr "Die Installation wurde angehalten."
 
 #: src/steps/install.rs:184
 msgid "install_step.failure.return"
@@ -731,3 +729,10 @@ msgstr "Terminalfenster ist zu klein — Mindestgröße:"
 #: src/steps/install.rs:293
 msgid "install_step.log.read_error"
 msgstr "Installationsprotokoll konnte nicht gelesen werden:"
+
+#: src/steps/disk.rs:289
+msgid "disk_step.error_same_disk_target"
+msgstr ""
+"Dieses Laufwerk enthält bereits eine Installationsziel-Partition. Btrfs-RAID "
+"erfordert, dass jedes Installationsziel auf einem separaten physischen "
+"Laufwerk liegt."

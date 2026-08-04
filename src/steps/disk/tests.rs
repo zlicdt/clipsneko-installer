@@ -117,6 +117,38 @@ fn assigning_target_clears_same_partition_from_esp() {
 }
 
 #[test]
+fn assigning_target_on_another_targets_disk_is_rejected() {
+    let mut step = DiskStep::new();
+    step.disks = vec![
+        disk(
+            "sda",
+            vec![
+                esp_part("sda1", Some("vfat")),
+                part("sda2", 30 * 1024_u64.pow(3), None),
+                part("sda3", 30 * 1024_u64.pow(3), None),
+            ],
+        ),
+        disk("sdb", vec![part("sdb1", 30 * 1024_u64.pow(3), None)]),
+    ];
+    step.parts = lsblk::flat_parts(&step.disks)
+        .into_iter()
+        .cloned()
+        .collect();
+    let mut state = state_with(Some("sda1"), &["sda2"]);
+
+    step.role_dialog.part = "sda3".to_string();
+    step.apply_role(RoleOption::Target, &mut state);
+    assert_eq!(state.disk.target_partitions, vec!["sda2"]);
+    assert!(step.error_dialog.visible);
+
+    step.error_dialog.visible = false;
+    step.role_dialog.part = "sdb1".to_string();
+    step.apply_role(RoleOption::Target, &mut state);
+    assert_eq!(state.disk.target_partitions, vec!["sda2", "sdb1"]);
+    assert!(!step.error_dialog.visible);
+}
+
+#[test]
 fn unassigned_clears_both_roles() {
     let mut step = DiskStep::new();
     step.role_dialog.part = "sda1".to_string();

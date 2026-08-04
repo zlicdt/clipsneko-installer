@@ -17,12 +17,18 @@ pub fn parse_packages(contents: &str) -> Vec<String> {
 
 /// Combine static and wizard-derived packages while preserving first-seen
 /// order. This avoids passing duplicate packages if the static list already
-/// contains a derived dependency.
-pub fn package_set(static_packages: &[String], config: &InstallConfig) -> Vec<String> {
+/// contains a derived dependency. `microcode_package` comes from the live
+/// CPU vendor detection and is `None` for unknown vendors.
+pub fn package_set(
+    static_packages: &[String],
+    config: &InstallConfig,
+    microcode_package: Option<&str>,
+) -> Vec<String> {
     let dynamic = [
         Some(config.kernel_package.as_str()),
         Some(config.headers_package.as_str()),
         Some("linux-firmware"),
+        microcode_package,
         config.nvidia.package_name(),
     ];
     let mut seen = HashSet::new();
@@ -44,7 +50,11 @@ pub fn install_packages(
 ) -> Result<()> {
     let contents = std::fs::read_to_string(packages_path)
         .with_context(|| format!("reading {packages_path}"))?;
-    let packages = package_set(&parse_packages(&contents), config);
+    let packages = package_set(
+        &parse_packages(&contents),
+        config,
+        crate::util::cpuinfo::microcode_package(),
+    );
     let mut args = vec!["-P".to_string(), TARGET_ROOT.to_string()];
     args.extend(packages);
     runner.run("pacstrap", &args, None)?;
@@ -126,12 +136,44 @@ mod tests {
     fn packages_preserve_static_order_and_add_dynamic_without_duplicates() {
         let static_packages = parse_packages("base\n# note\nlinux-firmware\nbase\n");
         assert_eq!(
-            package_set(&static_packages, &config()),
+            package_set(&static_packages, &config(), Some("intel-ucode")),
             [
                 "base",
                 "linux-firmware",
                 "linux-zen",
                 "linux-zen-headers",
+                "intel-ucode",
+                "nvidia-open-dkms"
+            ]
+        );
+    }
+
+    #[test]
+    fn unknown_cpu_vendor_adds_no_microcode_package() {
+        let static_packages = parse_packages("base\n");
+        assert_eq!(
+            package_set(&static_packages, &config(), None),
+            [
+                "base",
+                "linux-zen",
+                "linux-zen-headers",
+                "linux-firmware",
+                "nvidia-open-dkms"
+            ]
+        );
+    }
+
+    #[test]
+    fn statically_listed_microcode_is_not_duplicated() {
+        let static_packages = parse_packages("base\namd-ucode\n");
+        assert_eq!(
+            package_set(&static_packages, &config(), Some("amd-ucode")),
+            [
+                "base",
+                "amd-ucode",
+                "linux-zen",
+                "linux-zen-headers",
+                "linux-firmware",
                 "nvidia-open-dkms"
             ]
         );

@@ -726,3 +726,9 @@ msgstr "ターミナルウィンドウが小さすぎます — 最小サイズ:
 #: src/steps/install.rs:293
 msgid "install_step.log.read_error"
 msgstr "インストールログを読み込めませんでした:"
+
+#: src/steps/disk.rs:289
+msgid "disk_step.error_same_disk_target"
+msgstr ""
+"このディスクにはすでにインストール対象のパーティションがあります。btrfs RAID "
+"では、インストール対象をそれぞれ別の物理ディスクに配置する必要があります。"

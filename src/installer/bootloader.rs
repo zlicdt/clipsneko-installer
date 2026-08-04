@@ -1,7 +1,8 @@
 //! GRUB installation and target service enablement.
 
+use super::chroot::{read_target_file, write_target_file};
 use super::{CommandRunner, TARGET_ROOT};
-use anyhow::Result;
+use anyhow::{bail, Result};
 
 fn chroot_args(program: &str, args: &[&str]) -> Vec<String> {
     std::iter::once(TARGET_ROOT.to_string())
@@ -10,8 +11,44 @@ fn chroot_args(program: &str, args: &[&str]) -> Vec<String> {
         .collect()
 }
 
-/// Install GRUB, generate grub.cfg, and enable NetworkManager in the target.
+/// Enable os-prober so `grub-mkconfig` adds boot entries for other installed
+/// operating systems. Arch's stock `/etc/default/grub` ships the toggle as
+/// the commented line `#GRUB_DISABLE_OS_PROBER=false`; uncomment it while
+/// preserving unrelated lines. The stock line is a target-package invariant,
+/// so its absence is a fatal error.
+pub fn enable_os_prober(contents: &str) -> Result<String> {
+    const SETTING: &str = "GRUB_DISABLE_OS_PROBER=false";
+    let mut found = false;
+    let mut output = String::with_capacity(contents.len());
+    for line in contents.split_inclusive('\n') {
+        let raw = line.strip_suffix('\n').unwrap_or(line);
+        let candidate = raw
+            .trim_start()
+            .strip_prefix('#')
+            .map(str::trim_start)
+            .unwrap_or(raw.trim_start());
+        if candidate == SETTING {
+            output.push_str(SETTING);
+            found = true;
+        } else {
+            output.push_str(raw);
+        }
+        if line.ends_with('\n') {
+            output.push('\n');
+        }
+    }
+    if !found {
+        bail!("GRUB_DISABLE_OS_PROBER toggle is absent from target /etc/default/grub");
+    }
+    Ok(output)
+}
+
+/// Enable os-prober, install GRUB, generate grub.cfg, and enable
+/// NetworkManager in the target.
 pub fn install(runner: &mut dyn CommandRunner) -> Result<()> {
+    let grub_defaults = read_target_file(runner, "/etc/default/grub")?;
+    let grub_defaults = enable_os_prober(&grub_defaults)?;
+    write_target_file(runner, "/etc/default/grub", grub_defaults.as_bytes())?;
     runner.run(
         "arch-chroot",
         &chroot_args(
@@ -40,6 +77,60 @@ pub fn install(runner: &mut dyn CommandRunner) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::installer::CommandOutput;
+
+    #[test]
+    fn os_prober_toggle_is_uncommented_idempotently() {
+        let input = "GRUB_TIMEOUT=5\n#GRUB_DISABLE_OS_PROBER=false\n";
+        let once = enable_os_prober(input).unwrap();
+        assert_eq!(once, "GRUB_TIMEOUT=5\nGRUB_DISABLE_OS_PROBER=false\n");
+        assert_eq!(enable_os_prober(&once).unwrap(), once);
+    }
+
+    #[test]
+    fn missing_os_prober_toggle_is_a_fatal_invariant() {
+        assert!(enable_os_prober("GRUB_TIMEOUT=5\n").is_err());
+    }
+
+    #[derive(Default)]
+    struct GrubRunner {
+        written_grub_defaults: Option<String>,
+    }
+
+    impl CommandRunner for GrubRunner {
+        fn run(
+            &mut self,
+            program: &str,
+            args: &[String],
+            stdin: Option<&[u8]>,
+        ) -> Result<CommandOutput> {
+            assert_eq!(program, "arch-chroot");
+            let subcommand = args.get(1).map(String::as_str);
+            let mut stdout = Vec::new();
+            if subcommand == Some("cat")
+                && args.last().map(String::as_str) == Some("/etc/default/grub")
+            {
+                stdout = b"GRUB_TIMEOUT=5\n#GRUB_DISABLE_OS_PROBER=false\n".to_vec();
+            }
+            if subcommand == Some("tee")
+                && args.last().map(String::as_str) == Some("/etc/default/grub")
+            {
+                self.written_grub_defaults =
+                    stdin.map(|bytes| String::from_utf8(bytes.to_vec()).unwrap());
+            }
+            Ok(CommandOutput { stdout })
+        }
+    }
+
+    #[test]
+    fn install_writes_the_enabled_os_prober_toggle_to_the_target() {
+        let mut runner = GrubRunner::default();
+        install(&mut runner).unwrap();
+        assert_eq!(
+            runner.written_grub_defaults.as_deref(),
+            Some("GRUB_TIMEOUT=5\nGRUB_DISABLE_OS_PROBER=false\n")
+        );
+    }
 
     #[test]
     fn bootloader_arguments_match_the_uefi_design() {

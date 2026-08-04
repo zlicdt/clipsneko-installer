@@ -64,6 +64,9 @@ it moves from "Not done" to "Done" and stays there.
   otherwise prefixes `sudo --`. Full-screen `nmtui` and `cfdisk` suspension is
   shared, and subprocess spawn failures do not leave the app running with an
   unknown terminal state.
+- Startup enforces the UEFI-only target before entering the TUI: a missing
+  `/sys/firmware/efi/efivars` exits with a clear error instead of failing at
+  the GRUB stage after destructive partitioning.
 - The app shell renders the header, body, and footer; owns the 12-step state
   machine; skips disabled buttons; and provides shared step activation,
   completion, modal, subprocess, and commit hooks.
@@ -129,7 +132,10 @@ it moves from "Not done" to "Done" and stays there.
   requires the GPT ESP type, and refreshes reconcile stale assignments.
 - **Multi-target btrfs:** RAID0/RAID1 selection and conservative usable-capacity
   checks are implemented. Every Target appears in the destructive warning;
-  only an already-vfat ESP is reused without a format warning.
+  only an already-vfat ESP is reused without a format warning. Assigning a
+  Target on a disk that already holds another Target is rejected with a
+  translated error dialog, so every btrfs RAID leg lives on a different
+  physical disk.
 - **Kernel step:** the four supported kernels are available in a translated
   single-select list, with `linux-zen` selected by default. Space, Enter, and
   footer Next commit consistently; returning to the step restores the saved
@@ -193,13 +199,21 @@ it moves from "Not done" to "Done" and stays there.
   packages list, appends deduplicated kernel/headers/linux-firmware/NVIDIA
   choices, runs `pacstrap -P`, validates both generated btrfs fstab entries
   while preserving a kernel-normalized zstd level, and appends fstab without a
-  shell. Chroot configuration makes the selected locales the exact enabled
+  shell. The dynamic package set also derives a CPU microcode package from the
+  live `/proc/cpuinfo` vendor (`GenuineIntel` → `intel-ucode`, `AuthenticAMD`
+  → `amd-ucode`); an unknown vendor adds no package and is logged rather than
+  treated as fatal, and a statically listed microcode package is not
+  duplicated. Chroot configuration makes the selected locales the exact enabled
   UTF-8 set in `/etc/locale.gen`, generates them, writes the separately selected
   default `LANG`, and applies timezone, hardware clock, vconsole,
   hostname/hosts, wheel user and stdin-only password, sudoers, and NVIDIA-
   specific `kms` HOOK removal before `mkinitcpio -P`.
 - **M4c boot and finalization:** GRUB UEFI installation and configuration plus
-  NetworkManager enablement are implemented. The install pipeline runs in a
+  NetworkManager enablement are implemented. Before `grub-install`, the stock
+  commented `GRUB_DISABLE_OS_PROBER=false` line in the target
+  `/etc/default/grub` is uncommented so `grub-mkconfig` adds entries for other
+  installed operating systems; a missing stock toggle is a fatal target
+  invariant. The install pipeline runs in a
   background worker with a responsive spinner and a stage-weighted progress
   bar (fixed 5/2/60/2/10/10/6/5 weights, numeric percentage label); Back,
   Esc, Ctrl+C, and the normal footer are locked. Failure stops without rollback and offers Return
@@ -234,7 +248,7 @@ it moves from "Not done" to "Done" and stays there.
   terminal size is 80x24, enforced at startup and by an in-app resize notice;
   the two new messages exist in the POT and all seven catalogs.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (169 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (177 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -263,7 +277,11 @@ it moves from "Not done" to "Done" and stays there.
   bar, navigation lock, failure/log dialog, generated fstab, target
   configuration, GRUB output, target-user dotfiles result, preserved-mount
   Not now path, and unmount/reboot path still need an interactive multi-disk
-  test on the actual ClipsNeko Live ISO or a disposable matching VM.
+  test on the actual ClipsNeko Live ISO or a disposable matching VM. This now
+  includes the UEFI boot-mode gate (accepted in UEFI, refused under
+  BIOS/CSM), microcode package selection on Intel and AMD hosts, os-prober
+  entries appearing in grub.cfg on a dual-OS disk, and the same-disk Target
+  rejection dialog.
 - **F1 help:** content and rendering still need the user's decision; F1 is not
   advertised in the UI meanwhile.
 - **End-to-end acceptance:** no complete VM/Live ISO installation has yet

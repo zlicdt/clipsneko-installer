@@ -708,3 +708,7 @@ msgstr ""
 #: src/steps/install.rs:293
 msgid "install_step.log.read_error"
 msgstr ""
+
+#: src/steps/disk.rs:289
+msgid "disk_step.error_same_disk_target"
+msgstr ""

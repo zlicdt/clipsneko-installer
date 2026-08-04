@@ -708,3 +708,9 @@ msgstr "終端視窗過小——最小尺寸："
 #: src/steps/install.rs:293
 msgid "install_step.log.read_error"
 msgstr "無法讀取安裝日誌："
+
+#: src/steps/disk.rs:289
+msgid "disk_step.error_same_disk_target"
+msgstr ""
+"此磁碟上已有一個安裝目標分割區。btrfs RAID 要求每個安裝目標位於不同的實體磁"
+"碟。"
