@@ -191,6 +191,11 @@ pub fn configure_target(runner: &mut dyn CommandRunner, config: &mut InstallConf
         )
         .as_bytes(),
     )?;
+    write_target_file(
+        runner,
+        "/etc/systemd/zram-generator.conf",
+        format!("[zram0]\n").as_bytes(),
+    )?;
 
     run_chroot(
         runner,

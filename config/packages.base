@@ -14,8 +14,6 @@ efibootmgr
 networkmanager
 openssh
 vim
-fcitx5-gtk
-fcitx5-configtool
 fastfetch
 btop
 eza
@@ -24,12 +22,7 @@ clipsneko-keyring
 clipsneko-hooks
 clipsneko-wallpapers
 clipsneko-icons
-clipsneko-dotfiles
-firefox
-nautilus
-ttf-ubuntu-mono-nerd
-noto-fonts-cjk
-noto-fonts-emoji
 zsh-syntax-highlighting
 zsh-autosuggestions
 pkgfile
+zram-generator
