@@ -321,7 +321,7 @@ pub fn run_install(mut config: InstallConfig, sender: &Sender<WorkerMessage>) ->
     report(sender, InstallProgress::Initramfs);
     chroot::generate_initramfs(&mut runner, config.nvidia)?;
     report(sender, InstallProgress::Bootloader);
-    bootloader::install(&mut runner)?;
+    bootloader::install(&mut runner, config.system_type)?;
     report(sender, InstallProgress::Postinstall);
     postinstall::run(&mut runner, &config.username)?;
     Ok(())

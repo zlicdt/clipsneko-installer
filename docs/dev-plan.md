@@ -382,7 +382,8 @@ M4a.
 - `src/installer/bootloader.rs` —
   `grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=clipsneko`;
   `grub-mkconfig -o /boot/grub/grub.cfg`;
-  `systemctl enable NetworkManager` (inside the chroot);
+  `systemctl enable NetworkManager` (inside the chroot), plus
+  `systemctl enable sddm` when the system type is KDE;
   run the pipeline in a background worker with a responsive spinner and locked
   Back/Esc/Ctrl+C paths; on failure stop without rollback and show Return/View
   Log actions; prompt "Reboot now?" with Reboot focused by default. Reboot runs
@@ -393,7 +394,8 @@ M4a.
 
 - GRUB is installed to the ESP with the `clipsneko` bootloader ID.
 - `grub.cfg` is generated and references the btrfs root subvolume.
-- `NetworkManager.service` is enabled on the target.
+- `NetworkManager.service` is enabled on the target, and `sddm.service` is
+  enabled when the system type is KDE.
 - The reboot prompt defaults to Reboot; reboot unmounts and restarts, while
   not-now returns to a usable live shell with `/mnt` preserved for inspection.
 - Destructive work cannot be interrupted through wizard Back/Esc/Ctrl+C. A

@@ -2,6 +2,7 @@
 
 use super::chroot::{read_target_file, write_target_file};
 use super::{CommandRunner, TARGET_ROOT};
+use crate::state::SystemType;
 use anyhow::{bail, Result};
 
 fn chroot_args(program: &str, args: &[&str]) -> Vec<String> {
@@ -45,7 +46,8 @@ pub fn enable_os_prober(contents: &str) -> Result<String> {
 
 /// Enable os-prober, install GRUB, generate grub.cfg, and enable
 /// NetworkManager in the target.
-pub fn install(runner: &mut dyn CommandRunner) -> Result<()> {
+/// KDE system type additionally enables sddm.service
+pub fn install(runner: &mut dyn CommandRunner, system_type: SystemType) -> Result<()> {
     let grub_defaults = read_target_file(runner, "/etc/default/grub")?;
     let grub_defaults = enable_os_prober(&grub_defaults)?;
     write_target_file(runner, "/etc/default/grub", grub_defaults.as_bytes())?;
@@ -71,6 +73,13 @@ pub fn install(runner: &mut dyn CommandRunner) -> Result<()> {
         &chroot_args("systemctl", &["enable", "NetworkManager"]),
         None,
     )?;
+    if system_type == SystemType::Kde {
+        runner.run(
+            "arch-chroot",
+            &chroot_args("systemctl", &["enable", "sddm"]),
+            None,
+        )?;
+    }
     Ok(())
 }
 
@@ -95,6 +104,7 @@ mod tests {
     #[derive(Default)]
     struct GrubRunner {
         written_grub_defaults: Option<String>,
+        commands: Vec<Vec<String>>,
     }
 
     impl CommandRunner for GrubRunner {
@@ -105,6 +115,7 @@ mod tests {
             stdin: Option<&[u8]>,
         ) -> Result<CommandOutput> {
             assert_eq!(program, "arch-chroot");
+            self.commands.push(args.to_vec());
             let subcommand = args.get(1).map(String::as_str);
             let mut stdout = Vec::new();
             if subcommand == Some("cat")
@@ -125,11 +136,40 @@ mod tests {
     #[test]
     fn install_writes_the_enabled_os_prober_toggle_to_the_target() {
         let mut runner = GrubRunner::default();
-        install(&mut runner).unwrap();
+        install(&mut runner, SystemType::Hyprland).unwrap();
         assert_eq!(
             runner.written_grub_defaults.as_deref(),
             Some("GRUB_TIMEOUT=5\nGRUB_DISABLE_OS_PROBER=false\n")
         );
+    }
+
+    #[test]
+    fn kde_enables_sddm_service() {
+        let mut runner = GrubRunner::default();
+        install(&mut runner, SystemType::Kde).unwrap();
+        let has_enable = |service: &str| {
+            runner
+                .commands
+                .iter()
+                .any(|args| args == &["/mnt", "systemctl", "enable", service])
+        };
+        assert!(has_enable("NetworkManager"));
+        assert!(has_enable("sddm"));
+    }
+
+    #[test]
+    fn non_kde_system_types_do_not_enable_sddm() {
+        for system_type in [SystemType::Server, SystemType::Hyprland] {
+            let mut runner = GrubRunner::default();
+            install(&mut runner, system_type).unwrap();
+            assert!(
+                !runner
+                    .commands
+                    .iter()
+                    .any(|args| args == &["/mnt", "systemctl", "enable", "sddm"]),
+                "sddm must stay disabled for {system_type:?}"
+            );
+        }
     }
 
     #[test]

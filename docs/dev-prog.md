@@ -228,7 +228,8 @@ it moves from "Not done" to "Done" and stays there.
   hostname/hosts, wheel user and stdin-only password, sudoers, and NVIDIA-
   specific `kms` HOOK removal before `mkinitcpio -P`.
 - **M4c boot and finalization:** GRUB UEFI installation and configuration plus
-  NetworkManager enablement are implemented. Before `grub-install`, the stock
+  NetworkManager enablement are implemented; a KDE system type additionally
+  enables `sddm.service`. Before `grub-install`, the stock
   commented `GRUB_DISABLE_OS_PROBER=false` line in the target
   `/etc/default/grub` is uncommented so `grub-mkconfig` adds entries for other
   installed operating systems; a missing stock toggle is a fatal target
