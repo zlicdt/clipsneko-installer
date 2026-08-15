@@ -19,7 +19,7 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
-use crate::util::ui::{focusable_block, rounded_block};
+use crate::util::ui::{focusable_block, rounded_block, selected_style};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -142,12 +142,12 @@ impl Step for KeyboardStep {
             .keymaps
             .iter()
             .map(|k| {
-                // The row that is *selected/applied* (via Space/Enter) is
-                // rendered bold so it stands out. The cursor
-                // row is separately indicated by the `REVERSED` highlight
-                // style (mirrors the language step).
+                // The row that is *selected/applied* (via Space/Enter) uses
+                // the shared bold-white selection style so it stands out.
+                // The cursor row is separately indicated by the `REVERSED`
+                // highlight style (mirrors the language step).
                 let style = if *k == self.selected {
-                    Style::default().add_modifier(Modifier::BOLD)
+                    selected_style()
                 } else {
                     Style::default()
                 };

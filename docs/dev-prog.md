@@ -89,7 +89,11 @@ it moves from "Not done" to "Done" and stays there.
   non-interactive containers, and semantic colors such as password strength
   retain their existing independent styles. Every visible border, including
   modal dialogs and informational containers, is created through the shared
-  rounded-corner block constructor.
+  rounded-corner block constructor. The selected/committed row of every
+  selection list, table, and checkbox label (language, keyboard, mirror, disk,
+  system type, kernel, NVIDIA, timezone) shares the bold white
+  `util::ui::selected_style()` helper, so a committed choice stays visible
+  after the cursor moves away.
 - **Language/locale step:** coordinated UI-language and target-locale lists are
   implemented. UI switching is live and automatically selects the matching
   target locale. The target list contains every commented or enabled UTF-8
@@ -263,7 +267,7 @@ it moves from "Not done" to "Done" and stays there.
   terminal size is 80x24, enforced at startup and by an in-app resize notice;
   the two new messages exist in the POT and all seven catalogs.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (189 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (191 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done

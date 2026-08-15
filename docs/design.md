@@ -54,6 +54,10 @@ return to the terminal's default style and the footer keeps its existing
 reversed focus style. Non-interactive container and informational borders do
 not receive the focus style. Every visible border, including modal dialogs and
 informational containers, uses rounded corners.
+The selected/committed row of every selection list, table, or checkbox label
+uses the shared bold white `util::ui::selected_style()` helper — bold alone is
+nearly invisible on consoles without a distinct bold face, so the white
+foreground is required; the cursor row stays on the `REVERSED` highlight style.
 
 1. **Language and locale** — two coordinated lists on one step:
    - Installer UI language: en / zh_CN / zh_TW / ja / de / ko / ru. Space

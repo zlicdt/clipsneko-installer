@@ -6,7 +6,7 @@ use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::lsblk::{self, BlockDevice};
 use crate::util::process::{is_root, privileged_command};
-use crate::util::ui::{focusable_block, render_autosized_dialog, rounded_block};
+use crate::util::ui::{focusable_block, render_autosized_dialog, rounded_block, selected_style};
 use anyhow::{Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -14,10 +14,6 @@ use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Cell, Paragraph, Row, Table, TableState, Wrap};
 use ratatui::Frame;
-
-fn selected_style() -> Style {
-    Style::default().add_modifier(Modifier::BOLD)
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Phase {

@@ -1,6 +1,7 @@
 use super::*;
 use crossterm::event::KeyModifiers;
 use ratatui::backend::TestBackend;
+use ratatui::style::Color;
 use ratatui::Terminal;
 
 fn key(code: KeyCode) -> KeyEvent {
@@ -149,7 +150,7 @@ fn english_render_shows_all_choices_and_checkbox() {
 }
 
 #[test]
-fn selected_profile_and_checked_dev_tools_render_bold() {
+fn selected_profile_and_checked_dev_tools_render_bold_white() {
     crate::i18n::set_language(crate::i18n::UiLang::En).unwrap();
     let backend = TestBackend::new(72, 12);
     let mut terminal = Terminal::new(backend).unwrap();
@@ -176,19 +177,19 @@ fn selected_profile_and_checked_dev_tools_render_bold() {
     // List block: title row, then "Server", "KDE Plasma", "Hyprland" rows.
     let hyprland = row_cell(3, "H");
     assert!(
-        hyprland.modifier.contains(Modifier::BOLD),
-        "selected Hyprland entry must render bold"
+        hyprland.modifier.contains(Modifier::BOLD) && hyprland.fg == Color::White,
+        "selected Hyprland entry must render bold white"
     );
     let server = row_cell(1, "S");
     assert!(
-        !server.modifier.contains(Modifier::BOLD),
-        "unselected Server entry must not render bold"
+        !server.modifier.contains(Modifier::BOLD) && server.fg != Color::White,
+        "unselected Server entry must not render bold white"
     );
 
     // Checkbox block: borders at y=8/y=10, text row y=9.
     let checkbox = row_cell(9, "I");
     assert!(
-        checkbox.modifier.contains(Modifier::BOLD),
-        "checked dev-tools label must render bold"
+        checkbox.modifier.contains(Modifier::BOLD) && checkbox.fg == Color::White,
+        "checked dev-tools label must render bold white"
     );
 }

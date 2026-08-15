@@ -7,7 +7,7 @@
 use crate::state::{InstallerState, KernelChoice, NvidiaChoice};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::{focusable_block, rounded_block, wrap_plain};
+use crate::util::ui::{focusable_block, rounded_block, selected_style, wrap_plain};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -118,7 +118,7 @@ impl Step for NvidiaStep {
             if !compatible {
                 style = style.add_modifier(Modifier::DIM);
             } else if state.nvidia == choice {
-                style = style.add_modifier(Modifier::BOLD);
+                style = selected_style();
             }
             let lines: Vec<ratatui::text::Line> = wrap_plain(&label, item_width)
                 .into_iter()

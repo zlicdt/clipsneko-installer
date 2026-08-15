@@ -10,11 +10,11 @@
 use crate::state::{InstallerState, SystemType};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::{focusable_block, rounded_block, wrap_plain};
+use crate::util::ui::{focusable_block, rounded_block, selected_style, wrap_plain};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::style::{Modifier, Style};
 use ratatui::widgets::{List, ListItem, ListState, Paragraph};
 use ratatui::Frame;
 
@@ -101,7 +101,7 @@ impl Step for SystemTypeStep {
         let item_width = chunks[0].width.saturating_sub(2);
         let items = SystemType::ALL.map(|choice| {
             let style = if state.system_type == Some(choice) {
-                Style::default().add_modifier(Modifier::BOLD)
+                selected_style()
             } else {
                 Style::default()
             };
@@ -127,9 +127,7 @@ impl Step for SystemTypeStep {
         let checkbox_focused = body_focused && self.focus == SystemTypeFocus::DevTools;
         let marker = if state.dev_tools { "[x]" } else { "[ ]" };
         let checkbox_style = if state.dev_tools {
-            Style::default()
-                .fg(Color::White)
-                .add_modifier(Modifier::BOLD)
+            selected_style()
         } else {
             Style::default()
         };

@@ -8,7 +8,7 @@
 use crate::state::{InstallerState, KernelChoice};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
-use crate::util::ui::{focusable_block, rounded_block, wrap_plain};
+use crate::util::ui::{focusable_block, rounded_block, selected_style, wrap_plain};
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -84,7 +84,7 @@ impl Step for KernelStep {
         let item_width = chunks[0].width.saturating_sub(2);
         let items = KernelChoice::ALL.map(|choice| {
             let style = if state.kernel == Some(choice) {
-                Style::default().add_modifier(Modifier::BOLD)
+                selected_style()
             } else {
                 Style::default()
             };

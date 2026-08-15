@@ -10,7 +10,7 @@ use crate::state::InstallerState;
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::geoip;
-use crate::util::ui::{focusable_block, rounded_block};
+use crate::util::ui::{focusable_block, rounded_block, selected_style};
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -216,7 +216,7 @@ impl Step for TimezoneStep {
                     || timezone.starts_with(&format!("{}/", region.name))
             });
             let style = if selected_region {
-                Style::default().add_modifier(Modifier::BOLD)
+                selected_style()
             } else {
                 Style::default()
             };
@@ -244,7 +244,7 @@ impl Step for TimezoneStep {
                 .iter()
                 .map(|zone| {
                     let style = if selected_timezone == Some(zone.as_str()) {
-                        Style::default().add_modifier(Modifier::BOLD)
+                        selected_style()
                     } else {
                         Style::default()
                     };

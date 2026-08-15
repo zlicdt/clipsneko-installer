@@ -103,6 +103,17 @@ pub fn rounded_block() -> Block<'static> {
         .border_type(BorderType::Rounded)
 }
 
+/// Return the shared style for the selected/committed row of a selection
+/// list, table, or checkbox label: bold white text. Bold alone is nearly
+/// invisible on consoles and fonts without a distinct bold face, so the
+/// white foreground is what actually marks the selection. The cursor row is
+/// separately indicated by the `REVERSED` highlight style.
+pub fn selected_style() -> Style {
+    Style::default()
+        .fg(Color::White)
+        .add_modifier(Modifier::BOLD)
+}
+
 /// Return the shared style for a focused interactive border and its title.
 ///
 /// A focused widget uses a bold white border; an unfocused widget keeps the
@@ -141,6 +152,13 @@ pub fn centered_rect(width_pct: u16, height_rows: u16, area: Rect) -> Rect {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn selected_rows_are_bold_white() {
+        let style = selected_style();
+        assert_eq!(style.fg, Some(Color::White));
+        assert!(style.add_modifier.contains(Modifier::BOLD));
+    }
 
     #[test]
     fn interactive_border_is_bold_white_only_while_focused() {

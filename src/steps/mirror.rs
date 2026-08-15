@@ -31,7 +31,7 @@ use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::process::privileged_command;
 use crate::util::ui::{
-    focusable_block, render_autosized_dialog, render_loading_dialog, rounded_block,
+    focusable_block, render_autosized_dialog, render_loading_dialog, rounded_block, selected_style,
 };
 use anyhow::{bail, Context, Result};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
@@ -262,11 +262,11 @@ impl Step for MirrorStep {
             .regions
             .iter()
             .map(|r| {
-                // The currently-applied region (▶ in the old style) is now
-                // bold + a bright color. The cursor row is separately
-                // indicated by the `REVERSED` highlight style.
+                // The currently-applied region uses the shared bold-white
+                // selection style. The cursor row is separately indicated by
+                // the `REVERSED` highlight style.
                 let style = if *r == self.selected {
-                    Style::default().add_modifier(Modifier::BOLD)
+                    selected_style()
                 } else {
                     Style::default()
                 };
