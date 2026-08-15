@@ -26,3 +26,4 @@ zsh-syntax-highlighting
 zsh-autosuggestions
 pkgfile
 zram-generator
+lsb-release

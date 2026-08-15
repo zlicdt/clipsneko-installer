@@ -10,6 +10,7 @@ mod language;
 mod mirror;
 mod network;
 mod nvidia;
+mod system_type;
 mod timezone;
 mod user;
 
@@ -31,6 +32,7 @@ pub use language::LanguageStep;
 pub use mirror::MirrorStep;
 pub use network::NetworkStep;
 pub use nvidia::NvidiaStep;
+pub use system_type::SystemTypeStep;
 pub use timezone::TimezoneStep;
 pub use user::UserStep;
 
@@ -59,6 +61,7 @@ pub enum StepId {
     Network,
     Mirror,
     Disk,
+    SystemType,
     Kernel,
     Nvidia,
     Timezone,
@@ -77,6 +80,7 @@ impl StepId {
             StepId::Network => t!("step.title.network"),
             StepId::Mirror => t!("step.title.mirror_list"),
             StepId::Disk => t!("step.title.disk_partitioning"),
+            StepId::SystemType => t!("step.title.system_type"),
             StepId::Kernel => t!("step.title.kernel"),
             StepId::Nvidia => t!("step.title.nvidia_driver"),
             StepId::Timezone => t!("step.title.timezone"),
@@ -188,7 +192,7 @@ pub trait Step {
     }
 }
 
-/// Build the full 12-step wizard.
+/// Build the full 13-step wizard.
 pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
     Ok(vec![
         Box::new(LanguageStep::new()?),
@@ -196,6 +200,7 @@ pub fn build_steps() -> Result<Vec<Box<dyn Step>>> {
         Box::new(NetworkStep::new()),
         Box::new(MirrorStep::new()?),
         Box::new(DiskStep::new()),
+        Box::new(SystemTypeStep::new()),
         Box::new(KernelStep::new()),
         Box::new(NvidiaStep::new()),
         Box::new(TimezoneStep::new()?),

@@ -41,9 +41,10 @@ The optimized binary is written to
 The build script compiles all translation catalogs with `msgfmt`. Packaged
 release builds must install the resulting catalogs under the GNU-standard
 `/usr/share/locale/<locale>/LC_MESSAGES/clipsneko-installer.mo` path and install
-`config/packages.list` as `/etc/clipsneko-installer/packages.list` on the Live
-ISO. The installer exits at startup if that runtime configuration file is
-missing.
+`config/packages.base`, `config/packages.dev`, `config/packages.hypr`, and
+`config/packages.kde` as `/etc/clipsneko-installer/packages.{base,dev,hypr,kde}`
+on the Live ISO. The installer exits at startup if any of those runtime
+configuration files is missing.
 
 ## Development checks
 

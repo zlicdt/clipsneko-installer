@@ -45,7 +45,7 @@ struct TimezoneRegion {
     zones: Vec<String>,
 }
 
-/// Two-panel timezone picker used by wizard step 8.
+/// Two-panel timezone picker used by wizard step 9.
 pub struct TimezoneStep {
     regions: Vec<TimezoneRegion>,
     region_state: ListState,

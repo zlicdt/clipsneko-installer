@@ -54,6 +54,10 @@ msgid "confirm_step.data_profile"
 msgstr "Data profile"
 
 #: src/steps/confirm.rs:76
+#: src/steps/confirm.rs
+msgid "confirm_step.dev_tools"
+msgstr "Development tools"
+
 msgid "confirm_step.dialog.body"
 msgstr ""
 "The listed Target partitions will be formatted, and the ESP may be "
@@ -100,6 +104,10 @@ msgid "confirm_step.locales"
 msgstr "Enabled locales (locale.gen)"
 
 #: src/steps/confirm.rs:367
+#: src/steps/confirm.rs
+msgid "confirm_step.no"
+msgstr "No"
+
 msgid "confirm_step.no_nvidia"
 msgstr "No NVIDIA driver"
 
@@ -112,6 +120,10 @@ msgid "confirm_step.summary_title"
 msgstr "Installation summary"
 
 #: src/steps/confirm.rs:315 src/steps/confirm.rs:321
+#: src/steps/confirm.rs
+msgid "confirm_step.system_type"
+msgstr "System type"
+
 msgid "confirm_step.target_partition"
 msgstr "Installation Target"
 
@@ -124,6 +136,10 @@ msgid "confirm_step.username"
 msgstr "Username"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
+#: src/steps/confirm.rs
+msgid "confirm_step.yes"
+msgstr "Yes"
+
 msgid "disk_step.column_device"
 msgstr "Device"
 
@@ -619,6 +635,10 @@ msgid "step.title.nvidia_driver"
 msgstr "NVIDIA Driver"
 
 #: src/steps/mod.rs:82
+#: src/steps/mod.rs
+msgid "step.title.system_type"
+msgstr "System Type"
+
 msgid "step.title.timezone"
 msgstr "Timezone"
 
@@ -627,6 +647,30 @@ msgid "step.title.user_account"
 msgstr "User Account"
 
 #: src/steps/timezone.rs:280
+#: src/steps/system_type.rs
+msgid "system_type_step.dev_tools"
+msgstr "Install development tools"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.key_hint"
+msgstr "Space=Select/Toggle  Enter=Next"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.hyprland"
+msgstr "Hyprland"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.kde"
+msgstr "KDE Plasma"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.server"
+msgstr "Server"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.title"
+msgstr "Select system type"
+
 msgid "timezone_step.hint_region"
 msgstr "Up/Down=Select  Right/Enter=Timezones  Tab=Next control"
 

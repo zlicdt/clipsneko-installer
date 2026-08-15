@@ -54,6 +54,10 @@ msgid "confirm_step.data_profile"
 msgstr ""
 
 #: src/steps/confirm.rs:76
+#: src/steps/confirm.rs
+msgid "confirm_step.dev_tools"
+msgstr ""
+
 msgid "confirm_step.dialog.body"
 msgstr ""
 
@@ -98,6 +102,10 @@ msgid "confirm_step.locales"
 msgstr ""
 
 #: src/steps/confirm.rs:367
+#: src/steps/confirm.rs
+msgid "confirm_step.no"
+msgstr ""
+
 msgid "confirm_step.no_nvidia"
 msgstr ""
 
@@ -110,6 +118,10 @@ msgid "confirm_step.summary_title"
 msgstr ""
 
 #: src/steps/confirm.rs:315 src/steps/confirm.rs:321
+#: src/steps/confirm.rs
+msgid "confirm_step.system_type"
+msgstr ""
+
 msgid "confirm_step.target_partition"
 msgstr ""
 
@@ -122,6 +134,10 @@ msgid "confirm_step.username"
 msgstr ""
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
+#: src/steps/confirm.rs
+msgid "confirm_step.yes"
+msgstr ""
+
 msgid "disk_step.column_device"
 msgstr ""
 
@@ -614,6 +630,10 @@ msgid "step.title.nvidia_driver"
 msgstr ""
 
 #: src/steps/mod.rs:82
+#: src/steps/mod.rs
+msgid "step.title.system_type"
+msgstr ""
+
 msgid "step.title.timezone"
 msgstr ""
 
@@ -622,6 +642,30 @@ msgid "step.title.user_account"
 msgstr ""
 
 #: src/steps/timezone.rs:280
+#: src/steps/system_type.rs
+msgid "system_type_step.dev_tools"
+msgstr ""
+
+#: src/steps/system_type.rs
+msgid "system_type_step.key_hint"
+msgstr ""
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.hyprland"
+msgstr ""
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.kde"
+msgstr ""
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.server"
+msgstr ""
+
+#: src/steps/system_type.rs
+msgid "system_type_step.title"
+msgstr ""
+
 msgid "timezone_step.hint_region"
 msgstr ""
 

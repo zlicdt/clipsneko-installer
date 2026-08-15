@@ -54,6 +54,10 @@ msgid "confirm_step.data_profile"
 msgstr "Datenprofil"
 
 #: src/steps/confirm.rs:76
+#: src/steps/confirm.rs
+msgid "confirm_step.dev_tools"
+msgstr "Entwicklungswerkzeuge"
+
 msgid "confirm_step.dialog.body"
 msgstr ""
 "Die aufgeführten Zielpartitionen werden formatiert; auch die ESP kann "
@@ -100,6 +104,10 @@ msgid "confirm_step.locales"
 msgstr "Aktivierte Locales (locale.gen)"
 
 #: src/steps/confirm.rs:367
+#: src/steps/confirm.rs
+msgid "confirm_step.no"
+msgstr "Nein"
+
 msgid "confirm_step.no_nvidia"
 msgstr "Kein NVIDIA-Treiber"
 
@@ -112,6 +120,10 @@ msgid "confirm_step.summary_title"
 msgstr "Installationsübersicht"
 
 #: src/steps/confirm.rs:315 src/steps/confirm.rs:321
+#: src/steps/confirm.rs
+msgid "confirm_step.system_type"
+msgstr "Systemtyp"
+
 msgid "confirm_step.target_partition"
 msgstr "Installationsziel"
 
@@ -124,6 +136,10 @@ msgid "confirm_step.username"
 msgstr "Benutzername"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
+#: src/steps/confirm.rs
+msgid "confirm_step.yes"
+msgstr "Ja"
+
 msgid "disk_step.column_device"
 msgstr "Gerät"
 
@@ -633,6 +649,10 @@ msgid "step.title.nvidia_driver"
 msgstr "NVIDIA-Treiber"
 
 #: src/steps/mod.rs:82
+#: src/steps/mod.rs
+msgid "step.title.system_type"
+msgstr "Systemtyp"
+
 msgid "step.title.timezone"
 msgstr "Zeitzone"
 
@@ -641,6 +661,30 @@ msgid "step.title.user_account"
 msgstr "Benutzerkonto"
 
 #: src/steps/timezone.rs:280
+#: src/steps/system_type.rs
+msgid "system_type_step.dev_tools"
+msgstr "Entwicklungswerkzeuge installieren"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.key_hint"
+msgstr "Leertaste=Auswählen/Umschalten  Enter=Weiter"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.hyprland"
+msgstr "Hyprland"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.kde"
+msgstr "KDE Plasma"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.server"
+msgstr "Server"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.title"
+msgstr "Systemtyp auswählen"
+
 msgid "timezone_step.hint_region"
 msgstr "Auf/Ab=Auswählen  Rechts/Enter=Zeitzonen  Tab=Nächstes Steuerelement"
 

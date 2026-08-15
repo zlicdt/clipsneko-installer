@@ -18,7 +18,12 @@ use std::path::PathBuf;
 
 use crate::i18n::{set_language, UiLang};
 
-const REQUIRED_CONFIG_FILES: [&str; 1] = ["/etc/clipsneko-installer/packages.list"];
+const REQUIRED_CONFIG_FILES: [&str; 4] = [
+    "/etc/clipsneko-installer/packages.base",
+    "/etc/clipsneko-installer/packages.dev",
+    "/etc/clipsneko-installer/packages.hypr",
+    "/etc/clipsneko-installer/packages.kde",
+];
 
 /// Byte offset of this session's first log line. The log file is opened in
 /// append mode so earlier runs stay on disk for postmortems, while the in-app

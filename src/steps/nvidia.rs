@@ -18,7 +18,7 @@ use ratatui::Frame;
 /// Default NVIDIA choice for a new installer session.
 pub const DEFAULT_NVIDIA: NvidiaChoice = NvidiaChoice::NvidiaOpenDkms;
 
-/// Single-select NVIDIA driver picker used by wizard step 7.
+/// Single-select NVIDIA driver picker used by wizard step 8.
 pub struct NvidiaStep {
     list_state: ListState,
 }

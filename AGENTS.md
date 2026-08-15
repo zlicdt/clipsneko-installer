@@ -22,7 +22,10 @@ Runs on the ClipsNeko Live ISO. Targets **UEFI only, 64-bit** systems.
   (fixed path under `$XDG_CACHE_HOME`, falling back to `$HOME/.cache`; no env-var
   override). A panic hook restores the terminal on crash.
 - Runtime config (must exist or the installer exits with a clear error):
-  `/etc/clipsneko-installer/packages.list` — one package name per line.
+  `/etc/clipsneko-installer/packages.{base,dev,hypr,kde}` — one package name
+  per line. `packages.base` is always installed; the chosen system type adds
+  `packages.kde` or `packages.hypr` (nothing for Server), and the
+  development-tools checkbox adds `packages.dev`.
 - The Live ISO's `/etc/pacman.conf` already contains the ClipsNeko repository.
   The installer must use `pacstrap -P` so pacman configuration is copied to
   the target; it must not maintain a separate repository configuration.

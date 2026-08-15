@@ -16,7 +16,7 @@ use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 use ratatui::Frame;
 
-/// Centered hostname form used by wizard step 10.
+/// Centered hostname form used by wizard step 11.
 pub struct HostnameStep {
     hostname: String,
 }

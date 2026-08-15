@@ -88,9 +88,9 @@ online, and configure mirrors — everything required before any disk work.
 - `src/util/process.rs` — suspend-ratatui/run-subprocess/resume helper
   shared by interactive tools such as `nmtui` and `cfdisk`. Non-interactive
   commands such as `pacman -Sy` capture output without leaving the TUI.
-- Sample runtime package file in the repo: `config/packages.list`. The project
-  PKGBUILD installs it to `/etc/clipsneko-installer/packages.list`; the
-  installer exits if it is missing at startup. Repository configuration comes
+- Sample runtime package files in the repo: `config/packages.{base,dev,hypr,kde}`.
+  The project PKGBUILD installs them to `/etc/clipsneko-installer/`; the
+  installer exits if any is missing at startup. Repository configuration comes
   from the Live ISO's existing `pacman.conf`, not a separate runtime file.
 
 ### Acceptance
@@ -184,18 +184,24 @@ end-to-end needs network from M1 for a fully populated state).
 
 ## M3 — Selection & identity
 
-Steps 6-11: kernel, NVIDIA, timezone, user, hostname, confirm. After M3
+Steps 6-12: system type, kernel, NVIDIA, timezone, user, hostname, confirm.
+After M3
 the wizard holds a complete, validated pre-install configuration and the
 confirm screen can show a full summary.
 
 ### Deliverables
 
+- `src/steps/system_type.rs` — single-select from Server / KDE / Hyprland,
+  defaulting to Hyprland, plus a development-tools checkbox (default
+  unchecked) that adds `packages.dev` to the pacstrap set. The system type
+  appends its package file (`packages.kde` or `packages.hypr`) to the base
+  set; Server adds nothing.
 - `src/steps/kernel.rs` — single-select from `linux` / `linux-lts` /
   `linux-zen` / `linux-hardened`, defaulting to `linux-zen`; always derive the
   matching headers package for installation.
 - `src/steps/nvidia.rs` — "no NVIDIA" or one package from the current
   `nvidia-open` / `nvidia-open-lts` / `nvidia-open-dkms` matrix, filtered by
-  the chosen kernel (see `design.md` §4 step 7). Incompatible choices remain
+  the chosen kernel (see `design.md` §4 step 8). Incompatible choices remain
   visible but dimmed and are skipped by navigation. A saved choice made
   incompatible by changing the kernel resets to `nvidia-open-dkms` on entry.
   Kernel headers are already an unconditional part of the selected kernel's
@@ -216,7 +222,8 @@ confirm screen can show a full summary.
   `^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$`. Uppercase letters are
   accepted and preserved, while FQDNs are rejected; Enter and
   footer Next commit a valid value, and re-entry restores it.
-- `src/steps/confirm.rs` — scrollable summary of locale, keyboard, kernel,
+- `src/steps/confirm.rs` — scrollable summary of locale, keyboard, system
+  type, development-tools choice, kernel,
   NVIDIA, hostname, timezone, username, affected disks, ESP, every Target,
   and any RAID profile, while never reading or rendering the password.
   Device-to-disk relationships are derived from the latest lsblk tree in the
@@ -320,7 +327,8 @@ M3 (full state).
 #### Deliverables
 
 - `src/installer/pacstrap.rs` — construct and run `pacstrap -P` from state:
-  the authoritative static `packages.list` contents plus the chosen kernel,
+  the authoritative static `packages.base` contents plus the system-type file
+  and `packages.dev` when development tools are checked, plus the chosen kernel,
   its matching headers, linux-firmware, and the chosen NVIDIA package. The Live
   ISO's existing `pacman.conf` already contains the ClipsNeko repository, and `-P`
   copies `pacman.conf` plus `pacman.d` to the target;
@@ -342,8 +350,9 @@ M3 (full state).
 
 #### Acceptance
 
-- `pacstrap -P` installs exactly the static packages plus packages derived
-  from state, and copies the Live ISO's pacman configuration to the target.
+- `pacstrap -P` installs exactly the wizard-selected static packages plus
+  packages derived from state, and copies the Live ISO's pacman configuration
+  to the target.
 - `/mnt/etc/fstab` is generated and both btrfs subvolume entries carry zstd
   compression, with any kernel-normalized default level preserved.
 - Inside the chroot: timezone, locale, vconsole, hostname, hosts, user
@@ -353,7 +362,7 @@ M3 (full state).
 #### Unit tests
 
 - `pacstrap` argument list construction from a fixture `InstallerState`
-  and `packages.list`.
+  and the selected package files.
 - `mkinitcpio.conf` HOOKS `kms`-removal (string edit, idempotent).
 - `/etc/locale.gen` editing (enable a set of locales).
 - `chpasswd` stdin construction never exposes the secret through command

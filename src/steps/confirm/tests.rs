@@ -1,5 +1,5 @@
 use super::*;
-use crate::state::{DiskState, KernelChoice, UserInfo};
+use crate::state::{DiskState, KernelChoice, SystemType, UserInfo};
 use crate::util::password::SecretString;
 use crossterm::event::KeyModifiers;
 use ratatui::backend::TestBackend;
@@ -21,6 +21,8 @@ fn complete_state() -> InstallerState {
             affected_disks: vec!["nvme0n1".to_string(), "sda".to_string()],
             raid_mode: Some(BtrfsRaidMode::Raid1),
         },
+        system_type: Some(SystemType::Hyprland),
+        dev_tools: true,
         kernel: Some(KernelChoice::LinuxZen),
         nvidia: NvidiaChoice::NvidiaOpenDkms,
         timezone: Some("Asia/Shanghai".to_string()),
@@ -63,6 +65,8 @@ fn summary_contains_every_requested_choice_and_no_password() {
         "en_US.UTF-8",
         "zh_CN.UTF-8",
         "us",
+        "Hyprland",
+        "Yes",
         "linux-zen",
         "nvidia-open-dkms",
         "ClipsNeko",

@@ -139,6 +139,8 @@ mod tests {
             target_locale: "en_US.UTF-8".to_string(),
             target_locales: vec!["en_US.UTF-8".to_string()],
             keymap: "us".to_string(),
+            system_type: crate::state::SystemType::Hyprland,
+            dev_tools: false,
             kernel_package: "linux-zen".to_string(),
             headers_package: "linux-zen-headers".to_string(),
             nvidia: NvidiaChoice::None,

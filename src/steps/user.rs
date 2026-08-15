@@ -25,7 +25,7 @@ enum UserFocus {
     ConfirmPassword,
 }
 
-/// Centered username and password form used by wizard step 9.
+/// Centered username and password form used by wizard step 10.
 pub struct UserStep {
     username: String,
     password: SecretString,

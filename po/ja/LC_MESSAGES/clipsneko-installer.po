@@ -54,6 +54,10 @@ msgid "confirm_step.data_profile"
 msgstr "データプロファイル"
 
 #: src/steps/confirm.rs:76
+#: src/steps/confirm.rs
+msgid "confirm_step.dev_tools"
+msgstr "開発ツール"
+
 msgid "confirm_step.dialog.body"
 msgstr ""
 "一覧のインストール対象パーティションはフォーマットされ、ESP もフォーマットさ"
@@ -100,6 +104,10 @@ msgid "confirm_step.locales"
 msgstr "有効なロケール（locale.gen）"
 
 #: src/steps/confirm.rs:367
+#: src/steps/confirm.rs
+msgid "confirm_step.no"
+msgstr "いいえ"
+
 msgid "confirm_step.no_nvidia"
 msgstr "NVIDIA ドライバーなし"
 
@@ -112,6 +120,10 @@ msgid "confirm_step.summary_title"
 msgstr "インストール概要"
 
 #: src/steps/confirm.rs:315 src/steps/confirm.rs:321
+#: src/steps/confirm.rs
+msgid "confirm_step.system_type"
+msgstr "システムの種類"
+
 msgid "confirm_step.target_partition"
 msgstr "インストール対象"
 
@@ -124,6 +136,10 @@ msgid "confirm_step.username"
 msgstr "ユーザー名"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
+#: src/steps/confirm.rs
+msgid "confirm_step.yes"
+msgstr "はい"
+
 msgid "disk_step.column_device"
 msgstr "デバイス"
 
@@ -630,6 +646,10 @@ msgid "step.title.nvidia_driver"
 msgstr "NVIDIA ドライバー"
 
 #: src/steps/mod.rs:82
+#: src/steps/mod.rs
+msgid "step.title.system_type"
+msgstr "システムの種類"
+
 msgid "step.title.timezone"
 msgstr "タイムゾーン"
 
@@ -638,6 +658,30 @@ msgid "step.title.user_account"
 msgstr "ユーザーアカウント"
 
 #: src/steps/timezone.rs:280
+#: src/steps/system_type.rs
+msgid "system_type_step.dev_tools"
+msgstr "開発ツールをインストール"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.key_hint"
+msgstr "Space=選択/切替  Enter=次へ"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.hyprland"
+msgstr "Hyprland"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.kde"
+msgstr "KDE Plasma"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.server"
+msgstr "サーバー"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.title"
+msgstr "システムの種類を選択"
+
 msgid "timezone_step.hint_region"
 msgstr "上/下=選択  右/Enter=タイムゾーン  Tab=次のコントロール"
 

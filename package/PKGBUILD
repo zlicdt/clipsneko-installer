@@ -9,7 +9,6 @@ url="https://github.com/zlicdt/clipsneko-installer"
 license=('GPL-3.0-only')
 depends=('gcc-libs' 'glibc' 'inetutils')
 makedepends=('cargo' 'gettext' 'git')
-backup=('etc/clipsneko-installer/packages.list')
 source=("$pkgname::git+$url.git#tag=v$pkgver")
 sha256sums=('SKIP')
 
@@ -32,8 +31,9 @@ package() {
   cd "$pkgname"
 
   install -Dm755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
-  install -Dm644 config/packages.list \
-    "$pkgdir/etc/clipsneko-installer/packages.list"
+  for list in packages.base packages.dev packages.hypr packages.kde; do
+    install -Dm644 "config/$list" "$pkgdir/etc/clipsneko-installer/$list"
+  done
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 
   local lang

@@ -3,7 +3,7 @@
 //! The summary deliberately excludes the account password. Advancing opens a
 //! blocking confirmation dialog before the install step can begin.
 
-use crate::state::{BtrfsRaidMode, InstallerState, NvidiaChoice};
+use crate::state::{BtrfsRaidMode, InstallerState, NvidiaChoice, SystemType};
 use crate::steps::{Step, StepAction, StepId};
 use crate::t;
 use crate::util::ui::{focusable_block, render_autosized_dialog, rounded_block};
@@ -222,6 +222,7 @@ fn summary_is_complete(state: &InstallerState) -> bool {
         .is_some_and(|locale| state.target_locales.contains(locale))
         && !state.target_locales.is_empty()
         && state.keymap.is_some()
+        && state.system_type.is_some()
         && state.kernel.is_some()
         && state.timezone.is_some()
         && state.hostname.is_some()
@@ -247,6 +248,11 @@ fn summary_lines(state: &InstallerState) -> Vec<Line<'static>> {
         summary_line(
             t!("confirm_step.keyboard"),
             value_or_unavailable(state.keymap.as_deref()),
+        ),
+        summary_line(t!("confirm_step.system_type"), system_type_summary(state)),
+        summary_line(
+            t!("confirm_step.dev_tools"),
+            yes_no_summary(state.dev_tools),
         ),
         summary_line(
             t!("confirm_step.kernel"),
@@ -355,6 +361,23 @@ fn nvidia_summary(choice: NvidiaChoice) -> String {
         .package_name()
         .map(str::to_string)
         .unwrap_or_else(|| t!("confirm_step.no_nvidia"))
+}
+
+fn system_type_summary(state: &InstallerState) -> String {
+    match state.system_type {
+        Some(SystemType::Server) => t!("system_type_step.option.server"),
+        Some(SystemType::Kde) => t!("system_type_step.option.kde"),
+        Some(SystemType::Hyprland) => t!("system_type_step.option.hyprland"),
+        None => t!("common.not_available"),
+    }
+}
+
+fn yes_no_summary(enabled: bool) -> String {
+    if enabled {
+        t!("confirm_step.yes")
+    } else {
+        t!("confirm_step.no")
+    }
 }
 
 fn device_path(name: &str) -> String {

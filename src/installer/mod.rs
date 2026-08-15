@@ -9,7 +9,7 @@ pub mod pacstrap;
 pub mod partition;
 pub mod postinstall;
 
-use crate::state::{BtrfsRaidMode, InstallerState, NvidiaChoice};
+use crate::state::{BtrfsRaidMode, InstallerState, NvidiaChoice, SystemType};
 use crate::util::password::SecretString;
 use crate::util::process::privileged_command;
 use anyhow::{bail, Context, Result};
@@ -18,7 +18,29 @@ use std::process::Stdio;
 use std::sync::mpsc::Sender;
 
 pub const TARGET_ROOT: &str = "/mnt";
-pub const PACKAGES_LIST: &str = "/etc/clipsneko-installer/packages.list";
+/// Static package files shipped by the Live ISO under
+/// `/etc/clipsneko-installer`. The base set is always installed; the system
+/// type appends one more file and the development-tools choice appends
+/// `packages.dev`.
+pub const PACKAGES_BASE: &str = "/etc/clipsneko-installer/packages.base";
+pub const PACKAGES_DEV: &str = "/etc/clipsneko-installer/packages.dev";
+pub const PACKAGES_KDE: &str = "/etc/clipsneko-installer/packages.kde";
+pub const PACKAGES_HYPR: &str = "/etc/clipsneko-installer/packages.hypr";
+
+/// Static package files selected by the wizard choices. The base set always
+/// comes first so its packages keep their file order during deduplication.
+pub fn package_files(config: &InstallConfig) -> Vec<&'static str> {
+    let mut files = vec![PACKAGES_BASE];
+    match config.system_type {
+        SystemType::Server => {}
+        SystemType::Kde => files.push(PACKAGES_KDE),
+        SystemType::Hyprland => files.push(PACKAGES_HYPR),
+    }
+    if config.dev_tools {
+        files.push(PACKAGES_DEV);
+    }
+    files
+}
 
 /// Immutable installation choices transferred from wizard state to the
 /// worker thread. The password remains non-Debug and is consumed separately.
@@ -26,6 +48,8 @@ pub struct InstallConfig {
     pub target_locale: String,
     pub target_locales: Vec<String>,
     pub keymap: String,
+    pub system_type: SystemType,
+    pub dev_tools: bool,
     pub kernel_package: String,
     pub headers_package: String,
     pub nvidia: NvidiaChoice,
@@ -80,6 +104,8 @@ impl InstallConfig {
             target_locale,
             target_locales: state.target_locales.clone(),
             keymap: state.keymap.clone().context("keymap is missing")?,
+            system_type: state.system_type.context("system type choice is missing")?,
+            dev_tools: state.dev_tools,
             kernel_package: state
                 .kernel
                 .context("kernel choice is missing")?
@@ -287,7 +313,7 @@ pub fn run_install(mut config: InstallConfig, sender: &Sender<WorkerMessage>) ->
     report(sender, InstallProgress::Mounting);
     partition::mount_layout(&mut runner, &config)?;
     report(sender, InstallProgress::Packages);
-    pacstrap::install_packages(&mut runner, &config, PACKAGES_LIST)?;
+    pacstrap::install_packages(&mut runner, &config, &package_files(&config))?;
     report(sender, InstallProgress::Fstab);
     pacstrap::generate_fstab(&mut runner)?;
     report(sender, InstallProgress::TargetConfig);
@@ -319,6 +345,42 @@ pub fn device_path(name: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn package_files_follow_system_type_and_dev_tools() {
+        let mut config = InstallConfig {
+            target_locale: "en_US.UTF-8".to_string(),
+            target_locales: vec!["en_US.UTF-8".to_string()],
+            keymap: "us".to_string(),
+            system_type: SystemType::Server,
+            dev_tools: false,
+            kernel_package: "linux".to_string(),
+            headers_package: "linux-headers".to_string(),
+            nvidia: NvidiaChoice::None,
+            timezone: "UTC".to_string(),
+            username: "user".to_string(),
+            password: SecretString::new("secret".to_string()),
+            hostname: "host".to_string(),
+            esp_partition: "sda1".to_string(),
+            esp_needs_format: false,
+            target_partitions: vec!["sda2".to_string()],
+            raid_mode: None,
+        };
+        assert_eq!(package_files(&config), [PACKAGES_BASE]);
+
+        config.dev_tools = true;
+        assert_eq!(package_files(&config), [PACKAGES_BASE, PACKAGES_DEV]);
+
+        config.system_type = SystemType::Kde;
+        assert_eq!(
+            package_files(&config),
+            [PACKAGES_BASE, PACKAGES_KDE, PACKAGES_DEV]
+        );
+
+        config.system_type = SystemType::Hyprland;
+        config.dev_tools = false;
+        assert_eq!(package_files(&config), [PACKAGES_BASE, PACKAGES_HYPR]);
+    }
 
     #[test]
     fn sanitize_output_strips_ansi_and_resolves_progress_frames() {

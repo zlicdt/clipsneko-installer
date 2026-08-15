@@ -17,7 +17,7 @@ user amends them in writing. Pending items are explicitly marked **(deferred)**.
 See `AGENTS.md` §2. Highlights:
 
 - Rust + ratatui + crossterm; gettext-rs; anyhow/thiserror; tracing.
-- Runtime config: `/etc/clipsneko-installer/packages.list`.
+- Runtime config: `/etc/clipsneko-installer/packages.{base,dev,hypr,kde}`.
 - The Live ISO's `/etc/pacman.conf` already configures the ClipsNeko package
   repository. The installer reuses and copies it through `pacstrap -P`.
 
@@ -26,11 +26,11 @@ See `AGENTS.md` §2. Highlights:
 ```
 src/
   main.rs app.rs state.rs i18n.rs
-  steps/    language keyboard network mirror disk
+  steps/    language keyboard network mirror disk system_type
             kernel nvidia timezone user hostname confirm install
   installer/ partition pacstrap chroot mkinitcpio bootloader postinstall
   util/     process lsblk ui geoip password locale_list
-config/     packages.list
+config/     packages.base packages.dev packages.hypr packages.kde
 po/         clipsneko-installer.pot
             en/LC_MESSAGES/clipsneko-installer.po
             zh_CN/LC_MESSAGES/clipsneko-installer.po
@@ -138,11 +138,19 @@ informational containers, uses rounded corners.
      formatted as btrfs, plus the ESP only when it is not already vfat. The
      user must explicitly confirm data loss.
    - There is no extra-partition / extra-mount mapping in v0.1.
-6. **Kernel** — `linux` / `linux-lts` / `linux-zen` / `linux-hardened` (single
+6. **System Type** — one of **Server**, **KDE**, or **Hyprland** (single
+   select). Default: Hyprland. The choice appends its static package file to
+   the base set at install time (see §5 13.2/13.3). Below the list, a checkbox
+   **Install development tools** (default unchecked) adds the `packages.dev`
+   set regardless of the chosen system type. Space selects the highlighted
+   profile or toggles the checkbox; Tab/Shift+Tab cycles focus between the
+   list and the checkbox before reaching the footer. Kernel and NVIDIA
+   selection remain available for every system type.
+7. **Kernel** — `linux` / `linux-lts` / `linux-zen` / `linux-hardened` (single
    select). Default: `linux-zen`. The matching headers package is always
    installed with the selected kernel: `linux-headers`, `linux-lts-headers`,
    `linux-zen-headers`, or `linux-hardened-headers`.
-7. **NVIDIA** — "no NVIDIA" OR one variant from the compatible matrix below
+8. **NVIDIA** — "no NVIDIA" OR one variant from the compatible matrix below
    (incompatible options disabled in the UI). Default: `nvidia-open-dkms`.
    Disabled variants are dimmed, carry an "incompatible with selected kernel"
    suffix, and are skipped by keyboard navigation. If a user returns to the
@@ -175,7 +183,7 @@ informational containers, uses rounded corners.
    traverses both lists and then the footer. Returning to the step restores
    the saved timezone without repeating GeoIP detection. There is no manual
    timezone text input.
-9. **User** — single user:
+10. **User** — single user:
    - username validated `^[a-z_][a-z0-9_-]*$`
    - no GECOS field
    - a centered, bordered form containing username, password, password
@@ -186,16 +194,17 @@ informational containers, uses rounded corners.
      next field, and Enter on confirmation validates and continues
    - Created as `useradd -m -G wheel -s /bin/zsh <user>`; `%wheel` line
      uncommented in `/etc/sudoers`; the installer does not lock root.
-10. **Hostname** — a centered, bordered single-input form. The value is a
+11. **Hostname** — a centered, bordered single-input form. The value is a
     single ASCII DNS label validated
     `^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$`: 1–63 ASCII letters,
     digits, or non-leading/non-trailing hyphens. Letter case is preserved when
     the value is committed. FQDNs are intentionally not accepted. Validation
     is live; Enter or footer Next commits a valid value and continues, while
     returning to the step restores the saved value.
-11. **Confirm** — a scrollable, read-only summary of the default `LANG`, every
+12. **Confirm** — a scrollable, read-only summary of the default `LANG`, every
     target locale enabled for generation,
-    keyboard, kernel, NVIDIA driver, hostname, timezone, username, affected
+    keyboard, system type, development-tools choice, kernel, NVIDIA driver,
+    hostname, timezone, username, affected
     physical disks, ESP, every Target partition, and the btrfs data profile
     when RAID is used. Device relationships are derived from the latest lsblk
     tree in the disk step and saved explicitly, never guessed by parsing device
@@ -204,11 +213,11 @@ informational containers, uses rounded corners.
     blocking dialog warning that the listed Target partitions will be
     formatted and the ESP may be formatted; Cancel is focused by default and
     Install must be selected explicitly before entering the install step.
-12. **Install** — see §5.
+13. **Install** — see §5.
 
 ## 5. Install stage
 
-12.1 Format & mount:
+13.1 Format & mount:
 
 - root: if a single Target partition was chosen, `mkfs.btrfs -f <part>`. If two
   or more Target partitions were chosen, use the data RAID mode already chosen
@@ -219,31 +228,34 @@ informational containers, uses rounded corners.
 - ESP: skip if already vfat, else `mkfs.vfat -F32`; mount at `/mnt/boot/efi`.
 - No extra-partition mapping in v0.1 (see §4 step 5).
 
-12.2 Package source — use the Live ISO's existing `/etc/pacman.conf`, which
+13.2 Package source — use the Live ISO's existing `/etc/pacman.conf`, which
 already contains the ClipsNeko repository. Packages with names beginning in
-`clipsneko-` may therefore be listed in `packages.list` like ordinary packages.
-The installer does not parse or generate repository configuration.
+`clipsneko-` may therefore be listed in the package files like ordinary
+packages. The installer does not parse or generate repository configuration.
 The static `base-devel` entry supplies `sudo`, so the later sudoers edit does
 not require the installer to add a separate dynamic package.
 
-12.3 `pacstrap -P /mnt <packages.list contents> <chosen kernel>
-<matching kernel headers> linux-firmware <CPU microcode package>
-<chosen NVIDIA package>`.
-`packages.list` is the authoritative static package set; the installer only
-adds packages derived from wizard state and hardware detection. The microcode
+13.3 `pacstrap -P /mnt <packages.base contents>
+<system-type package file contents (packages.kde or packages.hypr; nothing
+for Server)> <packages.dev contents when development tools are checked>
+<chosen kernel> <matching kernel headers> linux-firmware <CPU microcode
+package> <chosen NVIDIA package>`.
+The static files are the authoritative package sets; the installer only adds
+packages derived from wizard state and hardware detection, deduplicated while
+preserving first-seen order. The microcode
 package comes from the live CPU's `vendor_id` in `/proc/cpuinfo`
 (`GenuineIntel` → `intel-ucode`, `AuthenticAMD` → `amd-ucode`); an unknown
 vendor contributes no package and is logged rather than treated as fatal.
 `-P` copies the Live ISO's `pacman.conf` and `pacman.d` configuration to the
 target.
 
-12.4 `genfstab -U /mnt >> /mnt/etc/fstab` — verify btrfs entries carry like
+13.4 `genfstab -U /mnt >> /mnt/etc/fstab` — verify btrfs entries carry like
 `rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@` and
 `rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@home`
 when the kernel normalizes the implicit default compression level. Preserve
 the generated level; do not rewrite it or specify a level in mount commands.
 
-12.5 `arch-chroot /mnt`:
+13.5 `arch-chroot /mnt`:
 
 - timezone symlink + `hwclock --systohc`
 - make the selected target locales the exact enabled UTF-8 set in
@@ -276,7 +288,7 @@ the generated level; do not rewrite it or specify a level in mount commands.
   for it or provide a fallback; a non-zero exit stops installation like any
   other failed target command.
 
-12.6 Prompt "Reboot now?" with Reboot focused by default. Reboot runs
+13.6 Prompt "Reboot now?" with Reboot focused by default. Reboot runs
 `umount -R /mnt` and `reboot` through the normal privileged-command path.
 Choosing not to reboot exits to the shell that launched the installer and
 intentionally leaves the target mounted for inspection.
@@ -399,7 +411,7 @@ This is the required pattern for all future modules that shell out — see
   alternate screen) so a crash never leaves the user stuck in a dead
   terminal.
 - Before entering the alternate screen, startup verifies that the required
-  `/etc/clipsneko-installer/packages.list` runtime file exists and that the
+  four `/etc/clipsneko-installer/packages.*` runtime files exist and that the
   Live ISO was booted in UEFI mode (`/sys/firmware/efi/efivars` is present).
   A BIOS/CSM boot exits with a clear error instead of failing at the GRUB
   stage after destructive partitioning.

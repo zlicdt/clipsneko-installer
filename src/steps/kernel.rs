@@ -19,7 +19,7 @@ use ratatui::Frame;
 /// Default selected kernel for a new installer session.
 pub const DEFAULT_KERNEL: KernelChoice = KernelChoice::LinuxZen;
 
-/// Single-select kernel picker used by wizard step 6.
+/// Single-select kernel picker used by wizard step 7.
 pub struct KernelStep {
     list_state: ListState,
 }

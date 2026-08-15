@@ -22,6 +22,10 @@ pub struct InstallerState {
     pub network_ok: bool,
     pub mirror_lines: Vec<String>,
     pub disk: DiskState,
+    /// System type chosen in step 6; drives the static package file set.
+    pub system_type: Option<SystemType>,
+    /// Whether development tools are added to the package set in step 6.
+    pub dev_tools: bool,
     pub kernel: Option<KernelChoice>,
     pub nvidia: NvidiaChoice,
     pub timezone: Option<String>,
@@ -53,7 +57,23 @@ pub enum BtrfsRaidMode {
     Raid1,
 }
 
-/// Kernel package chosen in step 6.
+/// Install profile chosen in step 6: a bare server or one of the two
+/// supported desktop environments. The profile selects the static package
+/// file appended to the base set at install time.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum SystemType {
+    Server,
+    Kde,
+    #[default]
+    Hyprland,
+}
+
+impl SystemType {
+    /// All system types in their UI display order.
+    pub const ALL: [Self; 3] = [Self::Server, Self::Kde, Self::Hyprland];
+}
+
+/// Kernel package chosen in step 7.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum KernelChoice {
     Linux,
@@ -93,7 +113,7 @@ impl KernelChoice {
     }
 }
 
-/// NVIDIA package chosen in step 7.
+/// NVIDIA package chosen in step 8.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum NvidiaChoice {
     None,
@@ -132,7 +152,7 @@ impl NvidiaChoice {
     }
 }
 
-/// Non-secret user account info collected in step 9. The password lives in a
+/// Non-secret user account info collected in step 10. The password lives in a
 /// separate non-Debug, zeroizing secret wrapper until chpasswd consumes it;
 /// `password_set` only records that confirmation succeeded.
 #[derive(Debug, Default)]

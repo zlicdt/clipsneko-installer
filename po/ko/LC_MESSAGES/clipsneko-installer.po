@@ -54,6 +54,10 @@ msgid "confirm_step.data_profile"
 msgstr "데이터 프로파일"
 
 #: src/steps/confirm.rs:76
+#: src/steps/confirm.rs
+msgid "confirm_step.dev_tools"
+msgstr "개발 도구"
+
 msgid "confirm_step.dialog.body"
 msgstr ""
 "목록의 설치 대상 파티션이 포맷되며 ESP도 포맷될 수 있습니다. 설치를 계속하시"
@@ -100,6 +104,10 @@ msgid "confirm_step.locales"
 msgstr "활성화된 로케일(locale.gen)"
 
 #: src/steps/confirm.rs:367
+#: src/steps/confirm.rs
+msgid "confirm_step.no"
+msgstr "아니요"
+
 msgid "confirm_step.no_nvidia"
 msgstr "NVIDIA 드라이버 없음"
 
@@ -112,6 +120,10 @@ msgid "confirm_step.summary_title"
 msgstr "설치 요약"
 
 #: src/steps/confirm.rs:315 src/steps/confirm.rs:321
+#: src/steps/confirm.rs
+msgid "confirm_step.system_type"
+msgstr "시스템 종류"
+
 msgid "confirm_step.target_partition"
 msgstr "설치 대상"
 
@@ -124,6 +136,10 @@ msgid "confirm_step.username"
 msgstr "사용자 이름"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
+#: src/steps/confirm.rs
+msgid "confirm_step.yes"
+msgstr "예"
+
 msgid "disk_step.column_device"
 msgstr "장치"
 
@@ -621,6 +637,10 @@ msgid "step.title.nvidia_driver"
 msgstr "NVIDIA 드라이버"
 
 #: src/steps/mod.rs:82
+#: src/steps/mod.rs
+msgid "step.title.system_type"
+msgstr "시스템 종류"
+
 msgid "step.title.timezone"
 msgstr "시간대"
 
@@ -629,6 +649,30 @@ msgid "step.title.user_account"
 msgstr "사용자 계정"
 
 #: src/steps/timezone.rs:280
+#: src/steps/system_type.rs
+msgid "system_type_step.dev_tools"
+msgstr "개발 도구 설치"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.key_hint"
+msgstr "Space=선택/전환  Enter=다음"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.hyprland"
+msgstr "Hyprland"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.kde"
+msgstr "KDE Plasma"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.server"
+msgstr "서버"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.title"
+msgstr "시스템 종류 선택"
+
 msgid "timezone_step.hint_region"
 msgstr "위/아래=선택  오른쪽/Enter=시간대  Tab=다음 컨트롤"
 

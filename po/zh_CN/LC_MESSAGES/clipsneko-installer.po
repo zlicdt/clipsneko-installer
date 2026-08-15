@@ -54,6 +54,10 @@ msgid "confirm_step.data_profile"
 msgstr "数据配置"
 
 #: src/steps/confirm.rs:76
+#: src/steps/confirm.rs
+msgid "confirm_step.dev_tools"
+msgstr "开发工具"
+
 msgid "confirm_step.dialog.body"
 msgstr "列出的目标分区将被格式化，ESP 分区也可能被格式化。是否继续安装？"
 
@@ -98,6 +102,10 @@ msgid "confirm_step.locales"
 msgstr "已启用区域设置（locale.gen）"
 
 #: src/steps/confirm.rs:367
+#: src/steps/confirm.rs
+msgid "confirm_step.no"
+msgstr "否"
+
 msgid "confirm_step.no_nvidia"
 msgstr "不安装 NVIDIA 驱动"
 
@@ -110,6 +118,10 @@ msgid "confirm_step.summary_title"
 msgstr "安装摘要"
 
 #: src/steps/confirm.rs:315 src/steps/confirm.rs:321
+#: src/steps/confirm.rs
+msgid "confirm_step.system_type"
+msgstr "系统类型"
+
 msgid "confirm_step.target_partition"
 msgstr "安装目标"
 
@@ -122,6 +134,10 @@ msgid "confirm_step.username"
 msgstr "用户名"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
+#: src/steps/confirm.rs
+msgid "confirm_step.yes"
+msgstr "是"
+
 msgid "disk_step.column_device"
 msgstr "设备"
 
@@ -614,6 +630,10 @@ msgid "step.title.nvidia_driver"
 msgstr "NVIDIA 驱动"
 
 #: src/steps/mod.rs:82
+#: src/steps/mod.rs
+msgid "step.title.system_type"
+msgstr "系统类型"
+
 msgid "step.title.timezone"
 msgstr "时区"
 
@@ -622,6 +642,30 @@ msgid "step.title.user_account"
 msgstr "用户账户"
 
 #: src/steps/timezone.rs:280
+#: src/steps/system_type.rs
+msgid "system_type_step.dev_tools"
+msgstr "安装开发工具"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.key_hint"
+msgstr "Space=选择/切换  Enter=下一步"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.hyprland"
+msgstr "Hyprland"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.kde"
+msgstr "KDE Plasma"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.server"
+msgstr "服务器"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.title"
+msgstr "选择系统类型"
+
 msgid "timezone_step.hint_region"
 msgstr "↑/↓=选择  →/Enter=进入时区列表  Tab=下一控件"
 

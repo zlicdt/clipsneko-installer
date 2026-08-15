@@ -11,15 +11,16 @@ it moves from "Not done" to "Done" and stays there.
   `installer` user and delegates system work to existing ISO tools.
 - The core stack is in place: Rust 2021, ratatui/crossterm, gettext-rs,
   anyhow/thiserror, tracing/tracing-subscriber, serde/serde_json, and libc.
-- The 12-step linear flow and install-stage outline are documented in
+- The 13-step linear flow and install-stage outline are documented in
   `docs/design.md`: UI language and target locale, keyboard, network, mirrors,
-  disk, kernel, NVIDIA, timezone, user, hostname, confirmation, and installation.
+  disk, system type, kernel, NVIDIA, timezone, user, hostname, confirmation,
+  and installation.
 - Cargo scaffolding, the release profile, `.gitignore`, CI, and build-time
   gettext compilation are present. CI checks formatting, Clippy with warnings
   denied, tests, translation consistency, and a release build.
 - Arch release packaging is present under `package/`. The PKGBUILD builds and
-  tests the locked Rust sources, installs the binary, backed-up runtime package
-  list, GPL license, and all seven GNU-standard MO catalogs. Numeric `vX.Y.Z`
+  tests the locked Rust sources, installs the binary, the four static package
+  files, GPL license, and all seven GNU-standard MO catalogs. Numeric `vX.Y.Z`
   tags trigger an Arch `base-devel` container, verify that the tag, Cargo, and
   PKGBUILD versions agree, set the requested makepkg packager identity, build
   the package as an unprivileged user, preserve it as an Actions artifact, and
@@ -34,7 +35,7 @@ it moves from "Not done" to "Done" and stays there.
 - i18n uses stable dot-separated IDs and a literal-only `t!()` macro. English,
   Simplified Chinese, Traditional Chinese, Japanese, German, Korean, and
   Russian are available in the language picker. The POT and all seven catalogs
-  contain the same 172 message IDs with no untranslated, fuzzy, or obsolete
+  contain the same 185 message IDs with no untranslated, fuzzy, or obsolete
   entries. CI and build-time MO generation cover every supported catalog.
 - UI language changes only the process's `LC_MESSAGES`; applying it also adds
   the matching target locale to the generation set without replacing the
@@ -42,8 +43,9 @@ it moves from "Not done" to "Done" and stays there.
   release builds use the GNU-standard `/usr/share/locale` path without a
   runtime override. Missing locales or catalogs are fatal Live ISO invariant
   failures.
-- `config/packages.list` contains the authoritative static package set. Startup
-  requires only `/etc/clipsneko-installer/packages.list`; there is no separate
+- The static package sets live in `config/packages.{base,dev,hypr,kde}` and are
+  installed to `/etc/clipsneko-installer/` on the Live ISO; startup requires
+  all four files. There is no separate
   repository config. The Live ISO's existing `pacman.conf` supplies the
   ClipsNeko repository, and the install design requires `pacstrap -P` to copy
   `pacman.conf` and `pacman.d` to the target. The static `base-devel` entry
@@ -67,7 +69,7 @@ it moves from "Not done" to "Done" and stays there.
 - Startup enforces the UEFI-only target before entering the TUI: a missing
   `/sys/firmware/efi/efivars` exits with a clear error instead of failing at
   the GRUB stage after destructive partitioning.
-- The app shell renders the header, body, and footer; owns the 12-step state
+- The app shell renders the header, body, and footer; owns the 13-step state
   machine; skips disabled buttons; and provides shared step activation,
   completion, modal, subprocess, and commit hooks.
 - Body Enter and footer Back/Next use the same `StepAction` paths, so button
@@ -136,6 +138,16 @@ it moves from "Not done" to "Done" and stays there.
   share a physical disk for RAID0 (pooling disjoint free regions); only
   RAID1 with same-disk Targets is rejected when advancing, with a translated
   error dialog and the profile reset so the RAID dialog reopens.
+- **System type step:** a translated single-select list offers Server, KDE,
+  and Hyprland with Hyprland selected by default; a development-tools checkbox
+  below it is unchecked by default. Space commits the highlighted profile or
+  toggles the checkbox; Enter and footer Next commit the profile and advance;
+  Tab/Shift+Tab cycles focus between the list and the checkbox before bubbling
+  out to the footer. Up/Down wrap within the list and are ignored while the
+  checkbox owns focus. Returning to the step restores the saved profile. The
+  choice selects the static package file appended to the base set at install
+  time (`packages.kde`, `packages.hypr`, or nothing for Server) and the
+  checkbox adds `packages.dev`.
 - **Kernel step:** the four supported kernels are available in a translated
   single-select list, with `linux-zen` selected by default. Space, Enter, and
   footer Next commit consistently; returning to the step restores the saved
@@ -168,7 +180,8 @@ it moves from "Not done" to "Done" and stays there.
   value. The install design writes it to `/etc/hostname` and adds a
   `127.0.1.1` mapping in `/etc/hosts`.
 - **Confirmation step:** a scrollable installation-summary paragraph lists the
-  default `LANG`, every locale enabled in `locale.gen`, keymap, kernel, NVIDIA,
+  default `LANG`, every locale enabled in `locale.gen`, keymap, system type,
+  development-tools choice, kernel, NVIDIA,
   hostname, timezone, username, every affected disk, the ESP, every Target
   partition, and the btrfs RAID profile when more than one Target exists. The
   account password is deliberately excluded from the summary; missing fields
@@ -195,8 +208,10 @@ it moves from "Not done" to "Done" and stays there.
   metadata, creates `@` and `@home`, and mounts both with implicit-level
   `compress=zstd`. Existing-vfat ESPs are reused; other ESPs are formatted
   FAT32 and mounted at `/mnt/boot/efi`.
-- **M4b packages and target configuration:** the installer reads the runtime
-  packages list, appends deduplicated kernel/headers/linux-firmware/NVIDIA
+- **M4b packages and target configuration:** the installer reads the static
+  package files selected by the wizard (`packages.base` plus the system-type
+  file and `packages.dev` when development tools are checked),
+  appends deduplicated kernel/headers/linux-firmware/NVIDIA
   choices, runs `pacstrap -P`, validates both generated btrfs fstab entries
   while preserving a kernel-normalized zstd level, and appends fstab without a
   shell. The dynamic package set also derives a CPU microcode package from the
@@ -248,7 +263,7 @@ it moves from "Not done" to "Done" and stays there.
   terminal size is 80x24, enforced at startup and by an in-app resize notice;
   the two new messages exist in the POT and all seven catalogs.
 - Current automated verification is green: `cargo fmt --check`,
-  `cargo clippy --all-targets -- -D warnings`, `cargo test` (177 tests),
+  `cargo clippy --all-targets -- -D warnings`, `cargo test` (189 tests),
   `cargo build`, `cargo build --release`, `msgfmt --check`, and POT/PO `msgcmp`.
 
 ## Not done
@@ -258,8 +273,8 @@ it moves from "Not done" to "Done" and stays there.
   nmtui return path, mirror rewrite, and release catalogs still need an
   interactive check on the actual ClipsNeko Live ISO or a matching VM. The ISO
   must generate all seven documented UI locales, and the packaged
-  `config/packages.list` plus every MO catalog still need validation at their
-  documented system paths after installation.
+  `config/packages.{base,dev,hypr,kde}` plus every MO catalog still need
+  validation at their documented system paths after installation.
 - **Full-screen restoration test seam:** the helper's actual terminal-state
   bookkeeping on subprocess spawn failure has not been automated; current
   coverage tests privilege command construction only.
@@ -268,7 +283,8 @@ it moves from "Not done" to "Done" and stays there.
   media, responsive tables in all supported languages, role assignment, RAID
   profiles, and wipe dialogs still need an interactive multi-disk Live ISO/VM
   check.
-- **M3 selection and identity:** the kernel, NVIDIA, timezone, user-account,
+- **M3 selection and identity:** the system-type, kernel, NVIDIA, timezone,
+  user-account,
   hostname, and confirmation steps still need an interactive multilingual Live
   ISO/VM check, including real GeoIP, `timedatectl` data, centered-form
   layouts, input focus, masking, strength colors, hostname validation, and the

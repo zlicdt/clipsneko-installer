@@ -41,17 +41,22 @@ pub fn package_set(
         .collect()
 }
 
-/// Load packages.list and run pacstrap with `-P` so the Live ISO's pacman
-/// configuration and ClipsNeko repository are copied into the target.
+/// Load every static package file and run pacstrap with `-P` so the Live
+/// ISO's pacman configuration and ClipsNeko repository are copied into the
+/// target. Files are read in the given order and their contents concatenated
+/// before deduplication, so the base set keeps its file order.
 pub fn install_packages(
     runner: &mut dyn CommandRunner,
     config: &InstallConfig,
-    packages_path: &str,
+    package_files: &[&str],
 ) -> Result<()> {
-    let contents = std::fs::read_to_string(packages_path)
-        .with_context(|| format!("reading {packages_path}"))?;
+    let mut static_packages = Vec::new();
+    for path in package_files {
+        let contents = std::fs::read_to_string(path).with_context(|| format!("reading {path}"))?;
+        static_packages.extend(parse_packages(&contents));
+    }
     let packages = package_set(
-        &parse_packages(&contents),
+        &static_packages,
         config,
         crate::util::cpuinfo::microcode_package(),
     );
@@ -118,6 +123,8 @@ mod tests {
             target_locale: "en_US.UTF-8".to_string(),
             target_locales: vec!["en_US.UTF-8".to_string()],
             keymap: "us".to_string(),
+            system_type: crate::state::SystemType::Hyprland,
+            dev_tools: false,
             kernel_package: "linux-zen".to_string(),
             headers_package: "linux-zen-headers".to_string(),
             nvidia: NvidiaChoice::NvidiaOpenDkms,

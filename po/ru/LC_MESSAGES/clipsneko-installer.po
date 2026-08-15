@@ -54,6 +54,10 @@ msgid "confirm_step.data_profile"
 msgstr "Профиль данных"
 
 #: src/steps/confirm.rs:76
+#: src/steps/confirm.rs
+msgid "confirm_step.dev_tools"
+msgstr "Инструменты разработки"
+
 msgid "confirm_step.dialog.body"
 msgstr ""
 "Указанные целевые разделы будут отформатированы; ESP также может быть "
@@ -100,6 +104,10 @@ msgid "confirm_step.locales"
 msgstr "Включённые локали (locale.gen)"
 
 #: src/steps/confirm.rs:367
+#: src/steps/confirm.rs
+msgid "confirm_step.no"
+msgstr "Нет"
+
 msgid "confirm_step.no_nvidia"
 msgstr "Без драйвера NVIDIA"
 
@@ -112,6 +120,10 @@ msgid "confirm_step.summary_title"
 msgstr "Сводка установки"
 
 #: src/steps/confirm.rs:315 src/steps/confirm.rs:321
+#: src/steps/confirm.rs
+msgid "confirm_step.system_type"
+msgstr "Тип системы"
+
 msgid "confirm_step.target_partition"
 msgstr "Цель установки"
 
@@ -124,6 +136,10 @@ msgid "confirm_step.username"
 msgstr "Имя пользователя"
 
 #: src/steps/disk.rs:366 src/steps/disk.rs:443
+#: src/steps/confirm.rs
+msgid "confirm_step.yes"
+msgstr "Да"
+
 msgid "disk_step.column_device"
 msgstr "Устройство"
 
@@ -623,6 +639,10 @@ msgid "step.title.nvidia_driver"
 msgstr "Драйвер NVIDIA"
 
 #: src/steps/mod.rs:82
+#: src/steps/mod.rs
+msgid "step.title.system_type"
+msgstr "Тип системы"
+
 msgid "step.title.timezone"
 msgstr "Часовой пояс"
 
@@ -631,6 +651,30 @@ msgid "step.title.user_account"
 msgstr "Учётная запись"
 
 #: src/steps/timezone.rs:280
+#: src/steps/system_type.rs
+msgid "system_type_step.dev_tools"
+msgstr "Установить инструменты разработки"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.key_hint"
+msgstr "Space=Выбор/Переключение  Enter=Далее"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.hyprland"
+msgstr "Hyprland"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.kde"
+msgstr "KDE Plasma"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.option.server"
+msgstr "Сервер"
+
+#: src/steps/system_type.rs
+msgid "system_type_step.title"
+msgstr "Выберите тип системы"
+
 msgid "timezone_step.hint_region"
 msgstr "Вверх/Вниз=Выбор  Вправо/Enter=Часовые пояса  Tab=Следующий элемент"
 
