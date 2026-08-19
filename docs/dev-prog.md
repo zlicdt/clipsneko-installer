@@ -235,7 +235,11 @@ it moves from "Not done" to "Done" and stays there.
   installed operating systems; a missing stock toggle is a fatal target
   invariant. The install pipeline runs in a
   background worker with a responsive spinner and a stage-weighted progress
-  bar (fixed 5/2/60/2/10/10/6/5 weights, numeric percentage label); Back,
+  bar. The package stage keeps its original 60% weight but now advances
+  between 7% and 67% by streaming `pacstrap` with `LC_ALL=C` and parsing
+  `pacman`'s C-locale markers (`Packages (N)`, download lines, `installing`
+  lines, phase headers, and hooks); unknown output holds the last value and a
+  successful pacstrap exit completes the boundary. Back,
   Esc, Ctrl+C, and the normal footer are locked. Failure stops without rollback and offers Return
   or a scrollable log view. Success defaults to Reboot; reboot runs privileged
   recursive unmount then reboot, while Not now exits with `/mnt` preserved.
@@ -251,8 +255,10 @@ it moves from "Not done" to "Done" and stays there.
 - Destructive system work is isolated behind a command-runner seam. Automated
   tests cover command and package construction, ESP decisions, btrfs RAID and
   mount options, fstab validation, target-file transforms, stdin-only password
-  handoff/clearing, navigation locking, failure/log behavior, and reboot focus
-  without executing any real format, mount, pacstrap, chroot, or reboot command.
+  handoff/clearing, navigation locking, failure/log behavior, reboot focus,
+  the streaming `CommandRunner` fallback, env-after-sudo command construction,
+  and pacstrap progress parsing across arbitrary chunk boundaries without
+  executing any real format, mount, pacstrap, chroot, or reboot command.
 - **Display-robustness pass (kitty-only target):** the file log is ANSI-free
   and subprocess output is sanitized before logging (escapes stripped, only the
   final `\r`-redrawn progress frame kept). The install-failure dialog shows the
@@ -301,8 +307,11 @@ it moves from "Not done" to "Done" and stays there.
   test on the actual ClipsNeko Live ISO or a disposable matching VM. This now
   includes the UEFI boot-mode gate (accepted in UEFI, refused under
   BIOS/CSM), microcode package selection on Intel and AMD hosts, os-prober
-  entries appearing in grub.cfg on a dual-OS disk, and the same-disk RAID1
-  rejection dialog (with RAID0 left available for same-disk pooling).
+  entries appearing in grub.cfg on a dual-OS disk, the same-disk RAID1
+  rejection dialog (with RAID0 left available for same-disk pooling), and a
+  slow-mirror observation that the package-stage bar advances continuously
+  from 7% through downloads, package installation, and hooks to 67% before
+  the fstab stage.
 - **F1 help:** content and rendering still need the user's decision; F1 is not
   advertised in the UI meanwhile.
 - **End-to-end acceptance:** no complete VM/Live ISO installation has yet

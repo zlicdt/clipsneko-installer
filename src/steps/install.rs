@@ -139,7 +139,7 @@ impl InstallStep {
         match self.progress {
             InstallProgress::Formatting => t!("install_step.progress.formatting"),
             InstallProgress::Mounting => t!("install_step.progress.mounting"),
-            InstallProgress::Packages => t!("install_step.progress.packages"),
+            InstallProgress::Packages { .. } => t!("install_step.progress.packages"),
             InstallProgress::Fstab => t!("install_step.progress.fstab"),
             InstallProgress::TargetConfig => t!("install_step.progress.target_config"),
             InstallProgress::Initramfs => t!("install_step.progress.initramfs"),

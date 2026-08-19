@@ -6,16 +6,18 @@
 pub mod bootloader;
 pub mod chroot;
 pub mod pacstrap;
+pub(crate) mod pacstrap_progress;
 pub mod partition;
 pub mod postinstall;
 
 use crate::state::{BtrfsRaidMode, InstallerState, NvidiaChoice, SystemType};
 use crate::util::password::SecretString;
-use crate::util::process::privileged_command;
+use crate::util::process::{privileged_command, privileged_command_with_env};
 use anyhow::{bail, Context, Result};
-use std::io::Write;
-use std::process::Stdio;
+use std::io::{Read, Write};
+use std::process::{ExitStatus, Stdio};
 use std::sync::mpsc::Sender;
+use std::time::Duration;
 
 pub const TARGET_ROOT: &str = "/mnt";
 /// Static package files shipped by the Live ISO under
@@ -206,6 +208,73 @@ pub trait CommandRunner {
         args: &[String],
         stdin: Option<&[u8]>,
     ) -> Result<CommandOutput>;
+
+    /// Run a command while forwarding raw stdout/stderr chunks to
+    /// `on_output` as they arrive. The default implementation keeps existing
+    /// fake runners source-compatible by falling back to `run` and forwarding
+    /// the completed stdout once; `SystemRunner` overrides this with live
+    /// streaming. `envs` are applied to the child only by the real runner.
+    fn run_streaming(
+        &mut self,
+        program: &str,
+        args: &[String],
+        stdin: Option<&[u8]>,
+        envs: &[(&str, &str)],
+        on_output: &mut dyn FnMut(&[u8]),
+    ) -> Result<CommandOutput> {
+        let _ = envs;
+        let output = self.run(program, args, stdin)?;
+        if !output.stdout.is_empty() {
+            on_output(&output.stdout);
+        }
+        Ok(output)
+    }
+}
+
+/// Log sanitized command output, reject non-zero exits with the same error
+/// shape as the old capture path, and return the captured stdout.
+fn finish_command(
+    program: &str,
+    stdout: Vec<u8>,
+    stderr: Vec<u8>,
+    status: ExitStatus,
+) -> Result<CommandOutput> {
+    if !stdout.is_empty() {
+        tracing::info!(program, output = %sanitize_output(&stdout));
+    }
+    if !stderr.is_empty() {
+        tracing::info!(program, output = %sanitize_output(&stderr));
+    }
+    if !status.success() {
+        bail!(
+            "{program} exited with {}: {}",
+            status,
+            sanitize_output(&stderr)
+        );
+    }
+    Ok(CommandOutput { stdout })
+}
+
+/// Copy one child pipe into the streaming channel until EOF. A reader failure
+/// simply closes that channel side; the command outcome still comes from the
+/// child's exit status.
+fn pump_stream<R>(mut stream: R, is_stderr: bool, sender: Sender<(bool, Vec<u8>)>)
+where
+    R: Read + Send + 'static,
+{
+    let mut buffer = [0_u8; 8192];
+    loop {
+        match stream.read(&mut buffer) {
+            Ok(0) => break,
+            Ok(read) => {
+                if sender.send((is_stderr, buffer[..read].to_vec())).is_err() {
+                    break;
+                }
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
+            Err(_) => break,
+        }
+    }
 }
 
 /// Real privileged command runner used only by the installation worker.
@@ -241,31 +310,111 @@ impl CommandRunner for SystemRunner {
         let output = child
             .wait_with_output()
             .with_context(|| format!("waiting for {program}"))?;
-        if !output.stdout.is_empty() {
-            tracing::info!(program, output = %sanitize_output(&output.stdout));
+        finish_command(program, output.stdout, output.stderr, output.status)
+    }
+
+    fn run_streaming(
+        &mut self,
+        program: &str,
+        args: &[String],
+        stdin: Option<&[u8]>,
+        envs: &[(&str, &str)],
+        on_output: &mut dyn FnMut(&[u8]),
+    ) -> Result<CommandOutput> {
+        tracing::info!(program, args = ?args, "running install command");
+        let mut command = if envs.is_empty() {
+            privileged_command(program)
+        } else {
+            privileged_command_with_env(program, envs)
+        };
+        command
+            .args(args)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped());
+        if stdin.is_some() {
+            command.stdin(Stdio::piped());
         }
-        if !output.stderr.is_empty() {
-            tracing::info!(program, output = %sanitize_output(&output.stderr));
+        let mut child = command
+            .spawn()
+            .with_context(|| format!("spawning {program}"))?;
+        if let Some(input) = stdin {
+            child
+                .stdin
+                .take()
+                .context("command stdin was not piped")?
+                .write_all(input)
+                .with_context(|| format!("writing stdin for {program}"))?;
         }
-        if !output.status.success() {
-            bail!(
-                "{program} exited with {}: {}",
-                output.status,
-                sanitize_output(&output.stderr)
-            );
+
+        let stdout = child
+            .stdout
+            .take()
+            .context("command stdout was not piped")?;
+        let stderr = child
+            .stderr
+            .take()
+            .context("command stderr was not piped")?;
+        let (sender, receiver) = std::sync::mpsc::channel::<(bool, Vec<u8>)>();
+        let stdout_sender = sender.clone();
+        let stdout_reader = std::thread::spawn(move || pump_stream(stdout, false, stdout_sender));
+        let stderr_reader = std::thread::spawn(move || pump_stream(stderr, true, sender));
+
+        let mut stdout_bytes = Vec::new();
+        let mut stderr_bytes = Vec::new();
+        let status = loop {
+            if let Some(status) = child
+                .try_wait()
+                .with_context(|| format!("waiting for {program}"))?
+            {
+                break status;
+            }
+            match receiver.recv_timeout(Duration::from_millis(100)) {
+                Ok((is_stderr, chunk)) => {
+                    on_output(&chunk);
+                    if is_stderr {
+                        stderr_bytes.extend_from_slice(&chunk);
+                    } else {
+                        stdout_bytes.extend_from_slice(&chunk);
+                    }
+                }
+                Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {}
+                Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
+                    break child
+                        .wait()
+                        .with_context(|| format!("waiting for {program}"))?;
+                }
+            }
+        };
+
+        // The child has exited; both pipes are at EOF. Drain anything the
+        // reader threads still have buffered before checking the exit status.
+        while let Ok((is_stderr, chunk)) = receiver.recv() {
+            on_output(&chunk);
+            if is_stderr {
+                stderr_bytes.extend_from_slice(&chunk);
+            } else {
+                stdout_bytes.extend_from_slice(&chunk);
+            }
         }
-        Ok(CommandOutput {
-            stdout: output.stdout,
-        })
+        let _ = stdout_reader.join();
+        let _ = stderr_reader.join();
+
+        finish_command(program, stdout_bytes, stderr_bytes, status)
     }
 }
+
+/// Cumulative progress boundaries for the package-installation stage. The
+/// stage keeps its original 60% weight and now advances inside this range by
+/// parsing `pacstrap`/`pacman` output.
+pub(crate) const PACKAGE_PROGRESS_START: u16 = 7;
+pub(crate) const PACKAGE_PROGRESS_END: u16 = 67;
 
 /// Coarse-grained progress values shown by the installation spinner.
 #[derive(Clone, Copy)]
 pub enum InstallProgress {
     Formatting,
     Mounting,
-    Packages,
+    Packages { percent: u16 },
     Fstab,
     TargetConfig,
     Initramfs,
@@ -274,15 +423,25 @@ pub enum InstallProgress {
 }
 
 impl InstallProgress {
-    /// Cumulative completion percentage reached when this stage begins. The
+    /// Construct a package-stage progress value, clamped to the stage range so
+    /// a malformed parser value can never move the bar backwards or past 100%.
+    pub fn packages(percent: u16) -> Self {
+        Self::Packages {
+            percent: percent.clamp(PACKAGE_PROGRESS_START, PACKAGE_PROGRESS_END),
+        }
+    }
+
+    /// Cumulative completion percentage shown while this stage is active. The
     /// fixed weights (5/2/60/2/10/10/6/5) reflect typical stage durations:
-    /// package installation dominates at 60% and the remaining stages share
-    /// the rest. The final stage begins at a full 100%.
+    /// package installation dominates at 60% and is now subdivided by parsed
+    /// pacstrap output; the remaining stages still show their stage target.
     pub fn percent(self) -> u16 {
         match self {
             Self::Formatting => 5,
             Self::Mounting => 7,
-            Self::Packages => 67,
+            Self::Packages { percent } => {
+                percent.clamp(PACKAGE_PROGRESS_START, PACKAGE_PROGRESS_END)
+            }
             Self::Fstab => 69,
             Self::TargetConfig => 79,
             Self::Initramfs => 89,
@@ -290,6 +449,13 @@ impl InstallProgress {
             Self::Postinstall => 100,
         }
     }
+}
+
+/// Map the parser's 0..=100 package-stage fraction onto the cumulative
+/// `[PACKAGE_PROGRESS_START, PACKAGE_PROGRESS_END]` range.
+pub(crate) fn package_percent(fraction: u8) -> u16 {
+    PACKAGE_PROGRESS_START
+        + (u16::from(fraction) * (PACKAGE_PROGRESS_END - PACKAGE_PROGRESS_START) + 50) / 100
 }
 
 /// Messages sent from the worker to the TUI.
@@ -312,8 +478,17 @@ pub fn run_install(mut config: InstallConfig, sender: &Sender<WorkerMessage>) ->
     partition::format_targets(&mut runner, &config)?;
     report(sender, InstallProgress::Mounting);
     partition::mount_layout(&mut runner, &config)?;
-    report(sender, InstallProgress::Packages);
-    pacstrap::install_packages(&mut runner, &config, &package_files(&config))?;
+    report(sender, InstallProgress::packages(PACKAGE_PROGRESS_START));
+    let package_sender = sender.clone();
+    pacstrap::install_packages(
+        &mut runner,
+        &config,
+        &package_files(&config),
+        &mut |percent| {
+            let _ =
+                package_sender.send(WorkerMessage::Progress(InstallProgress::packages(percent)));
+        },
+    )?;
     report(sender, InstallProgress::Fstab);
     pacstrap::generate_fstab(&mut runner)?;
     report(sender, InstallProgress::TargetConfig);
@@ -402,7 +577,7 @@ mod tests {
         let ordered = [
             InstallProgress::Formatting,
             InstallProgress::Mounting,
-            InstallProgress::Packages,
+            InstallProgress::packages(PACKAGE_PROGRESS_START),
             InstallProgress::Fstab,
             InstallProgress::TargetConfig,
             InstallProgress::Initramfs,
@@ -412,9 +587,58 @@ mod tests {
         let mut previous = 0;
         for stage in ordered {
             let percent = stage.percent();
-            assert!(percent > previous);
+            assert!(percent >= previous, "{percent} should not decrease");
             previous = percent;
         }
         assert_eq!(previous, 100);
+    }
+
+    #[test]
+    fn package_progress_is_clamped_and_mapped_inside_its_stage() {
+        assert_eq!(
+            InstallProgress::packages(0).percent(),
+            PACKAGE_PROGRESS_START
+        );
+        assert_eq!(InstallProgress::packages(50).percent(), 50);
+        assert_eq!(
+            InstallProgress::packages(1000).percent(),
+            PACKAGE_PROGRESS_END
+        );
+        assert_eq!(package_percent(0), PACKAGE_PROGRESS_START);
+        assert_eq!(package_percent(6), 11);
+        assert_eq!(package_percent(8), 12);
+        assert_eq!(package_percent(50), 37);
+        assert_eq!(package_percent(100), PACKAGE_PROGRESS_END);
+    }
+
+    struct FallbackRunner {
+        stdout: Vec<u8>,
+    }
+
+    impl CommandRunner for FallbackRunner {
+        fn run(
+            &mut self,
+            _program: &str,
+            _args: &[String],
+            _stdin: Option<&[u8]>,
+        ) -> Result<CommandOutput> {
+            Ok(CommandOutput {
+                stdout: self.stdout.clone(),
+            })
+        }
+    }
+
+    #[test]
+    fn run_streaming_default_forwards_stdout_after_run() {
+        let mut runner = FallbackRunner {
+            stdout: b"line one\nline two\n".to_vec(),
+        };
+        let mut chunks = Vec::new();
+        runner
+            .run_streaming("echo", &[], None, &[], &mut |chunk| {
+                chunks.extend_from_slice(chunk);
+            })
+            .unwrap();
+        assert_eq!(chunks, b"line one\nline two\n");
     }
 }

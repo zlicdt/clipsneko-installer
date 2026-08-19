@@ -44,6 +44,28 @@ pub fn privileged_command(program: &str) -> Command {
         cmd
     }
 }
+/// Start building a `Command` for `program` with additional environment
+/// variables, still prefixing `sudo` when the running user is not root.
+/// When sudo is used, the variables are applied by `/usr/bin/env` *after*
+/// sudo so the command does not depend on sudoers preserving `LC_*` or
+/// other environment allow-lists.
+pub fn privileged_command_with_env(program: &str, envs: &[(&str, &str)]) -> Command {
+    if is_root() {
+        let mut cmd = Command::new(program);
+        cmd.envs(envs.iter().copied());
+        cmd
+    } else if envs.is_empty() {
+        privileged_command(program)
+    } else {
+        let mut cmd = Command::new("sudo");
+        cmd.arg("--").arg("/usr/bin/env");
+        for (key, value) in envs {
+            cmd.arg(format!("{key}={value}"));
+        }
+        cmd.arg(program);
+        cmd
+    }
+}
 
 /// Run a full-screen interactive subprocess (e.g. `nmtui`, `cfdisk`) by
 /// temporarily suspending the ratatui terminal: leave the alternate screen

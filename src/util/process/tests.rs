@@ -25,3 +25,34 @@ fn privileged_command_as_user_has_sudo() {
         assert_eq!(cmd.get_program(), std::ffi::OsStr::new("sudo"));
     }
 }
+
+#[test]
+fn privileged_command_with_env_as_user_uses_env_after_sudo() {
+    if !is_root() {
+        let cmd = privileged_command_with_env("pacstrap", &[("LC_ALL", "C")]);
+        assert_eq!(cmd.get_program(), std::ffi::OsStr::new("sudo"));
+        let args: Vec<String> = cmd
+            .get_args()
+            .map(|arg| arg.to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(args, ["--", "/usr/bin/env", "LC_ALL=C", "pacstrap"]);
+    }
+}
+
+#[test]
+fn privileged_command_with_env_as_root_applies_env_directly() {
+    if is_root() {
+        let cmd = privileged_command_with_env("pacstrap", &[("LC_ALL", "C")]);
+        assert_eq!(cmd.get_program(), std::ffi::OsStr::new("pacstrap"));
+        let envs: Vec<(String, Option<String>)> = cmd
+            .get_envs()
+            .map(|(key, value)| {
+                (
+                    key.to_string_lossy().into_owned(),
+                    value.map(|value| value.to_string_lossy().into_owned()),
+                )
+            })
+            .collect();
+        assert!(envs.contains(&("LC_ALL".to_string(), Some("C".to_string()))));
+    }
+}

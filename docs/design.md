@@ -300,11 +300,18 @@ intentionally leaves the target mounted for inspection.
 The install work runs in a background thread so the TUI spinner, progress
 text, and progress bar continue to refresh. The bar advances once per
 pipeline stage using fixed weights that reflect typical durations (package
-installation alone carries 60%) and is labeled with the plain percentage. Back, Esc, and the global Ctrl+C quit path are locked
-for the install step. A failed command stops the pipeline without rollback and
-leaves current mounts intact. The blocking failure dialog offers Return (exit
-to the launching shell) and View Log; the latter opens the installer log and
-returns to the failure dialog without retrying commands.
+installation alone carries 60%) and is labeled with the plain percentage.
+The package stage is subdivided: `pacstrap` runs with `LC_ALL=C`, its
+stdout/stderr are streamed back to the worker, and a small parser maps the
+C-locale `pacman` markers (`Packages (N)`, package-download lines, package
+`installing` lines, phase headers, hooks) onto 7%–67%. Unrecognized output
+keeps the last percentage and a successful pacstrap exit always completes
+that stage boundary; parse failures never fail the install. Back, Esc, and
+the global Ctrl+C quit path are locked for the install step. A failed command
+stops the pipeline without rollback and leaves current mounts intact. The
+blocking failure dialog offers Return (exit to the launching shell) and View
+Log; the latter opens the installer log and returns to the failure dialog
+without retrying commands.
 
 ## 6. Keybindings
 
